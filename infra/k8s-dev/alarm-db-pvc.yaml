@@ -1,0 +1,40 @@
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: alarm-db-pv
+# spec:
+#   storageClassName: ""
+#   capacity:
+#     storage: 500Mi
+#   accessModes:
+#     - ReadWriteOnce
+#   hostPath:
+#     path: /host/data
+#   claimRef:
+#     name: alarm-db-pvc
+#     namespace: default
+# ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: alarm-db-pv
+spec:
+  capacity:
+    storage: 500M
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /host/data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: alarm-db-pvc
+spec:
+  # storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      # storage: 500Mi
+      storage: 500M

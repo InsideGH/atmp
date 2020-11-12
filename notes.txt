@@ -1,0 +1,4 @@
+minikube start --mount=true --mount-string=/Users/peterlarsson/src/ticketing/coolstorage:/host/data --driver=virtualbox
+
+
+minikube start --vm=true

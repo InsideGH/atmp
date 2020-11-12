@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alarm-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alarm
+  template:
+    metadata:
+      labels:
+        app: alarm
+    spec:
+      initContainers:
+        - name: alarm-init-containers-db
+          image: mariadb
+          command:
+            [
+              "sh",
+              "-c",
+              "until mysqladmin ping --host=alarm-db-srv --silent 2>/dev/null; do echo waiting for db; sleep 2; done;",
+            ]
+      containers:
+        - name: alarm
+          image: alarm:latest
+          env:
+            - name: ALARM_DB_TIMEZONE
+              valueFrom:
+                configMapKeyRef:
+                  name: alarm-config
+                  key: ALARM_DB_TIMEZONE
+            - name: ALARM_DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: alarm-config
+                  key: ALARM_DB_USER
+            - name: ALARM_DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: alarm-config
+                  key: ALARM_DB_NAME
+            - name: ALARM_DB_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: alarm-db-passwd-secret
+                  key: ALARM_DB_USER_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alarm-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: alarm
+  ports:
+    - name: alarm
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

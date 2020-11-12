@@ -1,0 +1,35 @@
+apiVersion: skaffold/v2beta8
+kind: Config
+deploy:
+  # Telling skaffold that there are kubernetes files.
+  # Watch files, and re-apply.
+  # Will make sure to create all object when we start skaffold.
+  # Will also delete all objects when we stop skaffold. (clean cluster)
+  kubectl:
+    manifests:
+      - ./infra/k8s-dev/*
+      - ./infra/k8s/*
+    # flags:
+    #   # additional flags passed on every command, both apply and delete.
+    #   global:
+    #   - --namespace=acss
+# Default skaffold tries to push to docker hub.
+build:
+  local:
+    push: false
+  # Tell skaffold that it needs to maintain
+  artifacts:
+    # alarm
+    - image: alarm
+      # There is pod running code from auth directory
+      # When there is a change in the source files, skaffold will try update pod
+      context: alarm
+      docker:
+        # Way 2: if any other file changes, rebuild the image
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          # Way 1: if a js file changes, copy the file into the pod!
+          # Then handle file change inside the pod!
+          - src: "src/**/*.ts"
+            dest: .
