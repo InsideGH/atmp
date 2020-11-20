@@ -6,8 +6,7 @@ import cookieSession from 'cookie-session';
 
 import { errorHandler, NotFoundError } from '@thelarsson/acss-common';
 
-import { newAlarmRouter } from './routes/new';
-import { updateAlarmRouter } from './routes/update';
+import { newPatientRoute } from './routes/new-patient';
 
 import { probeRouter } from './routes/probe';
 
@@ -29,8 +28,7 @@ app.use(
 );
 
 app.use(probeRouter);
-app.use(newAlarmRouter);
-app.use(updateAlarmRouter);
+app.use(newPatientRoute);
 
 app.all('*', async () => {
   throw new NotFoundError();

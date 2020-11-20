@@ -12,6 +12,7 @@
         "pino",
         "postgres",
         "signin",
-        "skaffold"
+        "skaffold",
+        "thelarsson"
     ]
 }

@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patients-db-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: patients-db
+  template:
+    metadata:
+      labels:
+        app: patients-db
+    spec:
+      containers:
+        - name: patients-db
+          image: mariadb
+          env:
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: patients-config
+                  key: PATIENTS_DB_USER
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: patients-config
+                  key: PATIENTS_DB_NAME
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: patients-db-passwd-secret
+                  key: PATIENTS_DB_USER_PASSWORD
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: patients-db-passwd-secret
+                  key: PATIENTS_DB_ROOT_PASSWORD
+          volumeMounts:
+            - name: patients-db-data
+              mountPath: /var/lib/mysql
+              subPath: db
+      volumes:
+        - name: patients-db-data
+          persistentVolumeClaim:
+            claimName: patients-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: patients-db-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: patients-db
+  ports:
+    - name: patients-db
+      protocol: TCP
+      port: 3306
+      targetPort: 3306

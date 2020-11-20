@@ -9,6 +9,13 @@ spec:
     - host: acss.dev
       http:
         paths:
+          - path: /api/patients/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: patients-srv
+                port:
+                  number: 3000
           - path: /api/alarm/?(.*)
             pathType: Prefix
             backend:

@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patients-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: patients
+  template:
+    metadata:
+      labels:
+        app: patients
+    spec:
+      initContainers:
+        - name: patients-init-containers-db
+          image: mariadb
+          command:
+            [
+              "sh",
+              "-c",
+              "until mysqladmin ping --host=patients-db-srv --silent 2>/dev/null; do echo waiting for db; sleep 2; done;",
+            ]
+      containers:
+        - name: patients
+          image: patients:latest
+          env:
+            - name: PATIENTS_DB_TIMEZONE
+              valueFrom:
+                configMapKeyRef:
+                  name: patients-config
+                  key: PATIENTS_DB_TIMEZONE
+            - name: PATIENTS_DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: patients-config
+                  key: PATIENTS_DB_USER
+            - name: PATIENTS_DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: patients-config
+                  key: PATIENTS_DB_NAME
+            - name: PATIENTS_DB_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: patients-db-passwd-secret
+                  key: PATIENTS_DB_USER_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: patients-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: patients
+  ports:
+    - name: patients
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
