@@ -24,7 +24,7 @@ export abstract class Listener<T extends Event> {
   protected ackWait: number = 5 * 1000;
 
   /**
-   * Create a nats streaming listener.s
+   * Create a nats streaming listener.
    *
    * @param client Nats streaming client
    * @param debug True if debug logs should be turned on
