@@ -1,8 +1,8 @@
 import { Message, Stan } from 'node-nats-streaming';
-import { Event } from './event';
-import { logger } from '../logger/pino';
+import { BaseEvent } from './base-event';
+import { logger } from '../../logger/pino';
 
-export abstract class Listener<T extends Event> {
+export abstract class Listener<T extends BaseEvent> {
   /**
    * Listener must have a subject of type Event.subject generic, provide by the implementing listener.
    */

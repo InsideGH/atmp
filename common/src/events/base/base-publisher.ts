@@ -1,8 +1,8 @@
 import { Stan } from 'node-nats-streaming';
-import { Event } from './event';
-import { logger } from '../logger/pino';
+import { BaseEvent } from './base-event';
+import { logger } from '../../logger/pino';
 
-export abstract class Publisher<T extends Event> {
+export abstract class Publisher<T extends BaseEvent> {
   /**
    * Publisher must have a subject of type Event.subject generic, provide by the implementing publisher.
    */
