@@ -1,40 +1,34 @@
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: alarm-db-pv
-# spec:
-#   storageClassName: ""
-#   capacity:
-#     storage: 500Mi
-#   accessModes:
-#     - ReadWriteOnce
-#   hostPath:
-#     path: /host/data
-#   claimRef:
-#     name: alarm-db-pvc
-#     namespace: default
-# ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: alarm-db-pv
 spec:
+  # empty string means use no StorageClass, we want to bind this pv-pvc
+  storageClassName: ""
   capacity:
-    storage: 500M
+    # The PVC size must match PV size.
+    storage: 500Mi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /host/data
+    # it must be /tmp/.*
+    # otherwise the delete of the PV will fail when skaffold is terminating.
+    path: "/Users/peterlarsson/src/acss/data/alarm"
+  claimRef:
+    name: alarm-db-pvc
+    # For some reason we need to have the namespace here event though we configure the namespace to the default
+    namespace: default
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: alarm-db-pvc
 spec:
-  # storageClassName: ""
+  # empty string means use no StorageClass, we want to bind this pv-pvc
+  storageClassName: ""
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      # storage: 500Mi
-      storage: 500M
+      # The PVC size must match PV size.
+      storage: 500Mi

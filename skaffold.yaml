@@ -7,6 +7,7 @@ deploy:
   # Will also delete all objects when we stop skaffold. (clean cluster)
   kubectl:
     manifests:
+      - ./infra/k8s-init/*
       - ./infra/k8s-dev/*
       - ./infra/k8s/*
     # flags:

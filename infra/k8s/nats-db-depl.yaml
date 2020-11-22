@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nats-db-depl
+spec:
+  replicas: 1
+  # Selector works together with metadata
+  # 'app' is just a key - could be anything
+  # The selector/matchLabels tells what pods it should manage (find)
+  selector:
+    matchLabels:
+      app: nats-db
+  # Metadata works together with selector
+  # Specifies configuration for creating pods.
+  template:
+    metadata:
+      labels:
+        app: nats-db
+    spec:
+      containers:
+        - name: nats-db
+          # latest is default if not specified
+          image: postgres
+          env:
+            # Name of env variable inside our app
+            - name: POSTGRES_USER
+              valueFrom:
+                # If the config map does not exist, the pod will not start (CreateContainerConfigError)
+                configMapKeyRef:
+                  name: nats-config
+                  key: NATS_DB_USER
+            - name: POSTGRES_DB
+              valueFrom:
+                # If the config map does not exist, the pod will not start (CreateContainerConfigError)
+                configMapKeyRef:
+                  name: nats-config
+                  key: NATS_DB_NAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nats-db-passwd-secret
+                  key: NATS_DB_PASSWD
+          volumeMounts:
+            # select which volume that should be mounted into 'mountPath'
+            - name: nats-db-data
+              # mount the volume/subPath into ->
+              # This means that the volume root will have a subfolder 'postgres' where all content will be located
+              # Without a subPath, there was no need to create the directory specified by PV spec.hostPath.path.
+              # With a subPath, I had to create the directory(!?)
+              # Reason for subPath is that Digital Ocean PV wasn't empty and postgres complained about it (lost&found folder).
+              mountPath: /var/lib/postgresql/data
+              # subPath: db
+      volumes:
+        # name the volume so that it can be referenced above and specify the claim
+        - name: nats-db-data
+          persistentVolumeClaim:
+            claimName: nats-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats-db-srv
+spec:
+  # Default is ClusterIP
+  type: ClusterIP
+  # Selector works together with DEPL.template.metadata.label
+  selector:
+    app: nats-db
+  ports:
+    # the name is just for logging purposes, can be anything
+    - name: nats-db
+      protocol: TCP
+      # the port that Cluster is listening on
+      port: 5432
+      # the port that pod/container is listening on
+      targetPort: 5432

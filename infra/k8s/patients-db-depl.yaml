@@ -39,7 +39,7 @@ spec:
           volumeMounts:
             - name: patients-db-data
               mountPath: /var/lib/mysql
-              subPath: db
+              # subPath: db
       volumes:
         - name: patients-db-data
           persistentVolumeClaim:

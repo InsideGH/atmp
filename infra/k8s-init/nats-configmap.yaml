@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nats-config
+data:
+  NATS_DB_USER: "1"
+  NATS_DB_NAME: "nats_streaming"

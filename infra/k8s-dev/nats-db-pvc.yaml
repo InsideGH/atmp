@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: patients-db-pv
+  name: nats-db-pv
 spec:
   # empty string means use no StorageClass, we want to bind this pv-pvc
   storageClassName: ""
@@ -13,16 +13,16 @@ spec:
   hostPath:
     # it must be /tmp/.*
     # otherwise the delete of the PV will fail when skaffold is terminating.
-    path: "/Users/peterlarsson/src/acss/data/patients"
+    path: "/Users/peterlarsson/src/acss/data/nats"
   claimRef:
-    name: patients-db-pvc
+    name: nats-db-pvc
     # For some reason we need to have the namespace here event though we configure the namespace to the default
     namespace: default
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: patients-db-pvc
+  name: nats-db-pvc
 spec:
   # empty string means use no StorageClass, we want to bind this pv-pvc
   storageClassName: ""
