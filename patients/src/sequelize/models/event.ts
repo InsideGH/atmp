@@ -7,6 +7,7 @@ interface EventInstance extends Model {
   id: string;
   data: any;
   versionKey: number;
+  sent: boolean;
   setPatient(patient: any, config?: any): Promise<any>;
 }
 
@@ -30,6 +31,10 @@ const Event = <EventInterface>db.sequelize.define<EventInstance>(
     versionKey: {
       allowNull: false,
       type: DataTypes.INTEGER,
+    },
+    sent: {
+      allowNull: false,
+      type: DataTypes.BOOLEAN,
     },
   },
   {

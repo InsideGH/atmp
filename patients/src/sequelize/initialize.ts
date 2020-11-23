@@ -7,5 +7,5 @@ export const initialize = async (db: Database) => {
    */
   Object.values(models).forEach((model) => model.associate(models));
 
-  await db.sequelize.sync({ force: false });
+  await db.sequelize.sync({ force: true });
 };

@@ -4,6 +4,6 @@ metadata:
   name: patients-config
 data:
   PATIENTS_DB_USER: "1"
-  PATIENTS_DB_NAME: "patients"
+  PATIENTS_DB_NAME: "patients_db"
   PATIENTS_DB_TIMEZONE: "Etc/GMT0"
   LOG_LEVEL: "debug"

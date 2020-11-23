@@ -29,6 +29,7 @@ router.post(
       const event = await models.Event.create(
         {
           data: {},
+          sent: false,
           versionKey: 0,
         },
         { transaction },

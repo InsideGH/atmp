@@ -25,11 +25,27 @@ router.post(
         { transaction },
       );
 
-      await new PatientCreatedPublisher(natsWrapper.client, true).publish({
-        id: patient.id,
-        name: patient.name,
-        version: patient.versionKey,
-      });
+      const event = await models.Event.create(
+        {
+          data: {
+            id: patient.id,
+            name: patient.name,
+            version: patient.versionKey,
+          },
+          sent: false,
+          versionKey: 0,
+        },
+        { transaction },
+      );
+
+      await event.setPatient(patient, { transaction });
+      await patient.addEvent(event, { transaction });
+
+      // await new PatientCreatedPublisher(natsWrapper.client, true).publish({
+      //   id: patient.id,
+      //   name: patient.name,
+      //   version: patient.versionKey,
+      // });
 
       await transaction.commit();
 

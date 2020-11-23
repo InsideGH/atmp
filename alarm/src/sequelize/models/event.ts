@@ -27,6 +27,10 @@ const Event = <EventInterface>db.sequelize.define<EventInstance>(
       type: DataTypes.JSON,
       allowNull: false,
     },
+    sent: {
+      allowNull: false,
+      type: DataTypes.BOOLEAN,
+    },
     versionKey: {
       allowNull: false,
       type: DataTypes.INTEGER,
