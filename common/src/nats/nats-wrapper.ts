@@ -38,7 +38,7 @@ class NatsWrapper {
     });
   }
 
-  close() {
+  disconnect() {
     return new Promise((resolve, reject) => {
       if (!this._client) {
         return resolve(true);
