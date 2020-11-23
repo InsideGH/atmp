@@ -37,6 +37,20 @@ class NatsWrapper {
       });
     });
   }
+
+  close() {
+    return new Promise((resolve, reject) => {
+      if (!this._client) {
+        return resolve(true);
+      }
+
+      this._client.on('close', () => {
+        return resolve(true);
+      });
+
+      this._client.close();
+    });
+  }
 }
 
 export const natsWrapper = new NatsWrapper();
