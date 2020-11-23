@@ -20,6 +20,11 @@ export * from './logger/pino';
 export * from './util/assert-env-variables';
 
 /**
+ * NATS
+ */
+export * from './nats/nats-wrapper';
+
+/**
  * EVENT RELATED
  */
 export * from './events/subjects';
