@@ -29,7 +29,7 @@ export abstract class Listener<T extends BaseEvent> {
    * @param client Nats streaming client
    * @param debug True if debug logs should be turned on
    */
-  constructor(protected client: Stan, protected debug: Boolean) {}
+  constructor(protected client: Stan, protected debug: Boolean = false) {}
 
   /**
    * This combination will replay all events to a queueGroup that has not been received and ack:ed by any worker in the queue group.
