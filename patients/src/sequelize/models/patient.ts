@@ -3,9 +3,10 @@ import { Model, DataTypes, ModelCtor } from 'sequelize';
 import { Models } from '../models';
 
 interface PatientInstance extends Model {
-  id: number;
+  id: string;
   name: string;
   versionKey: number;
+  addEvent(patient: any, config?: any): Promise<any>;
 }
 
 export interface PatientInterface extends ModelCtor<PatientInstance> {

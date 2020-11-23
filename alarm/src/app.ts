@@ -17,7 +17,6 @@ const app = express();
 app.set('trust proxy', true);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log("REQ", req.url);
   next();
 });
 

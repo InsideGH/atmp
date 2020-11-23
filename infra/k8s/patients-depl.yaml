@@ -45,6 +45,22 @@ spec:
                 secretKeyRef:
                   name: patients-db-passwd-secret
                   key: PATIENTS_DB_USER_PASSWORD
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+            - name: NATS_CLUSTER_ID
+              value: "acss"
+            - name: NATS_CLIENT_ID
+              # The value is the name of the pod
+              # k get pods ->
+              # for example: patients-depl-5f98787649-vtqlm
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: patients-config
+                  key: LOG_LEVEL
 ---
 apiVersion: v1
 kind: Service

@@ -9,7 +9,7 @@ const onExit = async () => {
 };
 
 const start = async () => {
-  assertEnvVariables(['ALARM_DB_USER', 'ALARM_DB_NAME', 'ALARM_DB_USER_PASSWORD']);
+  assertEnvVariables(['ALARM_DB_USER', 'ALARM_DB_NAME', 'ALARM_DB_USER_PASSWORD', 'LOG_LEVEL']);
 
   try {
     logger.info('Connect to db - ..');

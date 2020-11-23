@@ -1,3 +1,33 @@
+npm_install:
+	(cd common && npm i)
+	(cd alarm && npm i)
+	(cd patients && npm i)
+
+build:
+	(cd common && npm run build)
+	(cd alarm && npm run build)
+	(cd patients && npm run build)
+
+lint:
+	(cd common && npm run lint)
+	(cd alarm && npm run lint)
+	(cd patients && npm run lint)
+
+test:
+	(cd alarm && npm run "test:ci")
+	(cd patients && npm run "test:ci")
+
+release_common: 
+	(cd common && npm run pub)
+
+bump_patients_common:
+	(cd patients && npm update @thelarsson/acss-common)
+
+bump_alarm_common:
+	(cd alarm && npm update @thelarsson/acss-common)
+
+bump_all_common: bump_patients_common bump_alarm_common
+
 minikube_hyperkit:
 	# Ingress "minikube addons ..." is working with this variant
 	# But not file mounts on MacOS, permission problems with MariaDb and Postgres. 

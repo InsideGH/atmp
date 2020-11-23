@@ -7,7 +7,9 @@ const router = express.Router();
 
 router.post(
   '/',
-  [body('hwId').not().isEmpty().withMessage('hwId is required')],
+  [
+    body('hwId').not().isEmpty().withMessage('hwId is required'),
+  ],
   validateRequest,
   async (req: Request, res: Response) => {
     const { hwId } = req.body;

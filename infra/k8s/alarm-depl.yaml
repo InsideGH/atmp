@@ -45,6 +45,11 @@ spec:
                 secretKeyRef:
                   name: alarm-db-passwd-secret
                   key: ALARM_DB_USER_PASSWORD
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: alarm-config
+                  key: LOG_LEVEL
 ---
 apiVersion: v1
 kind: Service

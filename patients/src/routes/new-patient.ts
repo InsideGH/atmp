@@ -3,18 +3,41 @@ import { body } from 'express-validator';
 import { validateRequest, logger } from '@thelarsson/acss-common';
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
+import { PatientCreatedPublisher } from '../events/publishers/patient-created-publisher';
+import { natsWrapper } from '@thelarsson/acss-common';
+
 const router = express.Router();
 
 router.post(
-  '/patient',
+  '/',
   [body('firstName').not().isEmpty().withMessage('patient firstName is required')],
   validateRequest,
   async (req: Request, res: Response) => {
+    const { body } = req;
     const transaction = await db.sequelize.transaction();
 
     try {
-      res.status(201).send({});
+      const patient = await models.Patient.create(
+        {
+          name: body.firstName,
+          versionKey: 0,
+        },
+        { transaction },
+      );
+
+      await new PatientCreatedPublisher(natsWrapper.client, true).publish({
+        id: patient.id,
+        name: patient.name,
+        version: patient.versionKey,
+      });
+
       await transaction.commit();
+
+      logger.info(`Patient id=${patient.id} created`);
+
+      res.status(201).send({
+        patient,
+      });
     } catch (error) {
       await transaction.rollback();
       throw error;

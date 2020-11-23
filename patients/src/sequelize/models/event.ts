@@ -4,7 +4,7 @@ import { Models } from '../models';
 
 interface EventInstance extends Model {
   [x: string]: any;
-  id: number;
+  id: string;
   data: any;
   versionKey: number;
   setPatient(patient: any, config?: any): Promise<any>;

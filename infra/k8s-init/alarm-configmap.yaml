@@ -6,3 +6,4 @@ data:
   ALARM_DB_USER: "1"
   ALARM_DB_NAME: "alarm"
   ALARM_DB_TIMEZONE: "Etc/GMT0"
+  LOG_LEVEL: "debug"
