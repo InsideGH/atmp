@@ -27,9 +27,9 @@ export abstract class Listener<T extends BaseEvent> {
    * Create a nats streaming listener.
    *
    * @param client Nats streaming client
-   * @param debug True if debug logs should be turned on
+   * @param enableDebugLogs Enable debug logs, requires LOG_LEVEL=debug
    */
-  constructor(protected client: Stan, protected debug: Boolean = false) {}
+  constructor(protected client: Stan, protected enableDebugLogs: Boolean = false) {}
 
   /**
    * This combination will replay all events to a queueGroup that has not been received and ack:ed by any worker in the queue group.
@@ -55,7 +55,7 @@ export abstract class Listener<T extends BaseEvent> {
     );
 
     subscription.on('message', (msg: Message) => {
-      if (this.debug) {
+      if (this.enableDebugLogs) {
         logger.debug(
           `[${msg.getSequence()}] ${this.subject} event received by ${
             this.queueGroupName

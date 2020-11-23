@@ -12,6 +12,7 @@ export abstract class Publisher<T extends BaseEvent> {
    * Create a nats streaming publisher.
    *
    * @param client Nats streaming client
+   * @param enableDebugLogs Enable debug logs, requires LOG_LEVEL=debug
    */
   constructor(protected client: Stan, protected enableDebugLogs: Boolean = false) {}
 
@@ -23,7 +24,7 @@ export abstract class Publisher<T extends BaseEvent> {
   publish(data: T['data']): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.enableDebugLogs) {
-        logger.debug(`L ${this.subject} event published`);
+        logger.debug(`${this.subject} event published`);
       }
       this.client.publish(this.subject, JSON.stringify(data), (err) => {
         if (err) {
