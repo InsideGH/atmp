@@ -13,7 +13,9 @@ export abstract class Publisher<T extends BaseEvent> {
    *
    * @param client Nats streaming client
    */
-  constructor(protected client: Stan, protected debug: Boolean = false) {}
+  constructor(protected client: Stan, protected debug: Boolean = false) {
+    console.log('#Publisher', debug);
+  }
 
   /**
    * Call this to send the event.
@@ -22,6 +24,7 @@ export abstract class Publisher<T extends BaseEvent> {
    */
   publish(data: T['data']): Promise<void> {
     return new Promise((resolve, reject) => {
+      console.log('this.debug', this.debug);
       if (this.debug) {
         logger.debug(`${this.subject} event published`);
       }
