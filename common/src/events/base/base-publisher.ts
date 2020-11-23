@@ -13,9 +13,7 @@ export abstract class Publisher<T extends BaseEvent> {
    *
    * @param client Nats streaming client
    */
-  constructor(protected client: Stan, protected debug: Boolean = false) {
-    console.log('#Publisher', debug);
-  }
+  constructor(protected client: Stan, protected enableDebugLogs: Boolean = false) {}
 
   /**
    * Call this to send the event.
@@ -24,14 +22,12 @@ export abstract class Publisher<T extends BaseEvent> {
    */
   publish(data: T['data']): Promise<void> {
     return new Promise((resolve, reject) => {
-      console.log('this.debug', this.debug);
-      if (this.debug) {
-        console.log(`C ${this.subject} event published`);
+      if (this.enableDebugLogs) {
         logger.debug(`L ${this.subject} event published`);
       }
       this.client.publish(this.subject, JSON.stringify(data), (err) => {
         if (err) {
-          if (this.debug) {
+          if (this.enableDebugLogs) {
             logger.debug(`${this.subject} event publishing error ${err}`);
           }
           return reject(err);
