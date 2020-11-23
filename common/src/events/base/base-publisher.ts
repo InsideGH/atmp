@@ -13,7 +13,7 @@ export abstract class Publisher<T extends BaseEvent> {
    *
    * @param client Nats streaming client
    */
-  constructor(protected client: Stan, protected debug: Boolean) {}
+  constructor(protected client: Stan, protected debug: Boolean = false) {}
 
   /**
    * Call this to send the event.
