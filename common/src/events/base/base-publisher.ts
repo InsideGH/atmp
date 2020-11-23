@@ -26,7 +26,8 @@ export abstract class Publisher<T extends BaseEvent> {
     return new Promise((resolve, reject) => {
       console.log('this.debug', this.debug);
       if (this.debug) {
-        logger.debug(`${this.subject} event published`);
+        console.log(`C ${this.subject} event published`);
+        logger.debug(`L ${this.subject} event published`);
       }
       this.client.publish(this.subject, JSON.stringify(data), (err) => {
         if (err) {
