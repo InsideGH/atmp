@@ -1,5 +1,5 @@
 export enum Subjects {
-  ErrorUnknownSubject = 'error:unknown_subject',
+  ErrorUnknownEvent = 'error:unknown_event',
   PatientCreated = 'patient:created',
   PatientUpdated = 'patient:updated',
 }
