@@ -28,8 +28,6 @@ bump_alarm:
 
 bump_all: bump_patients bump_alarm
 
-
-
 minikube:
 	minikube start --mount=true --mount-string=$(PWD)/data:/host/data
 	minikube addons enable ingress
