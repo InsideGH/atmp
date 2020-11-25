@@ -2,3 +2,5 @@ minikube start --mount=true --mount-string=/Users/peterlarsson/src/ticketing/coo
 
 
 minikube start --vm=true
+
+  // [x: string]: any;

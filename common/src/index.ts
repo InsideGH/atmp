@@ -32,6 +32,9 @@ export * from './events/base/base-event';
 export * from './events/base/base-listener';
 export * from './events/base/base-publisher';
 
+export * from './events/base/any-event';
+export * from './events/base/any-publisher';
+
 export * from './events/events/patient-created-event';
 export * from './events/events/patient-updated-event';
 export * from './events/events/error-event-event';

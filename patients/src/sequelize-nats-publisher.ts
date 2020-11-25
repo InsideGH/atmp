@@ -1,6 +1,5 @@
-import { logger, natsWrapper, Subjects, ErrorEventPublisher } from '@thelarsson/acss-common';
+import { logger, natsWrapper, Subjects, ErrorEventPublisher, InternalEventHandler } from '@thelarsson/acss-common';
 import Event, { EventInstance } from './sequelize/models/event';
-import { InternalEventHandler } from './internal-event-handler';
 import { PatientCreatedPublisher } from './events/publishers/patient-created-publisher';
 import { PatientUpdatedPublisher } from './events/publishers/patient-updated-publisher';
 
@@ -10,8 +9,9 @@ export class SequelizeNatsPublisher {
 
     if (foundSubject) {
       switch (foundSubject) {
-        case Subjects.PatientCreated:
+        case Subjects.PatientCreated: {
           return await new PatientCreatedPublisher(natsWrapper.client, true).publish(event.data);
+        }
         case Subjects.PatientUpdated:
           return await new PatientUpdatedPublisher(natsWrapper.client, true).publish(event.data);
         default:

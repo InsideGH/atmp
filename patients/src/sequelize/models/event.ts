@@ -3,7 +3,6 @@ import { Model, DataTypes, ModelCtor } from 'sequelize';
 import { Models } from '../models';
 
 export interface EventInstance extends Model {
-  // [x: string]: any;
   id: string;
   data: any;
   subject: string;

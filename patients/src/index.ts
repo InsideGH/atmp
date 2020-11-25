@@ -8,9 +8,8 @@ import {
   Subjects,
   BaseEvent,
 } from '@thelarsson/acss-common';
-import { natsWrapper } from '@thelarsson/acss-common';
+import { natsWrapper,internalEventHandler } from '@thelarsson/acss-common';
 import cron from 'node-cron';
-import { internalEventHandler } from './internal-event-handler';
 import { Models, models } from './sequelize/models';
 import { PatientCreatedPublisher } from './events/publishers/patient-created-publisher';
 import { SequelizeNatsPublisher } from './sequelize-nats-publisher';
