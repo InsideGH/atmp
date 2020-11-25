@@ -1,8 +1,8 @@
 import { Publisher } from '../base/base-publisher';
 import { Subjects } from '../subjects';
-import { ErrorUnknownEvent } from '../events/error-unknown-event-event';
+import { ErrorEvent } from '../events/error-event-event';
 
-export class ErrorUnknownEventPublisher extends Publisher<ErrorUnknownEvent> {
+export class ErrorEventPublisher extends Publisher<ErrorEvent> {
   // Both to make sure that we never can change this value in the future.
-  subject: Subjects.ErrorUnknownEvent = Subjects.ErrorUnknownEvent;
+  subject: Subjects.ErrorEvent = Subjects.ErrorEvent;
 }

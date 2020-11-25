@@ -1,12 +1,12 @@
 import { Subjects } from '../subjects';
 import { BaseEvent } from '../base/base-event';
 
-export interface ErrorUnknownEvent extends BaseEvent {
-  subject: Subjects.ErrorUnknownEvent;
+export interface ErrorEvent extends BaseEvent {
+  subject: Subjects.ErrorEvent;
   data: {
     errorMessage: string;
     serviceName: string;
-    unknownEvent: {
+    errorEvent: {
       subject: string;
       data: any;
     };
