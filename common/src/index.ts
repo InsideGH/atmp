@@ -32,5 +32,8 @@ export * from './events/base/base-event';
 export * from './events/base/base-listener';
 export * from './events/base/base-publisher';
 
-export * from './events/patient-created-event';
-export * from './events/patient-updated-event';
+export * from './events/events/patient-created-event';
+export * from './events/events/patient-updated-event';
+export * from './events/events/error-unknown-subject-event';
+
+export * from './events/publishers/error-unknown-subject-publisher';
