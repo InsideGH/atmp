@@ -39,7 +39,7 @@ spec:
           volumeMounts:
             - name: alarm-db-data
               mountPath: /var/lib/mysql
-              # subPath: db
+              subPath: alarm
       volumes:
         - name: alarm-db-data
           persistentVolumeClaim:

@@ -1,4 +1,4 @@
-npm_install:
+install:
 	(cd common && npm i)
 	(cd alarm && npm i)
 	(cd patients && npm i)
@@ -17,34 +17,28 @@ test:
 	(cd alarm && npm run "test:ci")
 	(cd patients && npm run "test:ci")
 
-release_common: 
+common_pub: 
 	(cd common && npm run pub)
 
-bump_patients_common:
+bump_patients:
 	(cd patients && npm update @thelarsson/acss-common)
 
-bump_alarm_common:
+bump_alarm:
 	(cd alarm && npm update @thelarsson/acss-common)
 
-bump_all_common: bump_patients_common bump_alarm_common
+bump_all: bump_patients bump_alarm
 
-minikube_hyperkit:
-	# Ingress "minikube addons ..." is working with this variant
-	# But not file mounts on MacOS, permission problems with MariaDb and Postgres. 
-	# With postgres there are also problems with file system links not supported (it seemes like)
-	minikube start --mount=true --mount-string=$(PWD)/data:/host/data --driver=hyperkit
+
+
+minikube:
+	minikube start --mount=true --mount-string=$(PWD)/data:/host/data
 	minikube addons enable ingress
 
-minikube_docker_desktop:
-	# Ingress "minikube addons ..." is NOT working with this variant.
-	# However, the file mount on MacOS don't have any problems with MariaDb and Postgres.
-	minikube start --driver=docker
-
 minikube_delete:
-	minikube delete --all
-
-minikube_purge:
 	minikube delete --all --purge
+
+init_nats_db:
+	cat nats-streaming-server/scripts/postgres.db.sql | kubectl exec -it nats-db-depl-64555d7c49-lmz2p -- psql -h 127.0.0.1 nats_streaming 1
 
 init:
 	# config maps
@@ -62,13 +56,9 @@ init:
 	- kubectl delete secret nats-db-passwd-secret
 	kubectl create secret generic nats-db-passwd-secret --from-literal=NATS_DB_PASSWD=1
 
-docker_desktop:
+volumes:
 	# create a directory here to store stuff
-	mkdir -p $(PWD)/data/alarm
-	mkdir -p $(PWD)/data/patients
-	mkdir -p $(PWD)/data/nats
-	# https://kubernetes.github.io/ingress-nginx/deploy/#docker-for-mac
-	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.41.2/deploy/static/provider/cloud/deploy.yaml
+	mkdir -p $(PWD)/data
 
-dev: init docker_desktop
+dev: volumes init
 	skaffold dev

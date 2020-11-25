@@ -14,32 +14,27 @@ spec:
     spec:
       containers:
         - name: patients-db
-          image: mariadb
+          image: postgres
           env:
-            - name: MYSQL_USER
+            - name: POSTGRES_USER
               valueFrom:
                 configMapKeyRef:
                   name: patients-config
                   key: PATIENTS_DB_USER
-            - name: MYSQL_DATABASE
+            - name: POSTGRES_DB
               valueFrom:
                 configMapKeyRef:
                   name: patients-config
                   key: PATIENTS_DB_NAME
-            - name: MYSQL_PASSWORD
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: patients-db-passwd-secret
                   key: PATIENTS_DB_USER_PASSWORD
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: patients-db-passwd-secret
-                  key: PATIENTS_DB_ROOT_PASSWORD
           volumeMounts:
             - name: patients-db-data
-              mountPath: /var/lib/mysql
-              # subPath: db
+              mountPath: /var/lib/postgresql/data
+              subPath: patients
       volumes:
         - name: patients-db-data
           persistentVolumeClaim:
@@ -56,5 +51,5 @@ spec:
   ports:
     - name: patients-db
       protocol: TCP
-      port: 3306
-      targetPort: 3306
+      port: 5432
+      targetPort: 5432

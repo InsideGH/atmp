@@ -13,13 +13,13 @@ spec:
         app: patients
     spec:
       initContainers:
-        - name: patients-init-containers-db
-          image: mariadb
+        - name: check-db-ready
+          image: postgres:alpine
           command:
             [
               "sh",
               "-c",
-              "until mysqladmin ping --host=patients-db-srv --silent 2>/dev/null; do echo waiting for db; sleep 2; done;",
+              "until pg_isready -h patients-db-srv -p 5432; do echo waiting for database; sleep 2; done;",
             ]
       containers:
         - name: patients

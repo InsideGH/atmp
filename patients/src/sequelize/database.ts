@@ -10,7 +10,7 @@ export class Database {
       process.env.PATIENTS_DB_USER_PASSWORD!,
       {
         host: 'patients-db-srv',
-        dialect: 'mariadb',
+        dialect: 'postgres',
         dialectOptions: {
           timezone: process.env.PATIENTS_DB_TIMEZONE,
         },

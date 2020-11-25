@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nats-db-depl
+  labels:
+      name: nats-db-depl
 spec:
   replicas: 1
   # Selector works together with metadata
@@ -49,7 +51,7 @@ spec:
               # With a subPath, I had to create the directory(!?)
               # Reason for subPath is that Digital Ocean PV wasn't empty and postgres complained about it (lost&found folder).
               mountPath: /var/lib/postgresql/data
-              # subPath: db
+              subPath: nats
       volumes:
         # name the volume so that it can be referenced above and specify the claim
         - name: nats-db-data

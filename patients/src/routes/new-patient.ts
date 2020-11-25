@@ -1,10 +1,9 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { validateRequest, logger } from '@thelarsson/acss-common';
+import { validateRequest, logger, Subjects, PatientCreatedEvent } from '@thelarsson/acss-common';
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
-import { PatientCreatedPublisher } from '../events/publishers/patient-created-publisher';
-import { natsWrapper } from '@thelarsson/acss-common';
+import { SequelizeInternalPublisher } from '../sequelize-internal-publisher';
 
 const router = express.Router();
 
@@ -25,29 +24,20 @@ router.post(
         { transaction },
       );
 
-      const event = await models.Event.create(
-        {
-          data: {
-            id: patient.id,
-            name: patient.name,
-            version: patient.versionKey,
-          },
-          sent: false,
-          versionKey: 0,
+      const sequelizeEventPublisher = new SequelizeInternalPublisher<PatientCreatedEvent>({
+        subject: Subjects.PatientCreated,
+        data: {
+          id: patient.id,
+          name: patient.name,
+          version: patient.versionKey,
         },
-        { transaction },
-      );
+      });
 
-      await event.setPatient(patient, { transaction });
-      await patient.addEvent(event, { transaction });
-
-      // await new PatientCreatedPublisher(natsWrapper.client, true).publish({
-      //   id: patient.id,
-      //   name: patient.name,
-      //   version: patient.versionKey,
-      // });
+      await sequelizeEventPublisher.createDbEntry(transaction);
 
       await transaction.commit();
+
+      sequelizeEventPublisher.publish();
 
       logger.info(`Patient id=${patient.id} created`);
 

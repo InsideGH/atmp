@@ -13,7 +13,7 @@ spec:
   hostPath:
     # it must be /tmp/.*
     # otherwise the delete of the PV will fail when skaffold is terminating.
-    path: "/Users/peterlarsson/src/acss/data/nats"
+    path: "/host/data"
   claimRef:
     name: nats-db-pvc
     # For some reason we need to have the namespace here event though we configure the namespace to the default

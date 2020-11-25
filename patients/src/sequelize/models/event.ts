@@ -2,13 +2,12 @@ import db from '../database';
 import { Model, DataTypes, ModelCtor } from 'sequelize';
 import { Models } from '../models';
 
-interface EventInstance extends Model {
-  [x: string]: any;
+export interface EventInstance extends Model {
+  // [x: string]: any;
   id: string;
   data: any;
-  versionKey: number;
+  subject: string;
   sent: boolean;
-  setPatient(patient: any, config?: any): Promise<any>;
 }
 
 export interface EventInterface extends ModelCtor<EventInstance> {
@@ -28,13 +27,14 @@ const Event = <EventInterface>db.sequelize.define<EventInstance>(
       type: DataTypes.JSON,
       allowNull: false,
     },
-    versionKey: {
+    subject: {
       allowNull: false,
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
     },
     sent: {
       allowNull: false,
       type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
   },
   {
@@ -42,8 +42,6 @@ const Event = <EventInterface>db.sequelize.define<EventInstance>(
   },
 );
 
-Event.associate = (models) => {
-  Event.belongsTo(models.Patient);
-};
+Event.associate = (models) => {};
 
 export default Event;

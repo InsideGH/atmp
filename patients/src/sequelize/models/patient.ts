@@ -6,7 +6,6 @@ interface PatientInstance extends Model {
   id: string;
   name: string;
   versionKey: number;
-  addEvent(patient: any, config?: any): Promise<any>;
 }
 
 export interface PatientInterface extends ModelCtor<PatientInstance> {
@@ -36,8 +35,6 @@ const Patient = <PatientInterface>db.sequelize.define<PatientInstance>(
   },
 );
 
-Patient.associate = (models) => {
-  Patient.hasMany(models.Event);
-};
+Patient.associate = (models) => {};
 
 export default Patient;
