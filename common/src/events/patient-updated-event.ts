@@ -7,5 +7,6 @@ export interface PatientUpdatedEvent extends BaseEvent {
     id: string;
     version: number;
     name: string;
+    age: number;
   };
 }
