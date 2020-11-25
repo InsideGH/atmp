@@ -14,13 +14,13 @@ export * from './middlewares/error-handler';
 export * from './middlewares/validate-request';
 
 /**
- * MISC
+ * MISC 
  */
 export * from './logger/pino';
 export * from './util/assert-env-variables';
 
 /**
- * NATS
+ * NATS RELATED
  */
 export * from './nats/nats-wrapper';
 
@@ -37,3 +37,8 @@ export * from './events/events/patient-updated-event';
 export * from './events/events/error-event-event';
 
 export * from './events/publishers/error-unknown-subject-publisher';
+
+/**
+ * INTERNAL EVENT RELATED
+ */
+export * from './internal-events/internal-event-handler';
