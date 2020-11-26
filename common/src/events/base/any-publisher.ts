@@ -31,14 +31,14 @@ export class AnyPublisher {
         if (err) {
           if (this.enableDebugLogs) {
             logger.debug(
-              `${name}: publishing error for event id=${event.data.id} subject=${event.subject}`,
+              `${this.name}: publishing error for event id=${event.data.id} subject=${event.subject}`,
             );
           }
           return reject(err);
         }
         if (this.enableDebugLogs) {
           logger.debug(
-            `${name}: sent event id=${event.data.id} subject=${event.subject} to nats`,
+            `${this.name}: sent event id=${event.data.id} subject=${event.subject} to nats`,
           );
         }
         return resolve();
