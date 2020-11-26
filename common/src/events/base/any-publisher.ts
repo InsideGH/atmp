@@ -15,7 +15,7 @@ export class AnyPublisher {
   constructor(
     protected client: Stan,
     protected enableDebugLogs: Boolean = false,
-    private publisherName?: string,
+    publisherName?: string,
   ) {
     this.name = publisherName ? `any-publisher-${publisherName}` : '';
   }

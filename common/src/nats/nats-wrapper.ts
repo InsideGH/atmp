@@ -1,4 +1,5 @@
 import nats, { Stan } from 'node-nats-streaming';
+import { logger } from '../logger/pino';
 
 class NatsWrapper {
   /**
@@ -42,26 +43,26 @@ class NatsWrapper {
       stanPingInterval: 5000,
     });
 
-    this._client.on('close', (err?) => {
-      console.log(`nats-wrapper: close received ${err}`);
+    this._client.on('close', () => {
+      logger.info('nats-wrapper: close received');
     });
     this._client.on('disconnect', () => {
-      console.log('nats-wrapper: disconnect received');
+      logger.info('nats-wrapper: disconnect received');
     });
     this._client.on('reconnect', () => {
-      console.log('nats-wrapper: reconnect received');
+      logger.info('nats-wrapper: reconnect received');
     });
     this._client.on('reconnecting', () => {
-      console.log('nats-wrapper: reconnecting received');
+      logger.info('nats-wrapper: reconnecting received');
     });
     this._client.on('error', (err) => {
-      console.log(`nats-wrapper: error received ${err}`);
+      logger.error(`nats-wrapper: error received ${err}`);
     });
     this._client.on('permission_error', () => {
-      console.log('nats-wrapper: permission_error received');
+      logger.error('nats-wrapper: permission_error received');
     });
     this._client.on('connection_lost', () => {
-      console.log('nats-wrapper: connection_lost received');
+      logger.error('nats-wrapper: connection_lost received');
     });
 
     return new Promise((resolve, reject) => {
@@ -75,6 +76,15 @@ class NatsWrapper {
     });
   }
 
+  onConnectionLost(cb: Function) {
+    if (this._client) {
+      this._client.on('connection_lost', () => {
+        logger.error('nats-wrapper: onConnectionLost cb connection_lost received');
+        cb();
+      });
+    }
+  }
+
   disconnect() {
     return new Promise((resolve) => {
       if (!this._client) {
@@ -82,7 +92,7 @@ class NatsWrapper {
       }
 
       this._client.on('close', () => {
-        console.log('nats-wrapper: disconnect called and close event received ok');
+        logger.info('nats-wrapper: disconnect called and close event received ok');
         return resolve(true);
       });
 
