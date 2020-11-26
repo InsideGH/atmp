@@ -21,7 +21,7 @@ export class AnyPublisher {
       this.client.publish(event.subject, JSON.stringify(event.data), (err) => {
         if (err) {
           if (this.enableDebugLogs) {
-            logger.debug(`any-publisher: ${event.subject} event publishing error ${err}`);
+            logger.debug(`any-publisher: publishing error for event id=${event.data.id} subject=${event.subject}`);
           }
           return reject(err);
         }
