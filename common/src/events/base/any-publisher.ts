@@ -26,7 +26,7 @@ export class AnyPublisher {
           return reject(err);
         }
         if (this.enableDebugLogs) {
-          logger.debug(`any-publisher: ${event.subject} event published`);
+          logger.debug(`any-publisher: sent event id=${event.data.id} subject=${event.subject} to nats`);
         }
         return resolve();
       });
