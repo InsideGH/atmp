@@ -3,9 +3,9 @@ import { Transaction } from 'sequelize/types';
 import Event, { EventInstance } from './sequelize/models/event';
 
 export class SequelizeInternalPublisher<T extends BaseEvent> {
-  public id?: string;
+  private id?: string;
 
-  constructor(public event: T) {}
+  constructor(private event: T) {}
 
   async createDbEntry(transaction: Transaction): Promise<EventInstance> {
     const instance = await Event.create(this.event, { transaction });

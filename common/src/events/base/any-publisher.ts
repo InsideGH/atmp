@@ -18,15 +18,15 @@ export class AnyPublisher {
    */
   publish(event: AnyEvent): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (this.enableDebugLogs) {
-        logger.debug(`${event.subject} event published`);
-      }
       this.client.publish(event.subject, JSON.stringify(event.data), (err) => {
         if (err) {
           if (this.enableDebugLogs) {
-            logger.debug(`${event.subject} event publishing error ${err}`);
+            logger.debug(`any-publisher: ${event.subject} event publishing error ${err}`);
           }
           return reject(err);
+        }
+        if (this.enableDebugLogs) {
+          logger.debug(`any-publisher: ${event.subject} event published`);
         }
         return resolve();
       });

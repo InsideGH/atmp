@@ -1,54 +1,10 @@
 import { app } from './app';
 import db from './sequelize/database';
 import { initialize } from './sequelize/initialize';
-import {
-  assertEnvVariables,
-  logger,
-  PatientCreatedEvent,
-  Subjects,
-  BaseEvent,
-} from '@thelarsson/acss-common';
-import { natsWrapper,internalEventHandler } from '@thelarsson/acss-common';
-import cron from 'node-cron';
-import { Models, models } from './sequelize/models';
-import { PatientCreatedPublisher } from './events/publishers/patient-created-publisher';
+import { assertEnvVariables, logger } from '@thelarsson/acss-common';
+import { natsWrapper, internalEventHandler } from '@thelarsson/acss-common';
 import { SequelizeNatsPublisher } from './sequelize-nats-publisher';
-
-// cron.schedule('*/20 * * * * *', async () => {
-//   console.log('running every 20 sec');
-
-//   const events = await models.Event.findAll({
-//     where: {
-//       sent: false,
-//     },
-//   });
-
-//   if (events.length) {
-//     for (let i = 0; i < events.length; i++) {
-//       const event = events[i];
-//       console.log('event found: ', event.dataValues);
-//       await new PatientCreatedPublisher(natsWrapper.client, true).publish({
-//         ...event.data,
-//       });
-//       event.sent = true;
-//       await event.save();
-//     }
-//   }
-// });
-
-// internalEventHandler.listen(async (id: string) => {
-//   logger.info(`Internal event received ${id}`);
-
-//   const event = await models.Event.findByPk(id);
-
-//   if (event && !event.sent) {
-//     await new PatientCreatedPublisher(natsWrapper.client, true).publish({
-//       ...event.data,
-//     });
-//     event.sent = true;
-//     await event.save();
-//   }
-// });
+import { sequelizeCronPublisher } from './sequelize-cron-publisher';
 
 const onExit = async () => {
   logger.info('Disconnect from db');
@@ -59,6 +15,11 @@ const onExit = async () => {
 
   logger.info('Closing all internal event emitter listeners');
   internalEventHandler.close();
+
+  logger.info('Stopping cron publisher');
+  sequelizeCronPublisher.stop();
+
+  logger.info('Everything stopped. Bye!');
 
   process.exit();
 };
@@ -90,6 +51,9 @@ const start = async () => {
 
     logger.info('Listen for sequelize database entries');
     new SequelizeNatsPublisher().listen(internalEventHandler);
+
+    logger.info('Starting cron publisher');
+    sequelizeCronPublisher.start();
 
     process.on('SIGINT', async () => {
       logger.info('Received SIGINT');

@@ -16,7 +16,7 @@ export class InternalEventHandler {
     this.eventHandler = new MyEventEmitter();
 
     this.eventHandler.on('error', (err) => {
-      logger.error('InternalEventHandler error: ', err);
+      logger.error('internal-event error: ', err);
     });
   }
 

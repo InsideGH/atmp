@@ -23,15 +23,15 @@ export abstract class Publisher<T extends BaseEvent> {
    */
   publish(data: T['data']): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (this.enableDebugLogs) {
-        logger.debug(`${this.subject} event published`);
-      }
       this.client.publish(this.subject, JSON.stringify(data), (err) => {
         if (err) {
           if (this.enableDebugLogs) {
-            logger.debug(`${this.subject} event publishing error ${err}`);
+            logger.debug(`base-publisher: ${this.subject} event publishing error ${err}`);
           }
           return reject(err);
+        }
+        if (this.enableDebugLogs) {
+          logger.debug(`base-publisher: ${this.subject} event published`);
         }
         return resolve();
       });
