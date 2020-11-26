@@ -22,7 +22,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@thelarsson/acss-common": "^1.0.30",
+    "@thelarsson/acss-common": "^1.0.38",
     "@types/cookie-session": "^2.0.41",
     "@types/cron": "^1.7.2",
     "@types/express": "^4.17.9",

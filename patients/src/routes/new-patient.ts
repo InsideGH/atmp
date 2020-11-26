@@ -24,7 +24,7 @@ router.post(
         { transaction },
       );
 
-      const sequelizeEventPublisher = new SequelizeInternalPublisher<PatientCreatedEvent>({
+      const sequelizeInternalPublisher = new SequelizeInternalPublisher<PatientCreatedEvent>({
         subject: Subjects.PatientCreated,
         data: {
           id: patient.id,
@@ -33,11 +33,11 @@ router.post(
         },
       });
 
-      await sequelizeEventPublisher.createDbEntry(transaction);
+      await sequelizeInternalPublisher.createDbEntry(transaction);
 
       await transaction.commit();
 
-      sequelizeEventPublisher.publish();
+      sequelizeInternalPublisher.publish();
 
       logger.info(`Patient id=${patient.id} created`);
 

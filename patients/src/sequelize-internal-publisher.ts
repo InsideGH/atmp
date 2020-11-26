@@ -15,7 +15,7 @@ export class SequelizeInternalPublisher<T extends BaseEvent> {
 
   publish() {
     if (!this.id) {
-      throw new Error('Cannot publish before entry in database has been saved');
+      throw new Error('sequelize-internal-publisher: cannot publish before entry in database has been saved');
     }
     internalEventHandler.publish(this.id);
   }
