@@ -25,7 +25,22 @@ class NatsWrapper {
    * @param url The url to Nats service.
    */
   connect(clusterId: string, clientId: string, url: string) {
-    this._client = nats.connect(clusterId, clientId, { url });
+    /**
+     *
+     * Flow when the database is taken down.
+     * 1. disconnect
+     * 2. reconnecting * x times
+     * 3. connection_lost
+     * 4. close
+     *
+     */
+    this._client = nats.connect(clusterId, clientId, {
+      url,
+      ackTimeout: 30000,
+      connectTimeout: 2000,
+      stanMaxPingOut: 10, // default 3
+      stanPingInterval: 5000,
+    });
 
     this._client.on('close', (err?) => {
       console.log(`nats-wrapper: close received ${err}`);
