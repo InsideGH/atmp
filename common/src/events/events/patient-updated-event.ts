@@ -4,7 +4,7 @@ import { BaseEvent } from '../base/base-event';
 export interface PatientUpdatedEvent extends BaseEvent {
   subject: Subjects.PatientUpdated;
   data: {
-    id: string;
+    id: number;
     versionKey: number;
     name: string;
     age: number;
