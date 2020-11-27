@@ -3,8 +3,8 @@ import db from './sequelize/database';
 import { initialize } from './sequelize/initialize';
 import { assertEnvVariables, logger } from '@thelarsson/acss-common';
 import { natsWrapper, internalEventHandler } from '@thelarsson/acss-common';
-import { SequelizeNatsPublisher } from './sequelize-nats-publisher';
-import { sequelizeCronPublisher } from './sequelize-cron-publisher';
+import { SequelizeNatsPublisher } from './internal-event/sequelize-nats-publisher';
+import { sequelizeCronPublisher } from './internal-event/sequelize-cron-publisher';
 
 /**
  * Make sure we process.exit()

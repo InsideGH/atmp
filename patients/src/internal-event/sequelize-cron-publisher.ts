@@ -1,6 +1,6 @@
 import { natsWrapper, AnyPublisher, logger } from '@thelarsson/acss-common';
 import cron from 'cron';
-import { models } from './sequelize/models';
+import { models } from '../sequelize/models';
 
 class SequelizeCronPublisher {
   private cronJob?: cron.CronJob;

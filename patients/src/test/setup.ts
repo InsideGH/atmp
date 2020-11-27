@@ -5,6 +5,7 @@ declare global {
   namespace NodeJS {
     interface Global {
       signin(): string[];
+      stripKeys: any;
     }
   }
 }
@@ -31,6 +32,24 @@ afterAll(async () => {
 global.signin = () => {
   const base64 = '';
   return [`express:sess=${base64}`];
+};
+
+/**
+ * Remove keys from object.
+ */
+global.stripKeys = (obj: any, keys: string[]) => {
+  if (Array.isArray(obj)) {
+    obj.forEach((x) => global.stripKeys(x, keys));
+  } else if (typeof obj == 'object') {
+    for (const key in obj) {
+      const value = obj[key];
+      if (keys.includes(key)) {
+        delete obj[key];
+      } else {
+        global.stripKeys(value, keys);
+      }
+    }
+  }
 };
 
 export {};

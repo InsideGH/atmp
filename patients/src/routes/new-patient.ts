@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 import { validateRequest, logger, Subjects, PatientCreatedEvent } from '@thelarsson/acss-common';
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
-import { SequelizeInternalPublisher } from '../sequelize-internal-publisher';
+import { SequelizeInternalPublisher } from '../internal-event/sequelize-internal-publisher';
 
 const router = express.Router();
 
@@ -29,7 +29,7 @@ router.post(
         data: {
           id: patient.id,
           name: patient.name,
-          version: patient.versionKey,
+          versionKey: patient.versionKey,
         },
       });
 

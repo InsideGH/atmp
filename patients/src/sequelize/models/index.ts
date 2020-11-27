@@ -1,10 +1,5 @@
-import Patient, { PatientInterface } from './patient';
-import Event, { EventInterface } from './event';
-
-export interface Models {
-  Patient: PatientInterface;
-  Event: EventInterface;
-}
+import Patient from './patient';
+import Event from './event';
 
 export const models = {
   Patient,

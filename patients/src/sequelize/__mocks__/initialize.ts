@@ -1,11 +1,10 @@
 import { Database } from './database';
-import { models } from '../models/';
+import { createModelAssociations } from '../associations';
 
 export const initialize = async (db: Database) => {
   /**
    * It's required that the associations are configured BEFORE the sync.
    */
-  Object.values(models).forEach((model) => model.associate(models));
-
+  createModelAssociations();
   await db.sequelize.sync({ force: true });
 };

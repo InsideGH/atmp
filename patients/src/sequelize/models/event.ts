@@ -1,20 +1,15 @@
 import db from '../database';
-import { Model, DataTypes, ModelCtor } from 'sequelize';
-import { Models } from '../models';
+import { Model, DataTypes } from 'sequelize';
 
-export interface EventInstance extends Model {
-  id: string;
-  data: any;
-  subject: string;
-  sent: boolean;
+export class Event extends Model {
+  public id!: string;
+  public data: any;
+  public subject!: string;
+  public sent!: boolean;
+  public dataValues: any;
 }
 
-export interface EventInterface extends ModelCtor<EventInstance> {
-  associate(models: Models): void;
-}
-
-const Event = <EventInterface>db.sequelize.define<EventInstance>(
-  'Event',
+Event.init(
   {
     id: {
       allowNull: false,
@@ -37,10 +32,10 @@ const Event = <EventInterface>db.sequelize.define<EventInstance>(
     },
   },
   {
+    tableName: 'Events',
+    sequelize: db.sequelize,
     paranoid: true,
   },
 );
-
-Event.associate = (models) => {};
 
 export default Event;

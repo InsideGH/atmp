@@ -6,7 +6,7 @@ import {
   AnyPublisher,
 } from '@thelarsson/acss-common';
 
-import Event from './sequelize/models/event';
+import Event from '../sequelize/models/event';
 
 export class SequelizeNatsPublisher {
   publisher = new AnyPublisher(natsWrapper.client, true, 'direct');
