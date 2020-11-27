@@ -1,9 +1,9 @@
 import { BaseEvent, internalEventHandler } from '@thelarsson/acss-common';
 import { Transaction } from 'sequelize/types';
-import Event from '../sequelize/models/event';
+import Event from '../../sequelize/models/event';
 
-export class SequelizeInternalPublisher<T extends BaseEvent> {
-  private id?: string;
+export class InternalPublisher<T extends BaseEvent> {
+  private id?: number;
 
   constructor(private event: T) {}
 
@@ -15,9 +15,7 @@ export class SequelizeInternalPublisher<T extends BaseEvent> {
 
   publish() {
     if (!this.id) {
-      throw new Error(
-        'sequelize-internal-publisher: cannot publish before entry in database has been saved',
-      );
+      throw new Error('internal-publisher: cannot publish before entry in database has been saved');
     }
     internalEventHandler.publish(this.id);
   }

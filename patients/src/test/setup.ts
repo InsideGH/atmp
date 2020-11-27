@@ -12,6 +12,7 @@ declare global {
 
 jest.mock('../sequelize/database');
 jest.mock('../sequelize/initialize');
+jest.mock('../nats-wrapper');
 
 beforeAll(async () => {
   await db.connect();

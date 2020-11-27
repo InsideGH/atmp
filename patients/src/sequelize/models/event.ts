@@ -2,7 +2,7 @@ import db from '../database';
 import { Model, DataTypes } from 'sequelize';
 
 export class Event extends Model {
-  public id!: string;
+  public id!: number;
   public data: any;
   public subject!: string;
   public sent!: boolean;

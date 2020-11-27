@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 import { validateRequest, logger, Subjects, PatientCreatedEvent } from '@thelarsson/acss-common';
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
-import { SequelizeInternalPublisher } from '../internal-event/sequelize-internal-publisher';
+import { InternalPublisher } from '../internal-event/sequelize/internal-publisher';
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ router.post(
         { transaction },
       );
 
-      const sequelizeInternalPublisher = new SequelizeInternalPublisher<PatientCreatedEvent>({
+      const internalPublisher = new InternalPublisher<PatientCreatedEvent>({
         subject: Subjects.PatientCreated,
         data: {
           id: patient.id,
@@ -33,11 +33,11 @@ router.post(
         },
       });
 
-      await sequelizeInternalPublisher.createDbEntry(transaction);
+      await internalPublisher.createDbEntry(transaction);
 
       await transaction.commit();
 
-      sequelizeInternalPublisher.publish();
+      internalPublisher.publish();
 
       logger.info(`Patient id=${patient.id} created`);
 

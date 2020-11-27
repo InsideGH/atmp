@@ -2,10 +2,10 @@ import { app } from './app';
 import db from './sequelize/database';
 import { initialize } from './sequelize/initialize';
 import { assertEnvVariables, logger } from '@thelarsson/acss-common';
-import { natsWrapper, internalEventHandler } from '@thelarsson/acss-common';
-import { SequelizeNatsPublisher } from './internal-event/sequelize-nats-publisher';
-import { sequelizeCronPublisher } from './internal-event/sequelize-cron-publisher';
-
+import { internalEventHandler } from '@thelarsson/acss-common';
+import { InternalListener } from './internal-event/sequelize/internal-listener';
+import { cronNatsPublisher } from './internal-event/sequelize/cron-nats-publisher';
+import { natsWrapper } from './nats-wrapper';
 /**
  * Make sure we process.exit()
  */
@@ -21,7 +21,7 @@ const onExit = async () => {
     internalEventHandler.close();
 
     logger.info('Stopping cron publisher');
-    sequelizeCronPublisher.stop();
+    cronNatsPublisher.stop();
 
     logger.info('Everything stopped. Bye!');
   } catch (error) {
@@ -95,7 +95,7 @@ const boot = async () => {
      * if NATS is alive.
      */
     logger.info('Listen for sequelize database entries');
-    new SequelizeNatsPublisher().listen(internalEventHandler);
+    new InternalListener().listen(internalEventHandler);
 
     /**
      * INTERNAL EVENT HANDLING.
@@ -104,7 +104,7 @@ const boot = async () => {
      * to send, we will try to send the events from a cron job.
      */
     logger.info('Starting cron publisher');
-    sequelizeCronPublisher.start();
+    cronNatsPublisher.start();
   } catch (error) {
     /**
      * If anything went wrong during boot, make sure that

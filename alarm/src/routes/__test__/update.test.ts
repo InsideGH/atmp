@@ -10,7 +10,6 @@ it('returns 200, and stepped version number', async () => {
     .send({ hwId })
     .expect(201);
 
-  console.log('res.body', res.body);
   expect(res.body.alarm.versionKey).toEqual(0);
 
   const { body } = await request(app)
@@ -22,6 +21,4 @@ it('returns 200, and stepped version number', async () => {
   expect(body.alarm).toBeDefined();
   expect(body.alarm.hwId).toEqual(String(hwId));
   expect(body.alarm.versionKey).toEqual(1);
-
-  console.log(body);
 });

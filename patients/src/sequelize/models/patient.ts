@@ -12,7 +12,7 @@ import { Model, DataTypes } from 'sequelize';
  * For that we must have much mode magic code according to sequalize homepage.
  */
 class Patient extends Model {
-  public id!: string;
+  public id!: number;
   public name!: string;
   public versionKey!: number;
   public dataValues: any;

@@ -41,6 +41,7 @@ router.put(
         {
           data: {},
           versionKey: newVersionKey,
+          sent: false,
         },
         { transaction },
       );

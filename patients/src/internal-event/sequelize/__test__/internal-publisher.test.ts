@@ -1,20 +1,20 @@
-import { SequelizeInternalPublisher } from '../sequelize-internal-publisher';
+import { InternalPublisher } from '../internal-publisher';
 import { PatientCreatedEvent, Subjects, internalEventHandler } from '@thelarsson/acss-common';
 
-import db from '../../sequelize/database';
-import { models } from '../../sequelize/models';
+import db from '../../../sequelize/database';
+import { models } from '../../../sequelize/models';
 
 it('creates a PatientCreatedEvent event entry', async () => {
   const event: PatientCreatedEvent = {
     subject: Subjects.PatientCreated,
     data: {
-      id: '1',
+      id: 1,
       name: 'cool event',
       versionKey: 0,
     },
   };
 
-  const publisher = new SequelizeInternalPublisher(event);
+  const publisher = new InternalPublisher(event);
 
   const transaction = await db.sequelize.transaction();
   try {
@@ -34,14 +34,14 @@ it('creates a PatientCreatedEvent event entry', async () => {
     subject: Subjects.PatientCreated,
     sent: false,
     data: {
-      id: '1',
+      id: 1,
       name: 'cool event',
       versionKey: 0,
     },
   });
 
   await new Promise<void>((resolve) => {
-    internalEventHandler.listen((id: string) => {
+    internalEventHandler.listen((id) => {
       expect(id).toEqual(1);
       resolve();
     });

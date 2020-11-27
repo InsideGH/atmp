@@ -17,6 +17,8 @@ test:
 	(cd alarm && npm run "test:ci")
 	(cd patients && npm run "test:ci")
 
+check: build lint test
+
 common_pub: 
 	(cd common && npm run pub)
 
