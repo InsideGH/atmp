@@ -2,6 +2,11 @@ import { Stan } from 'node-nats-streaming';
 import { logger } from '../../logger/pino';
 import { AnyEvent } from './any-event';
 
+interface Config {
+  enableDebugLogs?: Boolean;
+  publisherName?: string;
+}
+
 export class AnyPublisher {
   name: string;
 
@@ -14,10 +19,11 @@ export class AnyPublisher {
    */
   constructor(
     protected client: Stan,
-    protected enableDebugLogs: Boolean = false,
-    publisherName?: string,
+    private config: Config = {
+      enableDebugLogs: false,
+    },
   ) {
-    this.name = publisherName ? `any-publisher-${publisherName}` : '';
+    this.name = config.publisherName ? `any-publisher-${config.publisherName}` : '';
   }
 
   /**
@@ -29,14 +35,14 @@ export class AnyPublisher {
     return new Promise((resolve, reject) => {
       this.client.publish(event.subject, JSON.stringify(event.data), (err) => {
         if (err) {
-          if (this.enableDebugLogs) {
+          if (this.config.enableDebugLogs) {
             logger.debug(
               `${this.name}: publishing error for event id=${event.data.id} subject=${event.subject}`,
             );
           }
           return reject(err);
         }
-        if (this.enableDebugLogs) {
+        if (this.config.enableDebugLogs) {
           logger.debug(
             `${this.name}: sent event id=${event.data.id} subject=${event.subject} to nats`,
           );
