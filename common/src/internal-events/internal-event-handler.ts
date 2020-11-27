@@ -24,8 +24,8 @@ export class InternalEventHandler {
    * Register a listener.
    * @param onEvent callback function
    */
-  listen(onEvent: (id: string| number) => any) {
-    this.eventHandler.on('internal-event', (id: string| number) => {
+  listen(onEvent: (id: string | number) => any) {
+    this.eventHandler.on('internal-event', (id: string | number) => {
       onEvent(id);
     });
   }
@@ -33,7 +33,7 @@ export class InternalEventHandler {
   /**
    * Publish event
    */
-  publish(id: string): void {
+  publish(id: string | number): void {
     this.eventHandler.emit('internal-event', id);
   }
 
