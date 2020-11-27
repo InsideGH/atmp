@@ -24,9 +24,9 @@ export class InternalEventHandler {
    * Register a listener.
    * @param onEvent callback function
    */
-  listen(onEvent: (id: string) => any) {
-    this.eventHandler.on('internal-event', (id: string) => {
-      onEvent(JSON.parse(id));
+  listen(onEvent: (id: string| number) => any) {
+    this.eventHandler.on('internal-event', (id: string| number) => {
+      onEvent(id);
     });
   }
 
