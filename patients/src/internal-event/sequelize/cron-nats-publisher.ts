@@ -6,7 +6,6 @@ import { cronNatsJob } from './cron-nats-job';
 class CronNatsPublisher {
   private cronJob?: cron.CronJob;
 
-
   start() {
     if (!this.cronJob) {
       const natsPublisher = new NatsPublisher('cron');

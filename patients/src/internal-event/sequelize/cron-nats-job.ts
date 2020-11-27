@@ -1,9 +1,9 @@
-import { models } from '../../sequelize/models';
+import { Event } from '../../sequelize/models/event';
 import { NatsPublisher } from './nats-publisher';
 
 export const cronNatsJob = async (natsPublisher: NatsPublisher): Promise<number> => {
   const events = (
-    await models.Event.findAll({
+    await Event.findAll({
       where: {
         sent: false,
       },

@@ -6,6 +6,7 @@ import { internalEventHandler } from '@thelarsson/acss-common';
 import { InternalListener } from './internal-event/sequelize/internal-listener';
 import { cronNatsPublisher } from './internal-event/sequelize/cron-nats-publisher';
 import { natsWrapper } from './nats-wrapper';
+
 /**
  * Make sure we process.exit()
  */
