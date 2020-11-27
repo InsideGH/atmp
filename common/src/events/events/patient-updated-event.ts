@@ -5,7 +5,7 @@ export interface PatientUpdatedEvent extends BaseEvent {
   subject: Subjects.PatientUpdated;
   data: {
     id: string;
-    version: number;
+    versionKey: number;
     name: string;
     age: number;
   };
