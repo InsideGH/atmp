@@ -1,12 +1,14 @@
-import { logger, ErrorEventPublisher, AnyPublisher } from '@thelarsson/acss-common';
-import { Event } from '../../sequelize/models/event';
-import { natsWrapper } from '../../nats-wrapper';
+import { logger } from '../../logger/pino';
+import { ErrorEventPublisher } from '../../events/publishers/error-unknown-subject-publisher';
+import { AnyPublisher } from '../../events/base/any-publisher';
+import { Event } from './models/event';
+import { Stan } from 'node-nats-streaming';
 
 export class NatsPublisher {
   private publisher: AnyPublisher;
 
-  constructor(name?: string) {
-    this.publisher = new AnyPublisher(natsWrapper.client, {
+  constructor(private stan: Stan, name?: string) {
+    this.publisher = new AnyPublisher(stan, {
       enableDebugLogs: true,
       publisherName: name,
     });
@@ -23,7 +25,7 @@ export class NatsPublisher {
       const errorMessage = `nats-publisher: event with id=${id} not found`;
       logger.error(errorMessage);
 
-      return await new ErrorEventPublisher(natsWrapper.client, true).publish({
+      return await new ErrorEventPublisher(this.stan, true).publish({
         serviceName: 'patients',
         errorMessage,
         errorEvent: {

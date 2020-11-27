@@ -1,5 +1,7 @@
-import Patient from './patient';
-import Event from './event';
+import { Patient, initPatient } from './patient';
+import { Event, initEvent } from './event';
+
+export const modelInits = [initPatient, initEvent];
 
 export const models = {
   Patient,

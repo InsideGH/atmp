@@ -1,6 +1,7 @@
-import { BaseEvent, internalEventHandler } from '@thelarsson/acss-common';
+import { internalEventHandler } from '../internal-event-handler';
+import { BaseEvent } from '../../events/base/base-event';
 import { Transaction } from 'sequelize/types';
-import {Event} from '../../sequelize/models/event';
+import { Event } from './models/event';
 
 export class InternalPublisher<T extends BaseEvent> {
   private id?: number;
