@@ -4,14 +4,14 @@ import { internalEventHandler } from '../internal-event-handler';
 import { CronNatsPublisher } from './cron-nats-publisher';
 import { InternalPublisher } from './internal-publisher';
 import { BaseEvent } from '../../events/base/base-event';
-import { Event } from '../sequelize/models/event';
+import { Event, initEvent } from '../sequelize/models/event';
 
 interface EventPersistorConfig {
   client: Stan;
 }
 
 export class EventPersistor {
-  cronNatsPublisher?: CronNatsPublisher;
+  private cronNatsPublisher?: CronNatsPublisher;
   private isStarted = false;
 
   constructor() {}
@@ -38,7 +38,10 @@ export class EventPersistor {
   }
 
   getModel() {
-    return Event;
+    return {
+      Event,
+      initEvent,
+    };
   }
 }
 
