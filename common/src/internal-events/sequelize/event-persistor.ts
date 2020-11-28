@@ -10,20 +10,26 @@ interface EventPersistorConfig {
 }
 
 export class EventPersistor {
-  cronNatsPublisher: CronNatsPublisher;
+  cronNatsPublisher?: CronNatsPublisher;
+  private isStarted = false;
 
-  constructor(private config: EventPersistorConfig) {
-    this.cronNatsPublisher = new CronNatsPublisher(config.client);
-  }
+  constructor(private config: EventPersistorConfig) {}
 
   start() {
-    new InternalListener(this.config.client).listen(internalEventHandler);
-    this.cronNatsPublisher.start();
+    if (!this.isStarted) {
+      this.cronNatsPublisher = new CronNatsPublisher(this.config.client);
+      new InternalListener(this.config.client).listen(internalEventHandler);
+      this.cronNatsPublisher.start();
+    }
   }
 
   stop() {
-    this.cronNatsPublisher.stop();
-    internalEventHandler.closeAll();
+    if (this.isStarted) {
+      if (this.cronNatsPublisher) {
+        this.cronNatsPublisher.stop();
+      }
+      internalEventHandler.closeAll();
+    }
   }
 
   getPublisher<T extends BaseEvent>(event: T) {
