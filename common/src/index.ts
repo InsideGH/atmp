@@ -14,7 +14,7 @@ export * from './middlewares/error-handler';
 export * from './middlewares/validate-request';
 
 /**
- * MISC 
+ * MISC
  */
 export * from './logger/pino';
 export * from './util/assert-env-variables';
@@ -41,3 +41,4 @@ export * from './events/publishers/error-unknown-subject-publisher';
  */
 export * from './internal-events/internal-event-handler';
 export * from './internal-events/sequelize/event-persistor';
+export * from './internal-events/sequelize/models/event';
