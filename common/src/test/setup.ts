@@ -1,15 +1,16 @@
-import db from '../internal-events/sequelize/stuff/database';
-import { initialize } from '../internal-events/sequelize/stuff/initialize';
+import { Stan } from 'node-nats-streaming';
+import db, { Database } from './database';
+import { initialize } from './initialize';
 
 declare global {
   namespace NodeJS {
     interface Global {
       stripKeys: any;
+      db: Database;
+      client: Stan;
     }
   }
 }
-
-jest.mock('../nats/nats-wrapper');
 
 beforeAll(async () => {
   await db.connect();
@@ -40,6 +41,14 @@ global.stripKeys = (obj: any, keys: string[]) => {
       }
     }
   }
+};
+
+global.db = db;
+
+global.client = <any>{
+  publish: jest.fn().mockImplementation((subject: string, data: string, callback: () => void) => {
+    callback();
+  }),
 };
 
 export {};

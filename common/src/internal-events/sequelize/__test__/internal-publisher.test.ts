@@ -3,7 +3,6 @@ import { PatientCreatedEvent } from '../../../events/events/patient-created-even
 import { Subjects } from '../../../events/subjects';
 import { internalEventHandler } from '../../internal-event-handler';
 
-import db from '../stuff/database';
 import { Event } from '../models/event';
 
 it('creates a PatientCreatedEvent event entry', async () => {
@@ -18,7 +17,7 @@ it('creates a PatientCreatedEvent event entry', async () => {
 
   const publisher = new InternalPublisher(event);
 
-  const transaction = await db.sequelize.transaction();
+  const transaction = await global.db.sequelize.transaction();
   try {
     await publisher.createDbEntry(transaction);
 

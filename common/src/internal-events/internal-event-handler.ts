@@ -40,7 +40,7 @@ export class InternalEventHandler {
   /**
    * Remove all event listeners.
    */
-  close() {
+  closeAll() {
     this.eventHandler.removeAllListeners('internal-event');
   }
 }

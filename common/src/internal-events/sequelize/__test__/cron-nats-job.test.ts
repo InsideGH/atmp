@@ -1,13 +1,12 @@
 import { cronNatsJob } from '../cron-nats-job';
 import { Subjects } from '../../../events/subjects';
-
 import { Event } from '../models/event';
 import { NatsPublisher } from '../nats-publisher';
 
-import { natsWrapper } from '../../../nats/nats-wrapper';
+jest.mock('nats');
 
 it('sends a PatientCreatedEvent event to nats', async () => {
-  const sequelizeNatsPublisher = new NatsPublisher(natsWrapper.client, 'test-cron');
+  const sequelizeNatsPublisher = new NatsPublisher(global.client, 'test-cron');
 
   /**
    * Create an event in the database, not sent.

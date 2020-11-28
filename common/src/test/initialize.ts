@@ -1,5 +1,5 @@
 import { Database } from './database';
-import { modelInits } from '../models';
+import { modelInits } from '../internal-events/sequelize/models';
 
 export const initialize = async (db: Database) => {
   modelInits.forEach((modelInit) => modelInit(db.sequelize));

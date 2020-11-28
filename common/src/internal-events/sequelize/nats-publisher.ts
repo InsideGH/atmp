@@ -4,6 +4,9 @@ import { AnyPublisher } from '../../events/base/any-publisher';
 import { Event } from './models/event';
 import { Stan } from 'node-nats-streaming';
 
+/**
+ * Provided the database ID of the event, it will send it to nats and mark db entry as sent.
+ */
 export class NatsPublisher {
   private publisher: AnyPublisher;
 
@@ -36,7 +39,7 @@ export class NatsPublisher {
     }
 
     /**
-     * Already sent for some reason. Maybe a cron job managed to get inbetween?
+     * Already sent for some reason. Probably a cron job managed to get inbetween.
      */
     if (event.sent) {
       return logger.info(`nats-publisher: event with id=${id} already sent`);

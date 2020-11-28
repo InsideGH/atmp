@@ -1,11 +1,9 @@
 import { NatsPublisher } from '../nats-publisher';
 import { Subjects } from '../../../events/subjects';
-
 import { Event } from '../models/event';
-import { natsWrapper } from '../../../nats/nats-wrapper';
 
 it('sends a PatientCreatedEvent event to nats', async () => {
-  const natsPublisher = new NatsPublisher(natsWrapper.client, 'test-direct');
+  const natsPublisher = new NatsPublisher(global.client, 'test-direct');
 
   /**
    * Create an event in the database, not sent.
