@@ -39,4 +39,5 @@ export * from './events/publishers/error-unknown-subject-publisher';
 /**
  * INTERNAL EVENT RELATED
  */
+export * from './internal-events/internal-event-handler';
 export * from './internal-events/sequelize/event-persistor';

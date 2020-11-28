@@ -1,6 +1,6 @@
 {
   "name": "@thelarsson/acss-common",
-  "version": "1.0.46",
+  "version": "1.0.47",
   "description": "",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -23,7 +23,9 @@
     "setupFilesAfterEnv": [
       "./src/test/setup.ts"
     ],
-    "modulePathIgnorePatterns": ["build"]
+    "modulePathIgnorePatterns": [
+      "build"
+    ]
   },
   "keywords": [],
   "author": "",
