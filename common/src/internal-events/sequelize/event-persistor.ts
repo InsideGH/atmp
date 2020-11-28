@@ -4,6 +4,7 @@ import { internalEventHandler } from '../internal-event-handler';
 import { CronNatsPublisher } from './cron-nats-publisher';
 import { InternalPublisher } from './internal-publisher';
 import { BaseEvent } from '../../events/base/base-event';
+import { Event } from '../sequelize/models/event';
 
 interface EventPersistorConfig {
   client: Stan;
@@ -34,5 +35,9 @@ export class EventPersistor {
 
   getPublisher<T extends BaseEvent>(event: T) {
     return new InternalPublisher<T>(event);
+  }
+
+  getModel() {
+    return Event;
   }
 }
