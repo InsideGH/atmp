@@ -14,12 +14,12 @@ export class EventPersistor {
   cronNatsPublisher?: CronNatsPublisher;
   private isStarted = false;
 
-  constructor(private config: EventPersistorConfig) {}
+  constructor() {}
 
-  start() {
+  start(config: EventPersistorConfig) {
     if (!this.isStarted) {
-      this.cronNatsPublisher = new CronNatsPublisher(this.config.client);
-      new InternalListener(this.config.client).listen(internalEventHandler);
+      this.cronNatsPublisher = new CronNatsPublisher(config.client);
+      new InternalListener(config.client).listen(internalEventHandler);
       this.cronNatsPublisher.start();
     }
   }
@@ -41,3 +41,5 @@ export class EventPersistor {
     return Event;
   }
 }
+
+export const eventPersistor = new EventPersistor();
