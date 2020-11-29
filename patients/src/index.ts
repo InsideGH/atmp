@@ -83,7 +83,15 @@ const boot = async () => {
       process.env.NATS_URL!,
     );
 
-    eventPersistor.start({ client: natsWrapper.client });
+    /**
+     * Send events to nats even if nats would be down.
+     */
+    eventPersistor.start({
+      client: natsWrapper.client,
+      cron: {
+        cronString: '*/5 * * * * *',
+      },
+    });
   } catch (error) {
     /**
      * If anything went wrong during boot, make sure that

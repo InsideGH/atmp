@@ -14,6 +14,7 @@ lint:
 	(cd patients && npm run lint)
 
 test:
+	(cd common && npm run "test:ci")
 	(cd alarm && npm run "test:ci")
 	(cd patients && npm run "test:ci")
 
