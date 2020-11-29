@@ -65,7 +65,7 @@ export abstract class Listener<T extends BaseEvent> {
 
       const parsedData = this.parseMessage(msg);
       this.onMessage(parsedData, msg);
-      msg.ack();
+      // msg.ack();
     });
   }
 
