@@ -1,17 +1,10 @@
-import { Stan } from 'node-nats-streaming';
 import { InternalListener } from './internal-listener';
 import { internalEventHandler } from '../internal-event-handler';
 import { CronNatsPublisher } from './cron-nats-publisher';
 import { InternalPublisher } from './internal-publisher';
 import { BaseEvent } from '../../events/base/base-event';
 import { Event, initEvent } from './models/event';
-
-interface EventPersistorConfig {
-  client: Stan;
-  cron: {
-    cronString: string;
-  };
-}
+import { EventPersistorConfig } from './event-persistor-config';
 
 /**
  * Main class that different microservice can use to send events to nats,
@@ -25,7 +18,7 @@ export class EventPersistor {
 
   start(config: EventPersistorConfig) {
     if (!this.isStarted) {
-      this.cronNatsPublisher = new CronNatsPublisher(config.client);
+      this.cronNatsPublisher = new CronNatsPublisher(config);
       new InternalListener(config.client).listen(internalEventHandler);
       this.cronNatsPublisher.start();
     }
