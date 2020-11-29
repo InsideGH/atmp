@@ -5,7 +5,7 @@ import { cronNatsJob } from './cron-nats-job';
 import { Stan } from 'node-nats-streaming';
 
 /**
- * Sets up a cron job that will run a job periodically. Provides a nats publisherfor the job task.
+ * Sets up a cron job that will run a job periodically. Provides a nats publisher for the job task.
  */
 export class CronNatsPublisher {
   private cronJob?: cron.CronJob;

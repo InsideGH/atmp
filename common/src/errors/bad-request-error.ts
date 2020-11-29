@@ -1,9 +1,7 @@
 import { CustomError } from './custom-error';
 
 /**
- * ----------->
- * This looks very OO but can't do much about it since we are extending a build in class (CustomError -> Error)
- * <-----------
+ * Extending built in Error through CustomError.
  */
 export class BadRequestError extends CustomError {
   statusCode = 400;

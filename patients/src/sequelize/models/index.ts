@@ -1,5 +1,7 @@
 import { Patient, initPatient } from './patient';
-import { Event, initEvent } from './event';
+import { eventPersistor } from '@thelarsson/acss-common';
+
+const { Event, initEvent } = eventPersistor.getModel();
 
 export const modelInits = [initPatient, initEvent];
 

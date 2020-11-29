@@ -4,12 +4,19 @@ import { internalEventHandler } from '../internal-event-handler';
 import { CronNatsPublisher } from './cron-nats-publisher';
 import { InternalPublisher } from './internal-publisher';
 import { BaseEvent } from '../../events/base/base-event';
-import { Event, initEvent } from '../sequelize/models/event';
+import { Event, initEvent } from './models/event';
 
 interface EventPersistorConfig {
   client: Stan;
+  cron: {
+    cronString: string;
+  };
 }
 
+/**
+ * Main class that different microservice can use to send events to nats,
+ * even if nats would be down.
+ */
 export class EventPersistor {
   private cronNatsPublisher?: CronNatsPublisher;
   private isStarted = false;
@@ -33,10 +40,20 @@ export class EventPersistor {
     }
   }
 
+  /**
+   * Provided the event, returns a publisher that can do two things.
+   *
+   * 1) Store event in database
+   * 2) Send event to nats (if available). Otherwise the cron job will send it later.
+   *
+   */
   getPublisher<T extends BaseEvent>(event: T) {
     return new InternalPublisher<T>(event);
   }
 
+  /**
+   * Returns the sequelize model and a function that must be called to initialize the model.
+   */
   getModel() {
     return {
       Event,

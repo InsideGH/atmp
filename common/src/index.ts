@@ -3,7 +3,6 @@
  */
 export * from './errors/bad-request-error';
 export * from './errors/custom-error';
-export * from './errors/database-connection-error';
 export * from './errors/not-found-error';
 export * from './errors/request-validation-error';
 
@@ -20,25 +19,27 @@ export * from './logger/pino';
 export * from './util/assert-env-variables';
 
 /**
- * EVENT RELATED
+ * EVENT BASE
  */
 export * from './events/subjects';
 export * from './events/base/base-event';
 export * from './events/base/base-listener';
 export * from './events/base/base-publisher';
 
-export * from './events/base/any-event';
-export * from './events/base/any-publisher';
-
+/**
+ * EVENTS
+ */
 export * from './events/events/patient-created-event';
 export * from './events/events/patient-updated-event';
 export * from './events/events/error-event-event';
 
-export * from './events/publishers/error-unknown-subject-publisher';
+/**
+ * EVENT PUBLISHERS
+ */
+export * from './events/publishers/event-publisher';
+export * from './events/publishers/error-event-publisher';
 
 /**
- * INTERNAL EVENT RELATED
+ * EVENT PUBLISHERS WITH LOCAL PERSISTENSE
  */
-export * from './internal-events/internal-event-handler';
-export * from './internal-events/sequelize/event-persistor';
-export * from './internal-events/sequelize/models/event';
+export * from './events-persistor/sequelize/event-persistor';

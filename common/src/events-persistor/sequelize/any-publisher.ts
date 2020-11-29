@@ -7,6 +7,11 @@ interface Config {
   publisherName?: string;
 }
 
+/**
+ * A publisher that can be used to send AnyEvent with.
+ *
+ * Reason for existense is described in the AnyEvent.
+ */
 export class AnyPublisher {
   name: string;
 

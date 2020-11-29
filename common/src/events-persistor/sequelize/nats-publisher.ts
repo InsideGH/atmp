@@ -1,12 +1,17 @@
-import { logger, ErrorEventPublisher, AnyPublisher } from '@thelarsson/acss-common';
-import { Event } from '../../sequelize/models/event';
-import { natsWrapper } from '../../nats-wrapper';
+import { logger } from '../../logger/pino';
+import { ErrorEventPublisher } from '../../events/publishers/error-event-publisher';
+import { AnyPublisher } from './any-publisher';
+import { Event } from './models/event';
+import { Stan } from 'node-nats-streaming';
 
+/**
+ * Provided the database ID of the event, it will send it to nats and mark db entry as sent.
+ */
 export class NatsPublisher {
   private publisher: AnyPublisher;
 
-  constructor(name?: string) {
-    this.publisher = new AnyPublisher(natsWrapper.client, {
+  constructor(private stan: Stan, name?: string) {
+    this.publisher = new AnyPublisher(stan, {
       enableDebugLogs: true,
       publisherName: name,
     });
@@ -23,7 +28,7 @@ export class NatsPublisher {
       const errorMessage = `nats-publisher: event with id=${id} not found`;
       logger.error(errorMessage);
 
-      return await new ErrorEventPublisher(natsWrapper.client, true).publish({
+      return await new ErrorEventPublisher(this.stan, true).publish({
         serviceName: 'patients',
         errorMessage,
         errorEvent: {
@@ -34,7 +39,7 @@ export class NatsPublisher {
     }
 
     /**
-     * Already sent for some reason. Maybe a cron job managed to get inbetween?
+     * Already sent for some reason. Probably a cron job managed to get inbetween.
      */
     if (event.sent) {
       return logger.info(`nats-publisher: event with id=${id} already sent`);
