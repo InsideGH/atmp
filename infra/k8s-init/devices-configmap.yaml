@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: devices-config
+data:
+  DEVICES_DB_USER: "1"
+  DEVICES_DB_NAME: "devices_db"
+  DEVICES_DB_TIMEZONE: "Etc/GMT0"
+  LOG_LEVEL: "debug"

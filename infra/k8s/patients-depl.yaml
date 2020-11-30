@@ -21,6 +21,10 @@ spec:
               "-c",
               "until pg_isready -h patients-db-srv -p 5432; do echo waiting for database; sleep 2; done;",
             ]
+        - name: check-nats-ready
+          image: busybox
+          command:
+            ['sh', '-c', 'until wget -O- http://nats-srv:8222/varz; do echo waiting for nats-srv; sleep 2; done;']
       containers:
         - name: patients
           image: patients:latest

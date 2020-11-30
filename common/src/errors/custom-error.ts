@@ -1,10 +1,5 @@
 /**
- * Implement this if you want to make your own error returned from any service
- * to the frontend.
- *
- * ----------->
- * This looks very OO but can't do much about it since we are extending a build in class (Error)
- * <-----------
+ * Extending built in Error.
  */
 export abstract class CustomError extends Error {
   abstract statusCode: number;

@@ -1,5 +1,4 @@
-import db from '../database';
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, Sequelize } from 'sequelize';
 
 /**
  * Here we define some attributes on the Sequelize model that we want to be available for us
@@ -11,35 +10,35 @@ import { Model, DataTypes } from 'sequelize';
  *
  * For that we must have much mode magic code according to sequalize homepage.
  */
-class Patient extends Model {
+export class Patient extends Model {
   public id!: number;
   public name!: string;
   public versionKey!: number;
   public dataValues: any;
 }
 
-Patient.init(
-  {
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: DataTypes.INTEGER,
+export const initPatient = (sequelize: Sequelize) => {
+  Patient.init(
+    {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      versionKey: {
+        allowNull: false,
+        type: DataTypes.INTEGER,
+      },
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    {
+      tableName: 'Patients',
+      sequelize,
+      paranoid: true,
     },
-    versionKey: {
-      allowNull: false,
-      type: DataTypes.INTEGER,
-    },
-  },
-  {
-    tableName: 'Patients',
-    sequelize: db.sequelize,
-    paranoid: true,
-  },
-);
-
-export default Patient;
+  );
+};

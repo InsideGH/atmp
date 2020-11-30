@@ -2,9 +2,7 @@ import { app } from './app';
 import db from './sequelize/database';
 import { initialize } from './sequelize/initialize';
 import { assertEnvVariables, logger } from '@thelarsson/acss-common';
-import { internalEventHandler } from '@thelarsson/acss-common';
-import { InternalListener } from './internal-event/sequelize/internal-listener';
-import { cronNatsPublisher } from './internal-event/sequelize/cron-nats-publisher';
+import { eventPersistor } from '@thelarsson/acss-common';
 import { natsWrapper } from './nats-wrapper';
 
 /**
@@ -12,17 +10,14 @@ import { natsWrapper } from './nats-wrapper';
  */
 const onExit = async () => {
   try {
+    logger.info('Closing event persistor');
+    eventPersistor.stop();
+
     logger.info('Disconnect from db');
     await db.disconnect();
 
     logger.info('Disconnect from nats');
     await natsWrapper.disconnect();
-
-    logger.info('Closing all internal event emitter listeners');
-    internalEventHandler.close();
-
-    logger.info('Stopping cron publisher');
-    cronNatsPublisher.stop();
 
     logger.info('Everything stopped. Bye!');
   } catch (error) {
@@ -89,23 +84,14 @@ const boot = async () => {
     );
 
     /**
-     * INTERNAL EVENT HANDLING.
-     *
-     * Instead of sending event of to NATS directly, we
-     * store them in DB and send them in the next tick
-     * if NATS is alive.
+     * Send events to nats even if nats would be down.
      */
-    logger.info('Listen for sequelize database entries');
-    new InternalListener().listen(internalEventHandler);
-
-    /**
-     * INTERNAL EVENT HANDLING.
-     *
-     * If nats was down during event creating and first attempt
-     * to send, we will try to send the events from a cron job.
-     */
-    logger.info('Starting cron publisher');
-    cronNatsPublisher.start();
+    eventPersistor.start({
+      client: natsWrapper.client,
+      cron: {
+        cronString: '0 0 */1 * * *',
+      },
+    });
   } catch (error) {
     /**
      * If anything went wrong during boot, make sure that

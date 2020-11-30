@@ -1,21 +1,22 @@
 install:
 	(cd common && npm i)
-	(cd alarm && npm i)
 	(cd patients && npm i)
+	(cd devices && npm i)
 
 build:
 	(cd common && npm run build)
-	(cd alarm && npm run build)
 	(cd patients && npm run build)
+	(cd devices && npm run build)
 
 lint:
 	(cd common && npm run lint)
-	(cd alarm && npm run lint)
 	(cd patients && npm run lint)
+	(cd devices && npm run lint)
 
 test:
-	(cd alarm && npm run "test:ci")
+	(cd common && npm run "test:ci")
 	(cd patients && npm run "test:ci")
+	(cd devices && npm run "test:ci")
 
 check: build lint test
 
@@ -25,10 +26,10 @@ common_pub:
 bump_patients:
 	(cd patients && npm update @thelarsson/acss-common)
 
-bump_alarm:
-	(cd alarm && npm update @thelarsson/acss-common)
+bump_devices:
+	(cd devices && npm update @thelarsson/acss-common)
 
-bump_all: bump_patients bump_alarm
+bump_all: bump_patients bump_devices
 
 minikube:
 	minikube start --mount=true --mount-string=$(PWD)/data:/host/data
@@ -44,13 +45,13 @@ init:
 	# config maps
 	kubectl apply -f infra/k8s-init
 
-	# alarm secrets
-	- kubectl delete secret alarm-db-passwd-secret
-	kubectl create secret generic alarm-db-passwd-secret --from-literal=ALARM_DB_ROOT_PASSWORD=1 --from-literal=ALARM_DB_USER_PASSWORD=1
-
 	# patients secrets
 	- kubectl delete secret patients-db-passwd-secret
 	kubectl create secret generic patients-db-passwd-secret --from-literal=PATIENTS_DB_ROOT_PASSWORD=1 --from-literal=PATIENTS_DB_USER_PASSWORD=1
+
+	# devices secrets
+	- kubectl delete secret devices-db-passwd-secret
+	kubectl create secret generic devices-db-passwd-secret --from-literal=DEVICES_DB_ROOT_PASSWORD=1 --from-literal=DEVICES_DB_USER_PASSWORD=1
 
 	# nats secrets
 	- kubectl delete secret nats-db-passwd-secret

@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devices-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devices
+  template:
+    metadata:
+      labels:
+        app: devices
+    spec:
+      initContainers:
+        - name: check-db-ready
+          image: postgres:alpine
+          command:
+            [
+              "sh",
+              "-c",
+              "until pg_isready -h devices-db-srv -p 5432; do echo waiting for database; sleep 2; done;",
+            ]
+        - name: check-nats-ready
+          image: busybox
+          command:
+            ['sh', '-c', 'until wget -O- http://nats-srv:8222/varz; do echo waiting for nats-srv; sleep 2; done;']
+      containers:
+        - name: devices
+          image: devices:latest
+          # livenessProbe:
+          #   httpGet:
+          #     path: /liveness
+          #     port: 3000
+          #   initialDelaySeconds: 3
+          #   periodSeconds: 3
+          env:
+            - name: DEVICES_DB_TIMEZONE
+              valueFrom:
+                configMapKeyRef:
+                  name: devices-config
+                  key: DEVICES_DB_TIMEZONE
+            - name: DEVICES_DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: devices-config
+                  key: DEVICES_DB_USER
+            - name: DEVICES_DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: devices-config
+                  key: DEVICES_DB_NAME
+            - name: DEVICES_DB_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: devices-db-passwd-secret
+                  key: DEVICES_DB_USER_PASSWORD
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+            - name: NATS_CLUSTER_ID
+              value: "acss"
+            - name: NATS_CLIENT_ID
+              # The value is the name of the pod
+              # k get pods ->
+              # for example: devices-depl-5f98787649-vtqlm
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: devices-config
+                  key: LOG_LEVEL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: devices-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: devices
+  ports:
+    - name: devices
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

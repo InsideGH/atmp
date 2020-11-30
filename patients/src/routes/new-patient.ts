@@ -1,9 +1,14 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { validateRequest, logger, Subjects, PatientCreatedEvent } from '@thelarsson/acss-common';
+import {
+  validateRequest,
+  logger,
+  Subjects,
+  PatientCreatedEvent,
+  eventPersistor,
+} from '@thelarsson/acss-common';
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
-import { InternalPublisher } from '../internal-event/sequelize/internal-publisher';
 
 const router = express.Router();
 
@@ -24,7 +29,7 @@ router.post(
         { transaction },
       );
 
-      const internalPublisher = new InternalPublisher<PatientCreatedEvent>({
+      const internalPublisher = eventPersistor.getPublisher<PatientCreatedEvent>({
         subject: Subjects.PatientCreated,
         data: {
           id: patient.id,
@@ -32,7 +37,7 @@ router.post(
           versionKey: patient.versionKey,
         },
       });
-
+      
       await internalPublisher.createDbEntry(transaction);
 
       await transaction.commit();
@@ -46,6 +51,7 @@ router.post(
       });
     } catch (error) {
       await transaction.rollback();
+      logger.error('new-patient', error);
       throw error;
     }
   },
