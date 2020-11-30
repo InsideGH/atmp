@@ -13,7 +13,7 @@ spec:
         app: alarm
     spec:
       initContainers:
-        - name: alarm-init-containers-db
+        - name: check-db-ready
           image: mariadb
           command:
             [
@@ -21,6 +21,10 @@ spec:
               "-c",
               "until mysqladmin ping --host=alarm-db-srv --silent 2>/dev/null; do echo waiting for db; sleep 2; done;",
             ]
+        - name: check-nats-ready
+          image: busybox
+          command:
+            ['sh', '-c', 'until wget -O- http://nats-srv:8222/varz; do echo waiting for nats-srv; sleep 2; done;']
       containers:
         - name: alarm
           image: alarm:latest

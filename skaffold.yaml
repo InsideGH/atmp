@@ -34,6 +34,20 @@ build:
           # Then handle file change inside the pod!
           - src: "src/**/*.ts"
             dest: .
+    # devices
+    - image: devices
+      # There is pod running code from auth directory
+      # When there is a change in the source files, skaffold will try update pod
+      context: devices
+      docker:
+        # Way 2: if any other file changes, rebuild the image
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          # Way 1: if a js file changes, copy the file into the pod!
+          # Then handle file change inside the pod!
+          - src: "src/**/*.ts"
+            dest: .
     # alarm
     - image: alarm
       # There is pod running code from auth directory

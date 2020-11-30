@@ -4,6 +4,7 @@ import { initialize } from './sequelize/initialize';
 import { assertEnvVariables, logger } from '@thelarsson/acss-common';
 import { eventPersistor } from '@thelarsson/acss-common';
 import { natsWrapper } from './nats-wrapper';
+import { PatientCreatedListener } from './events/listeners/patient-created-listener';
 
 /**
  * Make sure we process.exit()
@@ -38,9 +39,9 @@ const boot = async () => {
    * is OK. (we don't have any liveness probes setup).
    */
   assertEnvVariables([
-    'PATIENTS_DB_USER',
-    'PATIENTS_DB_NAME',
-    'PATIENTS_DB_USER_PASSWORD',
+    'DEVICES_DB_USER',
+    'DEVICES_DB_NAME',
+    'DEVICES_DB_USER_PASSWORD',
     'NATS_URL',
     'NATS_CLUSTER_ID',
     'NATS_CLIENT_ID',
@@ -92,6 +93,8 @@ const boot = async () => {
         cronString: '5 * * * * *',
       },
     });
+
+    new PatientCreatedListener(natsWrapper.client, true).listen();
   } catch (error) {
     /**
      * If anything went wrong during boot, make sure that

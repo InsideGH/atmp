@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devices-db-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devices-db
+  template:
+    metadata:
+      labels:
+        app: devices-db
+    spec:
+      containers:
+        - name: devices-db
+          image: postgres
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: devices-config
+                  key: DEVICES_DB_USER
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: devices-config
+                  key: DEVICES_DB_NAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: devices-db-passwd-secret
+                  key: DEVICES_DB_USER_PASSWORD
+          volumeMounts:
+            - name: devices-db-data
+              mountPath: /var/lib/postgresql/data
+              subPath: devices
+      volumes:
+        - name: devices-db-data
+          persistentVolumeClaim:
+            claimName: devices-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: devices-db-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: devices-db
+  ports:
+    - name: devices-db
+      protocol: TCP
+      port: 5432
+      targetPort: 5432

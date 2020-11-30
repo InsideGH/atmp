@@ -4,3 +4,15 @@ minikube start --mount=true --mount-string=/Users/peterlarsson/src/ticketing/coo
 minikube start --vm=true
 
   // [x: string]: any;
+
+
+error in route handler
+
+error outside route handler
+
+nats connection goes down after a bunch of retries
+
+db connection is lost
+
+uncaught exception stops node but process does not exit meaning kubernetes does not restart pod.
+
