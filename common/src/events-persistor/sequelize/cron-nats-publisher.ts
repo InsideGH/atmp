@@ -18,13 +18,9 @@ export class CronNatsPublisher {
   start() {
     if (!this.cronJob) {
       this.cronJob = new cron.CronJob(this.config.cron.cronString, async () => {
-        try {
-          logger.info('cron-nats-publisher: starting');
-          const count = await cronNatsJob(this.publisher);
-          logger.info(`cron-nats-publisher: handled ${count} events`);
-        } catch (error) {
-          logger.error(`cron-nats-publisher: catched error ${error}`);
-        }
+        logger.info('cron-nats-publisher: starting');
+        const count = await cronNatsJob(this.publisher);
+        logger.info(`cron-nats-publisher: handled ${count} events`);
       });
 
       this.cronJob.start();

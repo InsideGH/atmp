@@ -21,21 +21,22 @@ export class NatsPublisher {
     const event = await Event.findByPk(id);
 
     /**
-     * In case the event is not found, we have some strange problems. Send a
-     * error event instead.
+     * In case the event is not found, we have some strange problems. 
+     * Send a error event instead.
      */
     if (!event) {
       const errorMessage = `nats-publisher: event with id=${id} not found`;
       logger.error(errorMessage);
-
-      return await new ErrorEventPublisher(this.stan, true).publish({
-        serviceName: 'patients',
-        errorMessage,
-        errorEvent: {
-          subject: '',
-          data: {},
-        },
-      });
+      
+      throw new Error(errorMessage);
+      // return await new ErrorEventPublisher(this.stan, true).publish({
+      //   serviceName: 'patients',
+      //   errorMessage,
+      //   errorEvent: {
+      //     subject: '',
+      //     data: {},
+      //   },
+      // });
     }
 
     /**

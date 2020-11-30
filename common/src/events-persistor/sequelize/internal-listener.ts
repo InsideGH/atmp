@@ -15,13 +15,7 @@ export class InternalListener {
 
   listen(internalEventHandler: InternalEventHandler) {
     internalEventHandler.listen(async (id) => {
-      try {
-        this.publisher.sendEvent(id);
-      } catch (error) {
-        logger.error(
-          `nats-publisher: could not send event error ${error}, silently ignoring and letting cron take its turn.`,
-        );
-      }
+      this.publisher.sendEvent(id);
     });
   }
 }
