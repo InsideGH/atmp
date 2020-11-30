@@ -8,6 +8,11 @@ class NatsWrapper {
   private _client?: Stan;
 
   /**
+   * Are we connected or not?
+   */
+  public isConnected: boolean = false;
+
+  /**
    * Typescript getter.
    *
    * Accessed from outside/inside like so: natsInstance.client
@@ -20,6 +25,7 @@ class NatsWrapper {
   }
 
   /**
+   * Connect to nats server.
    *
    * @param clusterId The cluster ID: -cid option
    * @param clientId Unique name of this client. Basically the pods name with random characters in the end.
@@ -28,11 +34,13 @@ class NatsWrapper {
   connect(clusterId: string, clientId: string, url: string) {
     /**
      *
-     * Flow when the database is taken down.
+     * Flow when the nats server is taken down for example.
      * 1. disconnect
      * 2. reconnecting * x times
      * 3. connection_lost
      * 4. close
+     *
+     * 'stanMaxPingOut' decides how many times we will try 'reconnecting'
      *
      */
     this._client = nats.connect(clusterId, clientId, {
@@ -43,9 +51,25 @@ class NatsWrapper {
       stanPingInterval: 5000,
     });
 
+    /**
+     * When connect, save state about it.
+     */
+    this._client.on('connect', () => {
+      logger.info('nats-wrapper: connect received');
+      this.isConnected = false;
+    });
+
+    /**
+     * When close, save state about it.
+     */
     this._client.on('close', () => {
       logger.info('nats-wrapper: close received');
+      this.isConnected = false;
     });
+
+    /**
+     * These are here for educational purposes.
+     */
     this._client.on('disconnect', () => {
       logger.info('nats-wrapper: disconnect received');
     });
@@ -65,6 +89,9 @@ class NatsWrapper {
       logger.error('nats-wrapper: connection_lost received');
     });
 
+    /**
+     * Return a promise that can be awaited for to get connected.
+     */
     return new Promise((resolve, reject) => {
       this.client.on('connect', () => {
         resolve(this._client);

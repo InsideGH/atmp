@@ -12,10 +12,15 @@ export class PatientCreatedListener extends Listener<PatientCreatedEvent> {
     const transaction = await db.sequelize.transaction();
 
     try {
-      await models.Patient.create({
-        id: data.id,
-        name: data.name,
-        versionKey: data.versionKey,
+      await models.Patient.findOrCreate({
+        where: {
+          id: data.id,
+        },
+        defaults: {
+          id: data.id,
+          name: data.name,
+          versionKey: data.versionKey,
+        },
       });
 
       await transaction.commit();
@@ -25,6 +30,8 @@ export class PatientCreatedListener extends Listener<PatientCreatedEvent> {
       logger.info(`Patient created event handled with id=${data.id}`);
     } catch (error) {
       await transaction.rollback();
+      logger.error(`Patient created event with id=${data.id} failed with error ${error}`);
+      throw error;
     }
   }
 }

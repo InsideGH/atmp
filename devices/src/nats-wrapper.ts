@@ -55,7 +55,7 @@ class NatsWrapper {
      * When connect, save state about it.
      */
     this._client.on('connect', () => {
-      logger.error('nats-wrapper: connect received');
+      logger.info('nats-wrapper: connect received');
       this.isConnected = false;
     });
 

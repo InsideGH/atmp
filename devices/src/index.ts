@@ -5,12 +5,25 @@ import { assertEnvVariables, logger } from '@thelarsson/acss-common';
 import { eventPersistor } from '@thelarsson/acss-common';
 import { natsWrapper } from './nats-wrapper';
 import { PatientCreatedListener } from './events/listeners/patient-created-listener';
+import { Server } from 'http';
+
+let expressServer: Server;
 
 /**
  * Make sure we process.exit()
  */
 const onExit = async () => {
   try {
+    
+    if (expressServer) {
+      logger.info('Closing express server');
+      await new Promise<void>((resolve) => {
+        expressServer.close(() => {
+          resolve();
+        });
+      });
+    }
+
     logger.info('Closing event persistor');
     eventPersistor.stop();
 
@@ -53,57 +66,47 @@ const boot = async () => {
    * kubernetes will restart our pod exponential with back-off
    * delay (10s, 20s, 40s, …), that is capped at five minutes.
    */
-  try {
-    /**
-     * Set up these first just in case they are needed.
-     */
-    process.on('SIGINT', async () => {
-      logger.info('Received SIGINT');
-      await onExit();
-    });
-    process.on('SIGTERM', async () => {
-      logger.info('Received SIGTERM');
-      await onExit();
-    });
+  /**
+   * Set up these first just in case they are needed.
+   */
+  process.on('SIGINT', async () => {
+    logger.info('Received SIGINT');
+    await onExit();
+  });
+  process.on('SIGTERM', async () => {
+    logger.info('Received SIGTERM');
+    await onExit();
+  });
 
-    /**
-     * DB
-     */
-    logger.info('Connect to db');
-    await db.connect();
-    logger.info('Initialize db');
-    await initialize(db);
+  /**
+   * DB
+   */
+  logger.info('Connect to db');
+  await db.connect();
+  logger.info('Initialize db');
+  await initialize(db);
 
-    /**
-     * NATS
-     */
-    logger.info('Connect to nats');
-    await natsWrapper.connect(
-      process.env.NATS_CLUSTER_ID!,
-      process.env.NATS_CLIENT_ID!,
-      process.env.NATS_URL!,
-    );
+  /**
+   * NATS
+   */
+  logger.info('Connect to nats');
+  await natsWrapper.connect(
+    process.env.NATS_CLUSTER_ID!,
+    process.env.NATS_CLIENT_ID!,
+    process.env.NATS_URL!,
+  );
 
-    /**
-     * Send events to nats even if nats would be down.
-     */
-    eventPersistor.start({
-      client: natsWrapper.client,
-      cron: {
-        cronString: '5 * * * * *',
-      },
-    });
+  /**
+   * Send events to nats even if nats would be down.
+   */
+  eventPersistor.start({
+    client: natsWrapper.client,
+    cron: {
+      cronString: '5 * * * * *',
+    },
+  });
 
-    new PatientCreatedListener(natsWrapper.client, true).listen();
-  } catch (error) {
-    /**
-     * If anything went wrong during boot, make sure that
-     * we process exit so that kubernetes can restart us.
-     */
-    logger.error('Boot failed, sending SIGINT to self');
-    logger.error(error);
-    process.kill(process.pid, 'SIGINT');
-  }
+  new PatientCreatedListener(natsWrapper.client, true).listen();
 
   natsWrapper.onConnectionLost(() => {
     logger.error('Connection with NATS failed, sending SIGINT to self');
@@ -113,7 +116,7 @@ const boot = async () => {
   /**
    * All good, spin up the express app.
    */
-  app.listen(3000, () => {
+  expressServer = app.listen(3000, () => {
     logger.info('App listen 3000');
   });
 };
