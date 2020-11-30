@@ -16,7 +16,7 @@ export abstract class Listener<T extends BaseEvent> {
   /**
    * Listener must have a onMessage function, provide by the implementing listener.
    */
-  abstract onMessage(data: T['data'], msg: Message): void;
+  abstract onMessage(data: T['data'], msg: Message): Promise<void>;
 
   /**
    * After 5 seconds without any ack, the event goes back to the nats streaming.
@@ -54,7 +54,7 @@ export abstract class Listener<T extends BaseEvent> {
       this.subscriptionOptions(),
     );
 
-    subscription.on('message', (msg: Message) => {
+    subscription.on('message', async (msg: Message) => {
       if (this.enableDebugLogs) {
         logger.debug(
           `[${msg.getSequence()}] ${this.subject} event received by ${
@@ -64,8 +64,7 @@ export abstract class Listener<T extends BaseEvent> {
       }
 
       const parsedData = this.parseMessage(msg);
-      this.onMessage(parsedData, msg);
-      msg.ack();
+      await this.onMessage(parsedData, msg);
     });
   }
 
