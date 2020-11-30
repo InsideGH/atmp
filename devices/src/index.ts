@@ -5,6 +5,7 @@ import { assertEnvVariables, logger } from '@thelarsson/acss-common';
 import { eventPersistor } from '@thelarsson/acss-common';
 import { natsWrapper } from './nats-wrapper';
 import { PatientCreatedListener } from './events/listeners/patient-created-listener';
+import { PatientUpdatedListener } from './events/listeners/patient-updated-listener';
 import { Server } from 'http';
 
 let expressServer: Server;
@@ -107,7 +108,8 @@ const boot = async () => {
   });
 
   new PatientCreatedListener(natsWrapper.client, true).listen();
-
+  new PatientUpdatedListener(natsWrapper.client, true).listen();
+  
   natsWrapper.onConnectionLost(() => {
     logger.error('Connection with NATS failed, sending SIGINT to self');
     process.kill(process.pid, 'SIGINT');
