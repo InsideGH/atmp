@@ -103,7 +103,7 @@ const boot = async () => {
   eventPersistor.start({
     client: natsWrapper.client,
     cron: {
-      cronString: '5 * * * * *',
+      cronString: '0 0 */1 * * *',
     },
   });
 

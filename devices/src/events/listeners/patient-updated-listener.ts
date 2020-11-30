@@ -18,7 +18,7 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
       const patient = await models.Patient.findOne({
         where: {
           id: data.id,
-          versionKey: data.versionKey,
+          versionKey: data.versionKey - 1,
         },
         transaction,
       });
@@ -38,10 +38,10 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
 
       msg.ack();
 
-      logger.info(`Patient created event handled with id=${data.id}`);
+      logger.info(`Patient updated event handled with id=${data.id}`);
     } catch (error) {
       await transaction.rollback();
-      logger.error(`Patient created event with id=${data.id} failed with error ${error}`);
+      logger.error(`Patient updated event with id=${data.id} failed with error ${error}`);
       throw error;
     }
   }
