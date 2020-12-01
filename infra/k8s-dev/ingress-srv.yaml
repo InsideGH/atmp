@@ -16,10 +16,10 @@ spec:
                 name: patients-srv
                 port:
                   number: 3000
-          - path: /api/alarm/?(.*)
+          - path: /api/system/?(.*)
             pathType: Prefix
             backend:
               service:
-                name: alarm-srv
+                name: system-srv
                 port:
                   number: 3000

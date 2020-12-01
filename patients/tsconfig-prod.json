@@ -1,6 +1,5 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["**/__test__/*", "**/__mocks__/*", "src/test/*", "**/*.test.ts", "**/*.mock.ts"],
   "compilerOptions": {
     "outDir": "./build"
   }

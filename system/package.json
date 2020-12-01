@@ -1,21 +1,15 @@
 {
-  "name": "@thelarsson/acss-common",
-  "version": "1.0.64",
+  "name": "alarm",
+  "version": "1.0.0",
   "description": "",
-  "main": "./build/index.js",
-  "types": "./build/index.d.ts",
-  "files": [
-    "build/**/*"
-  ],
+  "main": "index.js",
   "scripts": {
-    "clean": "del ./build/*",
-    "build": "npm run clean && tsc",
-    "test": "jest --watchAll --no-cache",
+    "start": "ts-node-dev --poll src/index.ts",
+    "test": "jest --watchAll --no-cache --runInBand",
     "lint": "eslint . --ext .ts",
-    "check": "npm run build && npm run lint && npm run test:ci",
-    "create": "npm publish --access public ",
-    "test:ci": "jest",
-    "pub": "npm run lint && npm run build && npm run test:ci && git add . && git commit -m \"Common updates\" && npm version patch && npm publish"
+    "build": "rm -rf build && tsc --project tsconfig-prod.json",
+    "test:ci": "jest --runInBand",
+    "prod": "node build/index.js"
   },
   "jest": {
     "preset": "ts-jest",
@@ -24,26 +18,26 @@
       "./src/test/setup.ts"
     ],
     "modulePathIgnorePatterns": [
-      "build"
+      "build/"
     ]
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/cron": "^1.7.2",
-    "@types/express": "^4.17.8",
+    "@thelarsson/acss-common": "^1.0.64",
+    "@types/cookie-session": "^2.0.41",
+    "@types/express": "^4.17.9",
     "@types/node": "^14.14.10",
-    "@types/pino": "^6.3.4",
     "body-parser": "^1.19.0",
-    "cron": "^1.8.2",
+    "cookie-session": "^1.4.0",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "express-validator": "^6.7.0",
-    "node-nats-streaming": "^0.3.2",
-    "pino": "^6.7.0",
-    "pino-pretty": "^4.3.0",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
     "sequelize": "^6.3.5",
+    "ts-node-dev": "^1.0.0",
     "typescript": "^4.0.5"
   },
   "devDependencies": {
@@ -51,7 +45,6 @@
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
-    "del-cli": "^3.0.1",
     "eslint": "^7.14.0",
     "jest": "^26.6.3",
     "sqlite3": "^5.0.0",

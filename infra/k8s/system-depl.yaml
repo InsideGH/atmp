@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: system-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: system
+  template:
+    metadata:
+      labels:
+        app: system
+    spec:
+      initContainers:
+        - name: check-db-ready
+          image: postgres:alpine
+          command:
+            [
+              "sh",
+              "-c",
+              "until pg_isready -h system-db-srv -p 5432; do echo waiting for database; sleep 2; done;",
+            ]
+        - name: check-nats-ready
+          image: busybox
+          command:
+            ['sh', '-c', 'until wget -O- http://nats-srv:8222/varz; do echo waiting for nats-srv; sleep 2; done;']
+      containers:
+        - name: system
+          image: system:latest
+          # livenessProbe:
+          #   httpGet:
+          #     path: /liveness
+          #     port: 3000
+          #   initialDelaySeconds: 3
+          #   periodSeconds: 3
+          env:
+            - name: SYSTEM_DB_TIMEZONE
+              valueFrom:
+                configMapKeyRef:
+                  name: system-config
+                  key: SYSTEM_DB_TIMEZONE
+            - name: SYSTEM_DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: system-config
+                  key: SYSTEM_DB_USER
+            - name: SYSTEM_DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: system-config
+                  key: SYSTEM_DB_NAME
+            - name: SYSTEM_DB_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: system-db-passwd-secret
+                  key: SYSTEM_DB_USER_PASSWORD
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+            - name: NATS_CLUSTER_ID
+              value: "acss"
+            - name: NATS_CLIENT_ID
+              # The value is the name of the pod
+              # k get pods ->
+              # for example: system-depl-5f98787649-vtqlm
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: system-config
+                  key: LOG_LEVEL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: system-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: system
+  ports:
+    - name: system
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

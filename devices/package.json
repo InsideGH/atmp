@@ -16,13 +16,16 @@
     "testEnvironment": "node",
     "setupFilesAfterEnv": [
       "./src/test/setup.ts"
+    ],
+    "modulePathIgnorePatterns": [
+      "build/"
     ]
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@thelarsson/acss-common": "^1.0.63",
+    "@thelarsson/acss-common": "^1.0.64",
     "@types/cookie-session": "^2.0.41",
     "@types/express": "^4.17.9",
     "@types/node": "^14.14.10",

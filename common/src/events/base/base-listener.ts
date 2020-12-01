@@ -64,7 +64,11 @@ export abstract class Listener<T extends BaseEvent> {
       }
 
       const parsedData = this.parseMessage(msg);
-      await this.onMessage(parsedData, msg);
+      try {
+        await this.onMessage(parsedData, msg);
+      } catch (error) {
+        logger.error(`base-listener catched: ${error}`);
+      }
     });
   }
 
