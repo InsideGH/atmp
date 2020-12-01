@@ -2,21 +2,25 @@ install:
 	(cd common && npm i)
 	(cd patients && npm i)
 	(cd devices && npm i)
+	(cd system && npm i)
 
 build:
 	(cd common && npm run build)
 	(cd patients && npm run build)
 	(cd devices && npm run build)
+	(cd system && npm run build)
 
 lint:
 	(cd common && npm run lint)
 	(cd patients && npm run lint)
 	(cd devices && npm run lint)
+	(cd system && npm run lint)
 
 test:
 	(cd common && npm run "test:ci")
 	(cd patients && npm run "test:ci")
 	(cd devices && npm run "test:ci")
+	(cd system && npm run "test:ci")
 
 check: build lint test
 
@@ -29,7 +33,10 @@ bump_patients:
 bump_devices:
 	(cd devices && npm update @thelarsson/acss-common)
 
-bump_all: bump_patients bump_devices
+bump_system:
+	(cd system && npm update @thelarsson/acss-common)
+
+bump_all: bump_patients bump_devices bump_system
 
 minikube:
 	minikube start --mount=true --mount-string=$(PWD)/data:/host/data
@@ -52,6 +59,10 @@ init:
 	# devices secrets
 	- kubectl delete secret devices-db-passwd-secret
 	kubectl create secret generic devices-db-passwd-secret --from-literal=DEVICES_DB_ROOT_PASSWORD=1 --from-literal=DEVICES_DB_USER_PASSWORD=1
+
+	# system secrets
+	- kubectl delete secret system-db-passwd-secret
+	kubectl create secret generic system-db-passwd-secret --from-literal=SYSTEM_DB_ROOT_PASSWORD=1 --from-literal=SYSTEM_DB_USER_PASSWORD=1
 
 	# nats secrets
 	- kubectl delete secret nats-db-passwd-secret

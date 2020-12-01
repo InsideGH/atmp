@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: system-db-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: system-db
+  template:
+    metadata:
+      labels:
+        app: system-db
+    spec:
+      containers:
+        - name: system-db
+          image: postgres
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: system-config
+                  key: SYSTEM_DB_USER
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: system-config
+                  key: SYSTEM_DB_NAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: system-db-passwd-secret
+                  key: SYSTEM_DB_USER_PASSWORD
+          volumeMounts:
+            - name: system-db-data
+              mountPath: /var/lib/postgresql/data
+              subPath: system
+      volumes:
+        - name: system-db-data
+          persistentVolumeClaim:
+            claimName: system-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: system-db-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: system-db
+  ports:
+    - name: system-db
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
