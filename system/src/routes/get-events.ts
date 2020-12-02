@@ -13,7 +13,7 @@ import { models } from '../sequelize/models';
 
 const router = express.Router();
 
-router.post('/', validateRequest, async (req: Request, res: Response) => {
+router.get('/', validateRequest, async (req: Request, res: Response) => {
   const { body } = req;
 
   const events = await models.Event.findAndCountAll({});
