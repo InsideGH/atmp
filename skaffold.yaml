@@ -74,5 +74,7 @@ build:
         manual:
           # Way 1: if a js file changes, copy the file into the pod!
           # Then handle file change inside the pod!
-          - src: "src/**/*.js"
+          - src: "src/**/*.*"
+            dest: .
+          - src: "public/**/*.*"
             dest: .
