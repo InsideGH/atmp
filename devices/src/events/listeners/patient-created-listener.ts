@@ -1,10 +1,8 @@
-import { PatientCreatedEvent, Subjects, logger } from '@thelarsson/acss-common';
+import { PatientCreatedEvent, Subjects, logger, Listener } from '@thelarsson/acss-common';
 import { Message } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import db from '../../sequelize/database';
 import { models } from '../../sequelize/models';
-
-import { Listener } from './base-listener';
 
 export class PatientCreatedListener extends Listener<PatientCreatedEvent> {
   subject: Subjects.PatientCreated = Subjects.PatientCreated;

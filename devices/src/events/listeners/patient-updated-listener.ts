@@ -1,17 +1,17 @@
-import { PatientUpdatedEvent, Subjects, logger } from '@thelarsson/acss-common';
+import { PatientUpdatedEvent, Subjects, logger, Listener } from '@thelarsson/acss-common';
 import { Message } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import db from '../../sequelize/database';
 import { models } from '../../sequelize/models';
 
-import {Listener} from './base-listener';
-
 export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
   subject: Subjects.PatientUpdated = Subjects.PatientUpdated;
   queueGroupName: string = queueGroupName;
 
-  async onMessage(data: { id: number; versionKey: number; name: string }, msg: Message): Promise<void> {
-
+  async onMessage(
+    data: { id: number; versionKey: number; name: string },
+    msg: Message,
+  ): Promise<void> {
     const transaction = await db.sequelize.transaction();
 
     try {
