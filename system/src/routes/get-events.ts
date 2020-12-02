@@ -1,14 +1,7 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 
-import {
-  validateRequest,
-  logger,
-  Subjects,
-  DeviceCreatedEvent,
-  eventPersistor,
-} from '@thelarsson/acss-common';
-import db from '../sequelize/database';
+import { validateRequest, Subjects } from '@thelarsson/acss-common';
 import { models } from '../sequelize/models';
 import { Op } from 'sequelize';
 
@@ -32,10 +25,7 @@ router.post(
       .filter((x: any) => x.field && x.order)
       .map((x: any) => [x.field, x.order == 'ascend' ? 'ASC' : 'DESC']);
 
-    console.log('filters', filters);
-
     const where: any = {};
-
     Object.keys(filters).forEach((key) => {
       const columnName = key;
       const values = filters[columnName];
@@ -46,14 +36,13 @@ router.post(
       }
     });
 
-    console.log('where', where);
-
     const events = await models.Event.findAndCountAll({
       where,
       limit,
       offset,
       order,
     });
+
     res.status(200).send(events);
   },
 );
