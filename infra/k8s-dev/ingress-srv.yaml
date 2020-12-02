@@ -6,6 +6,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   rules:
+    # Expose the web and give it possibility to acess all microservices using '/api/system/*' path.
     - host: acss.dev
       http:
         paths:
@@ -21,5 +22,30 @@ spec:
             backend:
               service:
                 name: system-srv
+                port:
+                  number: 3000
+          - path: /api/devices/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: devices-srv
+                port:
+                  number: 3000
+    # Expose the system web and give it possibility to acess 'system' using '/api/system' path.
+    - host: system.acss.dev
+      http:
+        paths:
+          - path: /api/system/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: system-srv
+                port:
+                  number: 3000
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: system-web-srv
                 port:
                   number: 3000

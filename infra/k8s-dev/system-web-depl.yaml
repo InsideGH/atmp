@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: system-web-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: system-web
+  template:
+    metadata:
+      labels:
+        app: system-web
+    spec:
+      containers:
+        - name: system-web
+          image: system-web:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: system-web-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: system-web
+  ports:
+    - name: system-web
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
