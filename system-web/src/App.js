@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Layout, Table, Tag, Button, Space } from 'antd';
+import { useSubjects } from './hooks/use-subjects';
+import { useEvents } from './hooks/use-events';
 
 import './App.css';
 
@@ -20,89 +22,12 @@ const initial = {
 };
 
 function App() {
-  const [loading, setLoading] = useState(false);
-
-  const [subjects, setSubjects] = useState([]);
-  const [data, setData] = useState([]);
-
-  const [total, setTotal] = useState(initial.total);
   const [pagination, setPagination] = useState(initial.pagination);
   const [filters, setFilters] = useState(initial.filters);
   const [sorter, setSorter] = useState(initial.sorter);
 
-  const fetchSubjects = () => {
-    fetch('/api/system/subjects', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => res.json())
-      .then(
-        (subjects) => {
-          setSubjects(subjects);
-        },
-        (error) => {
-          console.error('subject error', error);
-        },
-      );
-  };
-
-  const fetchEvents = () => {
-    setLoading(true);
-
-    const body = {
-      limit: pagination.pageSize,
-      offset: (pagination.current - 1) * pagination.pageSize,
-      filters,
-    };
-
-    if (sorter.length) {
-      body.sorter = sorter
-        .sort((a, b) => a.column.sorter.multiple - b.column.sorter.multiple)
-        .map((x) => ({
-          field: x.field,
-          order: x.order,
-        }));
-    } else if (sorter) {
-      body.sorter = [
-        {
-          field: sorter.field,
-          order: sorter.order,
-        },
-      ];
-    } else {
-      body.sorter = [initial.sorter];
-    }
-
-    fetch('/api/system/events', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          setLoading(false);
-          setData(result.rows);
-          setTotal(result.count);
-        },
-        (error) => {
-          console.error('error', error);
-          setLoading(false);
-        },
-      );
-  };
-
-  useEffect(() => {
-    fetchEvents();
-  }, [pagination, sorter, filters]);
-
-  useEffect(() => {
-    fetchSubjects();
-  }, []);
+  const subjects = useSubjects();
+  const { loading, data, total, refetch } = useEvents(pagination, filters, sorter, initial);
 
   const handleTableChange = (pagination, filters, sorter) => {
     setPagination(pagination);
@@ -159,7 +84,7 @@ function App() {
       >
         <Space align="baseline">
           <Tag color="green">{total} events</Tag>
-          <Button type="primary" size="small" loading={loading} onClick={fetchEvents}>
+          <Button type="primary" size="small" loading={loading} onClick={refetch}>
             Refresh
           </Button>
         </Space>
