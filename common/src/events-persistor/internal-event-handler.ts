@@ -10,7 +10,7 @@ export class InternalEventHandler {
   private eventHandler;
 
   /**
-   * Create and capture error so that node process doesn't stops if an error event is published.
+   * Create.
    */
   constructor() {
     this.eventHandler = new MyEventEmitter();

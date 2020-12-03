@@ -13,10 +13,16 @@ export * from './middlewares/error-handler';
 export * from './middlewares/validate-request';
 
 /**
- * MISC
+ * LOGGER
  */
 export * from './logger/pino';
+
+/**
+ * UTIL
+ */
 export * from './util/assert-env-variables';
+export * from './util/stan-mock';
+export * from './util/strip-keys';
 
 /**
  * EVENT BASE

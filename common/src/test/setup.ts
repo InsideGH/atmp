@@ -1,6 +1,8 @@
 import { Stan } from 'node-nats-streaming';
-import db, { Database } from './database';
+import { Database, sqliteMemoryDatabase } from './sqlite-memory-db';
 import { initialize } from './initialize';
+import { stripKeys } from '../util/strip-keys';
+import { stanMock } from '../util/stan-mock';
 
 declare global {
   namespace NodeJS {
@@ -13,42 +15,22 @@ declare global {
 }
 
 beforeAll(async () => {
-  await db.connect();
+  await sqliteMemoryDatabase.connect();
 });
 
 beforeEach(async () => {
   jest.clearAllMocks();
-  await initialize(db);
+  await initialize(sqliteMemoryDatabase);
 });
 
 afterAll(async () => {
-  await db.disconnect();
+  await sqliteMemoryDatabase.disconnect();
 });
 
-/**
- * Remove keys from object.
- */
-global.stripKeys = (obj: any, keys: string[]) => {
-  if (Array.isArray(obj)) {
-    obj.forEach((x) => global.stripKeys(x, keys));
-  } else if (typeof obj == 'object') {
-    for (const key in obj) {
-      const value = obj[key];
-      if (keys.includes(key)) {
-        delete obj[key];
-      } else {
-        global.stripKeys(value, keys);
-      }
-    }
-  }
-};
+global.stripKeys = stripKeys;
 
-global.db = db;
+global.db = sqliteMemoryDatabase;
 
-global.client = <any>{
-  publish: jest.fn().mockImplementation((subject: string, data: string, callback: () => void) => {
-    callback();
-  }),
-};
+global.client = stanMock;
 
 export {};

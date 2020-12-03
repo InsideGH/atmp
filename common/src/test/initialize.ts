@@ -1,4 +1,4 @@
-import { Database } from './database';
+import { Database } from './sqlite-memory-db';
 import { modelInits } from '../events-persistor/sequelize/models';
 
 export const initialize = async (db: Database) => {

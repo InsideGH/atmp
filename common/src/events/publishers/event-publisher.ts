@@ -2,14 +2,21 @@ import { Stan } from 'node-nats-streaming';
 import { logger } from '../../logger/pino';
 import { BaseEvent } from '../base/base-event';
 
+interface Config {
+  enableDebugLogs?: Boolean;
+}
+
 export class EventPublisher<T extends BaseEvent> {
   /**
    * Create a nats streaming publisher.
    *
-   * @param client Nats streaming client
-   * @param enableDebugLogs Enable debug logs, requires LOG_LEVEL=debug
    */
-  constructor(private client: Stan, protected enableDebugLogs: Boolean = false) {}
+  constructor(
+    private client: Stan,
+    private config: Config = {
+      enableDebugLogs: false,
+    },
+  ) {}
 
   /**
    * Call this to send the event.
@@ -20,12 +27,12 @@ export class EventPublisher<T extends BaseEvent> {
     return new Promise((resolve, reject) => {
       this.client.publish(event.subject, JSON.stringify(event.data), (err) => {
         if (err) {
-          if (this.enableDebugLogs) {
+          if (this.config.enableDebugLogs) {
             logger.debug(`event-publisher: ${event.subject} event publishing error ${err}`);
           }
           return reject(err);
         }
-        if (this.enableDebugLogs) {
+        if (this.config.enableDebugLogs) {
           logger.debug(`event-publisher: ${event.subject} event published`);
         }
         return resolve();

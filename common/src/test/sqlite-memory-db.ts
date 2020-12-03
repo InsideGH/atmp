@@ -23,4 +23,4 @@ export class Database {
   }
 }
 
-export default new Database();
+export const sqliteMemoryDatabase = new Database();
