@@ -97,8 +97,8 @@ const boot = async () => {
    */
   socketWrapper.start();
 
-  new PatientCreatedListener(natsWrapper.client, socketWrapper, true).listen();
-  new PatientUpdatedListener(natsWrapper.client, socketWrapper, true).listen();
+  new PatientCreatedListener(natsWrapper.client, socketWrapper).listen();
+  new PatientUpdatedListener(natsWrapper.client, socketWrapper).listen();
 
   natsWrapper.onConnectionLost(() => {
     logger.error('Connection with NATS failed, sending SIGINT to self');

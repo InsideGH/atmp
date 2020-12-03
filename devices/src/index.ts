@@ -15,7 +15,6 @@ let expressServer: Server;
  */
 const onExit = async () => {
   try {
-    
     if (expressServer) {
       logger.info('Closing express server');
       await new Promise<void>((resolve) => {
@@ -107,9 +106,9 @@ const boot = async () => {
     },
   });
 
-  new PatientCreatedListener(natsWrapper.client, true).listen();
-  new PatientUpdatedListener(natsWrapper.client, true).listen();
-  
+  new PatientCreatedListener(natsWrapper.client).listen();
+  new PatientUpdatedListener(natsWrapper.client).listen();
+
   natsWrapper.onConnectionLost(() => {
     logger.error('Connection with NATS failed, sending SIGINT to self');
     process.kill(process.pid, 'SIGINT');

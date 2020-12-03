@@ -2,6 +2,10 @@ import { Message, Stan } from 'node-nats-streaming';
 import { BaseEvent } from './base-event';
 import { logger } from '../../logger/pino';
 
+interface Config {
+  enableDebugLogs?: Boolean;
+}
+
 export abstract class Listener<T extends BaseEvent> {
   /**
    * Listener must have a subject of type Event.subject generic, provide by the implementing listener.
@@ -25,11 +29,13 @@ export abstract class Listener<T extends BaseEvent> {
 
   /**
    * Create a nats streaming listener.
-   *
-   * @param client Nats streaming client
-   * @param enableDebugLogs Enable debug logs, requires LOG_LEVEL=debug
    */
-  constructor(protected client: Stan, protected enableDebugLogs: Boolean = false) {}
+  constructor(
+    protected client: Stan,
+    private config: Config = {
+      enableDebugLogs: false,
+    },
+  ) {}
 
   /**
    * This combination will replay all events to a queueGroup that has not been received and ack:ed by any worker in the queue group.
@@ -55,7 +61,7 @@ export abstract class Listener<T extends BaseEvent> {
     );
 
     subscription.on('message', async (msg: Message) => {
-      if (this.enableDebugLogs) {
+      if (this.config.enableDebugLogs) {
         logger.debug(
           `[${msg.getSequence()}] ${this.subject} event received by ${
             this.queueGroupName
