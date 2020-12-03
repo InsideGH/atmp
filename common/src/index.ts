@@ -21,7 +21,6 @@ export * from './logger/pino';
  * UTIL
  */
 export * from './util/assert-env-variables';
-export * from './util/stan-mock';
 export * from './util/strip-keys';
 
 /**
