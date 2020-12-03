@@ -1,11 +1,11 @@
-import { PatientUpdatedEvent, Subjects, logger, Listener } from '@thelarsson/acss-common';
+import { PatientDeletedEvent, Subjects, logger, Listener } from '@thelarsson/acss-common';
 import { Message, Stan } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import db from '../../sequelize/database';
 import { models } from '../../sequelize/models';
 
-export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
-  subject: Subjects.PatientUpdated = Subjects.PatientUpdated;
+export class PatientDeletedListener extends Listener<PatientDeletedEvent> {
+  subject: Subjects.PatientDeleted = Subjects.PatientDeleted;
   queueGroupName: string = queueGroupName;
 
   constructor(client: Stan) {
@@ -18,10 +18,7 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
    * We only want to throw back the event if everything is OK except the versionKey.
    *
    */
-  async onMessage(
-    data: { id: number; versionKey: number; name: string },
-    msg: Message,
-  ): Promise<void> {
+  async onMessage(data: { id: number; versionKey: number }, msg: Message): Promise<void> {
     const transaction = await db.sequelize.transaction();
 
     try {
@@ -33,19 +30,17 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
       });
 
       if (patient) {
-        if (data.versionKey - patient.versionKey == 1) {
-          patient.versionKey = data.versionKey;
-          patient.name = data.name;
-          await patient.save({ transaction });
+        if (data.versionKey - patient.versionKey == 0) {
+          await patient.destroy({ transaction });
           await transaction.commit();
-          logger.info(`Patient updated event handled with id=${data.id}`);
+          logger.info(`Patient deleted event handled with id=${data.id}`);
         } else {
           throw new Error(
-            `Can't updated patient with id=${data.id} versionKey=${data.versionKey}, not found`,
+            `Can't delete patient with id=${data.id}, versionKey=${data.versionKey} wrong`,
           );
         }
       } else {
-        logger.info(`Patient updated event ignore, pating with id=${data.id} not found`);
+        logger.info(`Patient delete event ignore, patient with id=${data.id} not found`);
       }
 
       msg.ack();

@@ -22,6 +22,10 @@ test:
 	(cd devices && npm run "test:ci")
 	(cd system && npm run "test:ci")
 
+testdb:
+	- docker rm testdb
+	docker run -p 5432:5432 --name testdb -e POSTGRES_PASSWORD=1 postgres
+
 check: build lint test
 
 common_pub: 

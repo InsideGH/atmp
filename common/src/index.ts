@@ -36,8 +36,10 @@ export * from './events/base/base-publisher';
  */
 export * from './events/events/patient-created-event';
 export * from './events/events/patient-updated-event';
+export * from './events/events/patient-deleted-event';
 export * from './events/events/device-created-event';
 export * from './events/events/device-updated-event';
+export * from './events/events/device-deleted-event';
 export * from './events/events/error-event-event';
 
 /**
