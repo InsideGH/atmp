@@ -5,24 +5,28 @@ import { assertEnvVariables, logger } from '@thelarsson/acss-common';
 import { natsWrapper } from './nats-wrapper';
 import { PatientCreatedListener } from './events/listeners/patient-created-listener';
 import { PatientUpdatedListener } from './events/listeners/patient-updated-listener';
-import { Server } from 'http';
+import { Server } from 'socket.io';
+import { SocketWrapper } from './socket/socket-wrapper';
 
-let expressServer: Server;
+const expressServer = require('http').createServer(app);
+const ioServer: Server = require('socket.io')(expressServer);
+
+const socketWrapper = new SocketWrapper(ioServer);
 
 /**
  * Make sure we process.exit()
  */
 const onExit = async () => {
   try {
-    
-    if (expressServer) {
-      logger.info('Closing express server');
-      await new Promise<void>((resolve) => {
-        expressServer.close(() => {
-          resolve();
-        });
+    logger.info('Closing io server');
+    await socketWrapper.close();
+
+    logger.info('Closing express server');
+    await new Promise<void>((resolve) => {
+      expressServer.close(() => {
+        resolve();
       });
-    }
+    });
 
     logger.info('Disconnect from db');
     await db.disconnect();
@@ -59,11 +63,6 @@ const boot = async () => {
   ]);
 
   /**
-   * If something throws inside the try/catch, we will SIGINT and
-   * kubernetes will restart our pod exponential with back-off
-   * delay (10s, 20s, 40s, …), that is capped at five minutes.
-   */
-  /**
    * Set up these first just in case they are needed.
    */
   process.on('SIGINT', async () => {
@@ -93,9 +92,14 @@ const boot = async () => {
     process.env.NATS_URL!,
   );
 
-  new PatientCreatedListener(natsWrapper.client, true).listen();
-  new PatientUpdatedListener(natsWrapper.client, true).listen();
-  
+  /**
+   * Socket IO
+   */
+  socketWrapper.start();
+
+  new PatientCreatedListener(natsWrapper.client, socketWrapper, true).listen();
+  new PatientUpdatedListener(natsWrapper.client, socketWrapper, true).listen();
+
   natsWrapper.onConnectionLost(() => {
     logger.error('Connection with NATS failed, sending SIGINT to self');
     process.kill(process.pid, 'SIGINT');
@@ -104,7 +108,7 @@ const boot = async () => {
   /**
    * All good, spin up the express app.
    */
-  expressServer = app.listen(3000, () => {
+  expressServer.listen(3000, () => {
     logger.info('App listen 3000');
   });
 };
