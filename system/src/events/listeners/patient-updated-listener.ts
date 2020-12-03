@@ -9,8 +9,10 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
   subject: Subjects.PatientUpdated = Subjects.PatientUpdated;
   queueGroupName: string = queueGroupName;
 
-  constructor(client: Stan, private socketWrapper: SocketWrapper, enableDebugLogs: boolean) {
-    super(client, enableDebugLogs);
+  constructor(client: Stan, private socketWrapper: SocketWrapper) {
+    super(client, {
+      enableDebugLogs: true,
+    });
   }
 
   async onMessage(

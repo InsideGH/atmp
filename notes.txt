@@ -16,3 +16,17 @@ db connection is lost
 
 uncaught exception stops node but process does not exit meaning kubernetes does not restart pod.
 
+import { mocked } from 'ts-jest/utils';
+const mockedSocketWrapper = mocked(SocketWrapper, true);
+
+
+docker run -p 5432:5432 --name test-db -e POSTGRES_PASSWORD=1 postgres
+
+
+
+import { mocked } from 'ts-jest/utils';
+
+jest.mock('../../../socket/socket-wrapper');
+const mockedSocketWrapper = mocked(SocketWrapper, true);
+
+

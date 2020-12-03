@@ -11,6 +11,7 @@ export const verifyEntry = async <T extends BaseEvent>(
     ack: jest.fn(),
     getSequence: () => 0,
     getSubject: () => subject,
+    getTimestamp: () => 0,
   };
 
   await listener.onMessage(data, msg);

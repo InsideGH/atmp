@@ -4,7 +4,9 @@ import { PatientCreatedListener } from '../patient-created-listener';
 import { verifyEntry } from './verify-entry';
 
 it('creates a patient event entry and acks the message', async () => {
-  const listener = new PatientCreatedListener(natsWrapper.client);
+  const socketWrapper = new global.SocketWrapper();
+
+  const listener = new PatientCreatedListener(natsWrapper.client, socketWrapper);
   const subject = Subjects.PatientCreated;
   const data: PatientCreatedEvent['data'] = {
     id: 666,
@@ -12,4 +14,5 @@ it('creates a patient event entry and acks the message', async () => {
     versionKey: 0,
   };
   await verifyEntry<PatientCreatedEvent>(subject, listener, data);
+  expect(socketWrapper.broadcast).toHaveBeenCalledTimes(1);
 });
