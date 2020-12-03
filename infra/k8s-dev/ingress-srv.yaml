@@ -35,6 +35,13 @@ spec:
     - host: system.acss.dev
       http:
         paths:
+          - path: /api/nats/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: nats-srv
+                port:
+                  number: 8222
           - path: /api/system/?(.*)
             pathType: Prefix
             backend:

@@ -3,6 +3,7 @@ import { Table, Tag, Button, Space } from 'antd';
 import { useSubjects } from './hooks/use-subjects';
 import { useEvents } from './hooks/use-events';
 import { SocketContext } from './context/socket-context';
+import { useNatsMonitor } from './hooks/use-nats-monitor';
 
 const initial = {
   total: 0,
@@ -27,10 +28,15 @@ function Events() {
 
   const subjects = useSubjects();
   const { loading, data, total, refetch } = useEvents(pagination, filters, sorter, initial);
+  const { data: natsData, refetch: natsRefetch } = useNatsMonitor();
 
   useEffect(() => {
     refetch();
   }, [refetch, socketContext]);
+
+  useEffect(() => {
+    natsRefetch();
+  }, [data, natsRefetch]);
 
   const handleTableChange = (pagination, filters, sorter) => {
     setPagination(pagination);
@@ -38,6 +44,31 @@ function Events() {
       setSorter(sorter);
     }
     setFilters(filters);
+  };
+
+  const renderNatsTags = ({ sequence, subject }) => {
+    if (natsData) {
+      const channel = natsData.find((ch) => ch.name === subject);
+      if (channel) {
+        const tags = channel.subscriptions.map((s) => {
+          let color;
+
+          if (s.is_offline) {
+            color = 'red';
+          } else {
+            if (s.pending_count === 0) {
+              color = 'green';
+            } else {
+              color = 'orange';
+            }
+          }
+
+          return <Tag color={color}>{`${s.name}:${s.pending_count}:${s.last_sent}`}</Tag>;
+        });
+        return tags;
+      }
+    }
+    return [];
   };
 
   const columns = [
@@ -56,6 +87,10 @@ function Events() {
         text: x,
         value: x,
       })),
+    },
+    {
+      title: 'nats',
+      render: renderNatsTags,
     },
     {
       title: 'sequence',
