@@ -57,6 +57,9 @@ function LatestEvent() {
         columns={columns}
         rowKey={(record) => record.id}
         dataSource={socketContext.latestEvent ? [socketContext.latestEvent] : []}
+        pagination={{
+          hideOnSinglePage: true
+        }}
       />
     </>
   );

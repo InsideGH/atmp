@@ -50,6 +50,7 @@ function App() {
           }}
         >
           <LatestEvent />
+          <br/>
           <Events />
         </Content>
       </Layout>
