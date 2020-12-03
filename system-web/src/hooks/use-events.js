@@ -19,7 +19,7 @@ export function useEvents(pagination, filters, sorter, initial) {
           field: x.field,
           order: x.order,
         }));
-    } else if (sorter) {
+    } else if (sorter && sorter.order) {
       body.sorter = [
         {
           field: sorter.field,
