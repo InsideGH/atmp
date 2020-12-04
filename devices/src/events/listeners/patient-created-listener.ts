@@ -32,15 +32,14 @@ export class PatientCreatedListener extends Listener<PatientCreatedEvent> {
         transaction,
       });
 
-      await transaction.commit();
-
-      msg.ack();
-
       if (created) {
         logger.info(`Patient created event handled with id=${data.id}`);
       } else {
         logger.info(`Patient created event ignored, already handled with id=${data.id}`);
       }
+
+      await transaction.commit();
+      msg.ack();
     } catch (error) {
       await transaction.rollback();
       logger.error(`Patient created event with id=${data.id} failed with error ${error}`);

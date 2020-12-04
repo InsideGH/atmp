@@ -32,7 +32,6 @@ export class PatientDeletedListener extends Listener<PatientDeletedEvent> {
       if (patient) {
         if (data.versionKey - patient.versionKey == 0) {
           await patient.destroy({ transaction });
-          await transaction.commit();
           logger.info(`Patient deleted event handled with id=${data.id}`);
         } else {
           throw new Error(
@@ -43,6 +42,7 @@ export class PatientDeletedListener extends Listener<PatientDeletedEvent> {
         logger.info(`Patient delete event ignore, patient with id=${data.id} not found`);
       }
 
+      await transaction.commit();
       msg.ack();
     } catch (error) {
       await transaction.rollback();

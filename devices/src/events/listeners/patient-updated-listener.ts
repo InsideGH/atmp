@@ -34,10 +34,13 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
 
       if (patient) {
         if (data.versionKey - patient.versionKey == 1) {
-          patient.versionKey = data.versionKey;
-          patient.name = data.name;
-          await patient.save({ transaction });
-          await transaction.commit();
+          await patient.update(
+            {
+              versionKey: data.versionKey,
+              name: data.name,
+            },
+            { transaction },
+          );
           logger.info(`Patient updated event handled with id=${data.id}`);
         } else {
           throw new Error(
@@ -47,6 +50,8 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
       } else {
         logger.info(`Patient updated event ignore, pating with id=${data.id} not found`);
       }
+
+      await transaction.commit();
 
       msg.ack();
     } catch (error) {

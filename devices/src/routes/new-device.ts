@@ -21,10 +21,37 @@ router.post(
     const transaction = await db.sequelize.transaction();
 
     try {
+      const device = await models.Device.create(
+        {
+          type: body.type,
+          versionKey: 0,
+        },
+        { transaction },
+      );
+
+      const internalPublisher = eventPersistor.getPublisher<DeviceCreatedEvent>({
+        subject: Subjects.DeviceCreated,
+        data: {
+          id: device.id,
+          type: device.type,
+          versionKey: device.versionKey,
+        },
+      });
+
+      await internalPublisher.createDbEntry(transaction);
+
       await transaction.commit();
-      res.status(201).send({});
+
+      internalPublisher.publish();
+
+      logger.info(`Device id=${device.id} created`);
+
+      res.status(201).send({
+        device,
+      });
     } catch (error) {
       await transaction.rollback();
+      logger.error('new-device', error);
       throw error;
     }
   },
