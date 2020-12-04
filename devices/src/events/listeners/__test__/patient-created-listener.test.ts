@@ -70,3 +70,36 @@ it('creates a patient multiple times will be ignore', async () => {
   expect(patient!.name).toEqual('kulan');
   expect(patient!.versionKey).toEqual(0);
 });
+
+it('creates many patients', async () => {
+  const { listener, data, msg } = await setup({ id: 666, name: 'kulan' });
+
+  const promises = [];
+
+  for (let i = 0; i < 1; i++) {
+    promises.push(
+      new Promise<any>(async (resolve, reject) => {
+        data.id = i;
+        try {
+          await listener.onMessage(
+            {
+              ...data,
+              id: i,
+              versionKey: i,
+            },
+            msg,
+          );
+          const patient = await models.Patient.findByPk(i);
+          expect(patient).toBeDefined();
+          expect(patient!.id).toEqual(i);
+          expect(patient!.name).toEqual('kulan');
+          expect(patient!.versionKey).toEqual(i);
+          resolve(patient);
+        } catch (error) {
+          reject(error);
+        }
+      }),
+    );
+  }
+  await Promise.all(promises);
+});

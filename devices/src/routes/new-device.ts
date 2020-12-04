@@ -21,6 +21,7 @@ router.post(
     const transaction = await db.sequelize.transaction();
 
     try {
+      await transaction.commit();
       res.status(201).send({});
     } catch (error) {
       await transaction.rollback();

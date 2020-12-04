@@ -4,9 +4,9 @@ export class Database {
   public sequelize: Sequelize;
 
   constructor() {
-    this.sequelize = new Sequelize({
-      dialect: 'sqlite',
-      storage: ':memory:',
+    this.sequelize = new Sequelize('postgres', 'postgres', '1', {
+      host: '127.0.0.1',
+      dialect: 'postgres',
       define: {
         timestamps: true,
       },
