@@ -52,3 +52,8 @@ export * from './events/publishers/error-event-publisher';
  * EVENT PUBLISHERS WITH LOCAL PERSISTENSE
  */
 export * from './events-persistor/sequelize/event-persistor';
+
+/**
+ * NATS
+ */
+export * from './nats/config';
