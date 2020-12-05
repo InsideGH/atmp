@@ -7,6 +7,6 @@ export interface DeviceUpdatedEvent extends BaseEvent {
     id: number;
     versionKey: number;
     type: string;
-    foo: number;
+    patientId?: number;
   };
 }
