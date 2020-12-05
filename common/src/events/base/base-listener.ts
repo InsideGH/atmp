@@ -1,6 +1,7 @@
 import { Message, Stan } from 'node-nats-streaming';
 import { BaseEvent } from './base-event';
 import { logger } from '../../logger/pino';
+import { getNatsSubscriptionOptions, parseNatsMessage, natsConstants } from '../../nats/config';
 
 interface Config {
   enableDebugLogs?: Boolean;
@@ -25,7 +26,7 @@ export abstract class Listener<T extends BaseEvent> {
   /**
    * After 5 seconds without any ack, the event goes back to the nats streaming.
    */
-  protected ackWait: number = 5 * 1000;
+  protected ackWait: number = natsConstants.ackWait;
 
   /**
    * Create a nats streaming listener.
@@ -41,23 +42,20 @@ export abstract class Listener<T extends BaseEvent> {
    * This combination will replay all events to a queueGroup that has not been received and ack:ed by any worker in the queue group.
    * The ack mode is manual.
    */
-  subscriptionOptions() {
-    return this.client
-      .subscriptionOptions()
-      .setDeliverAllAvailable()
-      .setManualAckMode(true)
-      .setAckWait(this.ackWait)
-      .setDurableName(this.queueGroupName);
-  }
 
   /**
    * Call this to create a subscription and get events to the onMessage function.
    */
   listen() {
+    const subscriptionOptions = getNatsSubscriptionOptions(this.client, {
+      ackWait: this.ackWait,
+      queueGroupName: this.queueGroupName,
+    });
+
     const subscription = this.client.subscribe(
       this.subject,
       this.queueGroupName,
-      this.subscriptionOptions(),
+      subscriptionOptions,
     );
 
     subscription.on('message', async (msg: Message) => {
@@ -69,17 +67,12 @@ export abstract class Listener<T extends BaseEvent> {
         );
       }
 
-      const parsedData = this.parseMessage(msg);
+      const parsedData = parseNatsMessage(msg);
       try {
         await this.onMessage(parsedData, msg);
       } catch (error) {
         logger.error(`base-listener catched: ${error}`);
       }
     });
-  }
-
-  parseMessage(msg: Message) {
-    const data = msg.getData();
-    return typeof data === 'string' ? JSON.parse(data) : JSON.parse(data.toString('utf8'));
   }
 }
