@@ -1,5 +1,4 @@
 import { logger } from '../../logger/pino';
-import { ErrorEventPublisher } from '../../events/publishers/error-event-publisher';
 import { AnyPublisher } from './any-publisher';
 import { Event } from './models/event';
 import { Stan } from 'node-nats-streaming';
@@ -21,22 +20,13 @@ export class NatsPublisher {
     const event = await Event.findByPk(id);
 
     /**
-     * In case the event is not found, we have some strange problems. 
+     * In case the event is not found, we have some strange problems.
      * Send a error event instead.
      */
     if (!event) {
       const errorMessage = `nats-publisher: event with id=${id} not found`;
       logger.error(errorMessage);
-      
       throw new Error(errorMessage);
-      // return await new ErrorEventPublisher(this.stan, true).publish({
-      //   serviceName: 'patients',
-      //   errorMessage,
-      //   errorEvent: {
-      //     subject: '',
-      //     data: {},
-      //   },
-      // });
     }
 
     /**

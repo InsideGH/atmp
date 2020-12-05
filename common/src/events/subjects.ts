@@ -1,5 +1,6 @@
 export enum Subjects {
   ErrorEvent = 'error:event',
+  LogEvent = 'log:event',
   PatientCreated = 'patient:created',
   PatientUpdated = 'patient:updated',
   PatientDeleted = 'patient:deleted',
