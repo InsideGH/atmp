@@ -1,9 +1,13 @@
-import { Model, DataTypes, Sequelize } from 'sequelize';
+import { Model, DataTypes, Sequelize, Transaction } from 'sequelize';
+import { Device } from './device';
+
+declare function addDevice(device: Device, options: { transaction: Transaction }): Promise<any>;
 
 export class Patient extends Model {
   public id!: number;
   public name!: string;
   public versionKey!: number;
+  public addDevice!: typeof addDevice;
   public dataValues: any;
 }
 

@@ -39,7 +39,6 @@ router.post(
       });
 
       await internalPublisher.createDbEntry(transaction);
-
       await transaction.commit();
 
       internalPublisher.publish();

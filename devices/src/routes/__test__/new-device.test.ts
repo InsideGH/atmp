@@ -28,6 +28,7 @@ it('returns 201, when creating a device', async () => {
     id: 1,
     type: 'watch',
     versionKey: 0,
+    PatientId: null
   });
 
   /**

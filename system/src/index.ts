@@ -6,6 +6,8 @@ import { natsWrapper } from './nats-wrapper';
 import { PatientCreatedListener } from './events/listeners/patient-created-listener';
 import { PatientUpdatedListener } from './events/listeners/patient-updated-listener';
 import { PatientDeletedListener } from './events/listeners/patient-deleted-listener';
+import { DeviceCreatedListener } from './events/listeners/device-created-listener';
+import { DeviceUpdatedListener } from './events/listeners/device-updated-listener';
 import { Server } from 'socket.io';
 import { SocketWrapper } from './socket/socket-wrapper';
 
@@ -101,6 +103,8 @@ const boot = async () => {
   new PatientCreatedListener(natsWrapper.client, socketWrapper).listen();
   new PatientUpdatedListener(natsWrapper.client, socketWrapper).listen();
   new PatientDeletedListener(natsWrapper.client, socketWrapper).listen();
+  new DeviceCreatedListener(natsWrapper.client, socketWrapper).listen();
+  new DeviceUpdatedListener(natsWrapper.client, socketWrapper).listen();
 
   natsWrapper.onConnectionLost(() => {
     logger.error('Connection with NATS failed, sending SIGINT to self');

@@ -1,4 +1,5 @@
-import { Model, DataTypes, Sequelize } from 'sequelize';
+import { Model, DataTypes, Sequelize, Transaction } from 'sequelize';
+import { Patient } from './patient';
 
 /**
  * Here we define some attributes on the Sequelize model that we want to be available for us
@@ -10,10 +11,17 @@ import { Model, DataTypes, Sequelize } from 'sequelize';
  *
  * For that we must have much mode magic code according to sequalize homepage.
  */
+
+/**
+ * Declare the association, this will make us never forget the transaction in second argument.
+ */
+declare function setPatient(x: Patient, options: { transaction: Transaction }): Promise<any>;
+
 export class Device extends Model {
   public id!: number;
   public type!: string;
   public versionKey!: number;
+  public setPatient!: typeof setPatient;
   public dataValues: any;
 }
 
