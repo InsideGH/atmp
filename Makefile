@@ -32,13 +32,13 @@ common_pub:
 	(cd common && npm run pub)
 
 bump_patients:
-	(cd patients && npm update @thelarsson/acss-common)
+	(cd patients && ncu --filter @thelarsson/acss-common -u && npm i)
 
 bump_devices:
-	(cd devices && npm update @thelarsson/acss-common)
+	(cd devices && ncu --filter @thelarsson/acss-common -u && npm i)
 
 bump_system:
-	(cd system && npm update @thelarsson/acss-common)
+	(cd system && ncu --filter @thelarsson/acss-common -u && npm i)
 
 bump_all: bump_patients bump_devices bump_system
 

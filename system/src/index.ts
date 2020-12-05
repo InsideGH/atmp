@@ -3,13 +3,9 @@ import db from './sequelize/database';
 import { initialize } from './sequelize/initialize';
 import { assertEnvVariables, logger } from '@thelarsson/acss-common';
 import { natsWrapper } from './nats-wrapper';
-import { PatientCreatedListener } from './events/listeners/patient-created-listener';
-import { PatientUpdatedListener } from './events/listeners/patient-updated-listener';
-import { PatientDeletedListener } from './events/listeners/patient-deleted-listener';
-import { DeviceCreatedListener } from './events/listeners/device-created-listener';
-import { DeviceUpdatedListener } from './events/listeners/device-updated-listener';
 import { Server } from 'socket.io';
 import { SocketWrapper } from './socket/socket-wrapper';
+import { EventReceiver } from './events/listeners/event-receiver';
 
 const expressServer = require('http').createServer(app);
 const ioServer: Server = require('socket.io')(expressServer);
@@ -100,11 +96,10 @@ const boot = async () => {
    */
   socketWrapper.start();
 
-  new PatientCreatedListener(natsWrapper.client, socketWrapper).listen();
-  new PatientUpdatedListener(natsWrapper.client, socketWrapper).listen();
-  new PatientDeletedListener(natsWrapper.client, socketWrapper).listen();
-  new DeviceCreatedListener(natsWrapper.client, socketWrapper).listen();
-  new DeviceUpdatedListener(natsWrapper.client, socketWrapper).listen();
+  /**
+   * Start listening for all events and push out to clients using socket.io.
+   */
+  new EventReceiver(natsWrapper.client, socketWrapper).listen();
 
   natsWrapper.onConnectionLost(() => {
     logger.error('Connection with NATS failed, sending SIGINT to self');
