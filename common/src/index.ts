@@ -42,6 +42,7 @@ export * from './events/events/device-created-event';
 export * from './events/events/device-updated-event';
 export * from './events/events/device-deleted-event';
 export * from './events/events/error-created-event';
+export * from './events/events/log-created-event';
 
 /**
  * EVENT PUBLISHERS
