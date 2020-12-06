@@ -27,6 +27,7 @@ export * from './util/strip-keys';
  * EVENT BASE
  */
 export * from './events/subjects';
+export * from './events/services';
 export * from './events/base/base-event';
 export * from './events/base/base-listener';
 export * from './events/base/base-publisher';
@@ -40,7 +41,7 @@ export * from './events/events/patient-deleted-event';
 export * from './events/events/device-created-event';
 export * from './events/events/device-updated-event';
 export * from './events/events/device-deleted-event';
-export * from './events/events/error-event-event';
+export * from './events/events/error-created-event';
 
 /**
  * EVENT PUBLISHERS
