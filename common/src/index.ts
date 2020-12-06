@@ -47,7 +47,7 @@ export * from './events/events/error-created-event';
  * EVENT PUBLISHERS
  */
 export * from './events/publishers/event-publisher';
-export * from './events/publishers/error-event-publisher';
+export * from './events/publishers/error-created-publisher';
 
 /**
  * EVENT PUBLISHERS WITH LOCAL PERSISTENSE
