@@ -59,3 +59,8 @@ export * from './events-persistor/sequelize/event-persistor';
  * NATS
  */
 export * from './nats/config';
+
+/**
+ * SEQUELIZE MICS
+ */
+export * from './sequelize/sequelize-queries';
