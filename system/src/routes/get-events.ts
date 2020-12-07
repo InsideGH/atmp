@@ -1,9 +1,8 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 
-import { validateRequest } from '@thelarsson/acss-common';
+import { validateRequest, sequelizeQueries } from '@thelarsson/acss-common';
 import { models } from '../sequelize/models';
-import sequelizeQueries from './sequelize-queries';
 
 const router = express.Router();
 
