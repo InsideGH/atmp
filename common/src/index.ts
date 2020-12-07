@@ -64,3 +64,8 @@ export * from './nats/config';
  * SEQUELIZE MICS
  */
 export * from './sequelize/sequelize-queries';
+
+/**
+ * RECORD
+ */
+export * from './record/sequelize/record-persistor';
