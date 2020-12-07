@@ -1,13 +1,13 @@
 import { Model, DataTypes, Sequelize } from 'sequelize';
 
-export class Log extends Model {
+export class Record extends Model {
   public id!: number;
   public msg!: string;
   public data: any;
 }
 
-export const initLog = (sequelize: Sequelize) => {
-  Log.init(
+export const initRecord = (sequelize: Sequelize) => {
+  Record.init(
     {
       id: {
         allowNull: false,

@@ -9,7 +9,7 @@ import {
 } from '@thelarsson/acss-common';
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
-import { PatientDbLog } from '../db-log/patients-db-log';
+import { PatientRecord } from '../record/patient-record';
 
 const router = express.Router();
 
@@ -41,12 +41,12 @@ router.post(
 
       await internalPublisher.createDbEntry(transaction);
 
-      const dbLog = await new PatientDbLog('Patient created', patient).createDbEntry(transaction);
+      const record = await new PatientRecord('Patient created', patient).createDbEntry(transaction);
 
       await transaction.commit();
 
       internalPublisher.publish();
-      dbLog.publish();
+      record.publishId();
 
       logger.info(`Patient id=${patient.id} created`);
 

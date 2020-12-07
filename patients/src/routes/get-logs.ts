@@ -19,7 +19,7 @@ router.post(
     const where = sequelizeQueries.buildWhereFromFilters(filters, excludedFilters);
     const order = sequelizeQueries.buildOrderFromSorter(sorter);
 
-    const events = await models.Log.findAndCountAll({
+    const events = await models.Record.findAndCountAll({
       where,
       limit,
       offset,

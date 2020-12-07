@@ -1,14 +1,14 @@
 import { Patient, initPatient } from './patient';
 import { eventPersistor } from '@thelarsson/acss-common';
-import { DbLog } from '../../db-log/sequelize/db-log';
+import { RecordPersistor } from '../../record/sequelize/record-persistor';
 
 const { Event, initEvent } = eventPersistor.getModel();
-const { Log, initLog } = DbLog.getModel();
+const { Record, initRecord } = RecordPersistor.getModel();
 
-export const modelInits = [initPatient, initEvent, initLog];
+export const modelInits = [initPatient, initEvent, initRecord];
 
 export const models = {
   Patient,
   Event,
-  Log,
+  Record,
 };

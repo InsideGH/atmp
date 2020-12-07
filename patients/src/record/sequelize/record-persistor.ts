@@ -1,17 +1,17 @@
-import { logger, Services } from '@thelarsson/acss-common';
+import { Services } from '@thelarsson/acss-common';
 import { Transaction } from 'sequelize/types';
-import { Log, initLog } from './models/log';
-import { DbLogPublisher } from '../db-log-publisher';
+import { Record, initRecord } from './models/record';
+import { RecordPublisher } from '../record-publisher';
 import { natsWrapper } from '../../nats-wrapper';
 
-export abstract class DbLog {
+export abstract class RecordPersistor {
   protected abstract service: Services;
-  private entry?: Log;
+  private entry?: Record;
 
   constructor(private msg: string, private data?: any) {}
 
   public async createDbEntry(transaction: Transaction) {
-    const entry = await Log.create(
+    const entry = await Record.create(
       {
         msg: this.msg,
         data: this.data,
@@ -22,9 +22,9 @@ export abstract class DbLog {
     return this;
   }
 
-  public publish() {
+  public publishId() {
     if (this.entry) {
-      const publisher = new DbLogPublisher(natsWrapper.client, {
+      const publisher = new RecordPublisher(natsWrapper.client, {
         enableDebugLogs: true,
       });
 
@@ -39,8 +39,8 @@ export abstract class DbLog {
 
   public static getModel() {
     return {
-      Log,
-      initLog,
+      Record,
+      initRecord,
     };
   }
 }
