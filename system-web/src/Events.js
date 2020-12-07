@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from 'react';
-import { Table, Tag, Button, Space } from 'antd';
+import { Table, Tag, Button, Space, Checkbox, Row, Col, Card } from 'antd';
 import { useSubjects } from './hooks/use-subjects';
 import { useEvents } from './hooks/use-events';
 import { SocketContext } from './context/socket-context';
@@ -17,7 +17,12 @@ const initial = {
     field: 'id',
     order: 'descend',
   },
+  excludedFilters: {
+    subject: ['log:created'],
+  },
 };
+
+const excludedSubjectsOptions = [{ label: 'log:created', value: 'log:created' }];
 
 function Events() {
   const socketContext = useContext(SocketContext);
@@ -25,25 +30,52 @@ function Events() {
   const [pagination, setPagination] = useState(initial.pagination);
   const [filters, setFilters] = useState(initial.filters);
   const [sorter, setSorter] = useState(initial.sorter);
+  const [excludedFilters, setExcludedFilters] = useState(initial.excludedFilters);
 
   const subjects = useSubjects();
-  const { loading, data, total, refetch } = useEvents(pagination, filters, sorter, initial);
+  const { loading, data, total, fetchEvents } = useEvents(
+    pagination,
+    filters,
+    sorter,
+    excludedFilters,
+    initial,
+  );
   const { data: natsData, refetch: natsRefetch } = useNatsMonitor();
 
+  /**
+   * When socket IO or our fetch function changes.
+   */
   useEffect(() => {
-    refetch();
-  }, [refetch, socketContext]);
+    fetchEvents();
+  }, [fetchEvents, socketContext]);
 
+  /**
+   * When events data is changed, we refresh our nats monitoring data.
+   */
   useEffect(() => {
     natsRefetch();
   }, [data, natsRefetch]);
 
+  /**
+   * When we change something in the events table, we update our local state. Note that the useEvents hook
+   * has dependecies on these, so it will refetch automatically.
+   */
   const handleTableChange = (pagination, filters, sorter) => {
+    console.log('handleTableChange');
     setPagination(pagination);
     if (sorter.length || sorter.order) {
       setSorter(sorter);
     }
     setFilters(filters);
+  };
+
+  /**
+   * When we interact with the excluded subjects checkboxes.
+   */
+  const onExcludeChange = (checkedValues) => {
+    setExcludedFilters({
+      subject: checkedValues,
+    });
   };
 
   const renderNatsTags = ({ sequence, subject }) => {
@@ -63,7 +95,9 @@ function Events() {
             }
           }
 
-          return <Tag color={color}>{`${s.name}:${s.pending_count}:${s.last_sent}`}</Tag>;
+          return (
+            <Tag key={s.name} color={color}>{`${s.name}:${s.pending_count}:${s.last_sent}`}</Tag>
+          );
         });
         return tags;
       }
@@ -113,14 +147,34 @@ function Events() {
 
   return (
     <>
-      <Space align="baseline">
-        <Tag color={socketContext.isConnected ? 'green' : 'red'}>socket</Tag>
-        <Tag color="green">{total} events</Tag>
-        <Button type="primary" size="small" loading={loading} onClick={refetch}>
-          Refresh
-        </Button>
-      </Space>
+      <Row align='bottom'>
+        <Col span={12}>
+          <Space align="baseline">
+            <Tag color={socketContext.isConnected ? 'green' : 'red'}>socket</Tag>
+            <Tag color="green">{total} events</Tag>
+            <Button type="primary" size="small" loading={loading} onClick={fetchEvents}>
+              Refresh
+            </Button>
+          </Space>
+        </Col>
+        <Col span={12} align="right">
+          <Card
+            title="Excluded subjects"
+            bordered={true}
+            style={{ width: 300 }}
+            size="small"
+            align="left"
+          >
+            <Checkbox.Group
+              options={excludedSubjectsOptions}
+              defaultValue={['log:created']}
+              onChange={onExcludeChange}
+            />
+          </Card>
+        </Col>
+      </Row>
 
+      <br />
       <Table
         size="small"
         columns={columns}

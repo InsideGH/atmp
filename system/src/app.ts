@@ -7,6 +7,8 @@ import cookieSession from 'cookie-session';
 import { errorHandler, NotFoundError } from '@thelarsson/acss-common';
 
 import { getEventsRoute } from './routes/get-events';
+import { getSubjectsRoute } from './routes/get-subjects';
+import { getServicesRoute } from './routes/get-services';
 
 const app = express();
 
@@ -26,6 +28,8 @@ app.use(
 );
 
 app.use(getEventsRoute);
+app.use(getSubjectsRoute);
+app.use(getServicesRoute);
 
 app.all('*', async () => {
   throw new NotFoundError();

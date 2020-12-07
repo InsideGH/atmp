@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
-import { Table, Tag, Space } from 'antd';
+import { Table, Tag, Space, Row, Col } from 'antd';
 import { SocketContext } from './context/socket-context';
 
 const columns = [
@@ -47,18 +47,24 @@ function LatestEvent() {
 
   return (
     <>
-      <Space align="baseline">
-        <Tag color={socketContext.isConnected ? 'green' : 'red'}>socket</Tag>
-        <Tag color="green">latest event</Tag>
-        {timeSinceLastEvent && <Tag color="green">{timeSinceLastEvent} seconds old</Tag>}
-      </Space>
+      <Row align='bottom'>
+        <Col span={12}>
+          <Space align="baseline">
+            <Tag color={socketContext.isConnected ? 'green' : 'red'}>socket</Tag>
+            <Tag color="green">latest event</Tag>
+            {timeSinceLastEvent && <Tag color="green">{timeSinceLastEvent} seconds old</Tag>}
+          </Space>
+        </Col>
+        <Col span={12} align="right"></Col>
+      </Row>
+      <br/>
       <Table
         size="small"
         columns={columns}
         rowKey={(record) => record.id}
         dataSource={socketContext.latestEvent ? [socketContext.latestEvent] : []}
         pagination={{
-          hideOnSinglePage: true
+          hideOnSinglePage: true,
         }}
       />
     </>

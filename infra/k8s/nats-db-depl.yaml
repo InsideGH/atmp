@@ -19,6 +19,8 @@ spec:
       labels:
         app: nats-db
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: nats-db
           # latest is default if not specified

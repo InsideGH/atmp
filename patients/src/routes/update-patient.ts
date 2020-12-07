@@ -11,6 +11,7 @@ import {
 } from '@thelarsson/acss-common';
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
+import { PatientDbLog } from '../db-log/patients-db-log';
 
 const router = express.Router();
 
@@ -49,10 +50,13 @@ router.put(
 
       await internalPublisher.createDbEntry(transaction);
 
+      const dbLog = await new PatientDbLog('Patient updated', patient).createDbEntry(transaction);
+
       await transaction.commit();
 
       internalPublisher.publish();
-
+      dbLog.publish();
+      
       logger.info(`Patient id=${patient.id} updated`);
 
       res.status(200).send({

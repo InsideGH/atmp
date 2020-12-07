@@ -12,6 +12,8 @@ spec:
       labels:
         app: devices
     spec:
+      imagePullSecrets:
+        - name: regcred
       initContainers:
         - name: check-db-ready
           image: postgres:alpine
@@ -27,7 +29,7 @@ spec:
             ['sh', '-c', 'until wget -O- http://nats-srv:8222/varz; do echo waiting for nats-srv; sleep 2; done;']
       containers:
         - name: devices
-          image: devices:latest
+          image: devices
           # livenessProbe:
           #   httpGet:
           #     path: /liveness

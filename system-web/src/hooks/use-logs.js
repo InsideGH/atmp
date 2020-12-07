@@ -1,16 +1,14 @@
 import { useState, useCallback } from 'react';
 
-export function useEvents(pagination, filters, sorter, excludedFilters, initial) {
+export function useLogs(service, pagination, sorter, initial) {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
 
-  const fetchEvents = useCallback(() => {
+  const fetchLogs = useCallback(() => {
     const body = {
       limit: pagination.pageSize,
       offset: (pagination.current - 1) * pagination.pageSize,
-      filters,
-      excludedFilters,
     };
 
     if (sorter.length) {
@@ -33,7 +31,7 @@ export function useEvents(pagination, filters, sorter, excludedFilters, initial)
 
     setLoading(true);
 
-    fetch('/api/system/events', {
+    fetch(`/api/${service}/logs`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,7 +50,7 @@ export function useEvents(pagination, filters, sorter, excludedFilters, initial)
           setLoading(false);
         },
       );
-  }, [filters, initial.sorter, pagination, excludedFilters, sorter]);
+  }, [service, initial.sorter, pagination, sorter]);
 
-  return { loading, data, total, fetchEvents };
+  return { loading, data, total, fetchLogs };
 }
