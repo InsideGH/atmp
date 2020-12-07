@@ -4,7 +4,6 @@ import {
   validateRequest,
   logger,
   Subjects,
-  PatientCreatedEvent,
   eventPersistor,
   BadRequestError,
   PatientUpdatedEvent,
@@ -12,6 +11,7 @@ import {
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
 import { PatientRecord } from '../record/patient-record';
+import { natsWrapper } from '../nats-wrapper';
 
 const router = express.Router();
 
@@ -50,7 +50,11 @@ router.put(
 
       await internalPublisher.createDbEntry(transaction);
 
-      const record = await new PatientRecord('Patient updated', patient).createDbEntry(transaction);
+      const record = await new PatientRecord(
+        natsWrapper.client,
+        'Patient updated',
+        patient,
+      ).createDbEntry(transaction);
 
       await transaction.commit();
 

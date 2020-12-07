@@ -10,7 +10,7 @@ import {
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
 import { PatientRecord } from '../record/patient-record';
-
+import { natsWrapper } from '../nats-wrapper';
 const router = express.Router();
 
 router.post(
@@ -41,7 +41,11 @@ router.post(
 
       await internalPublisher.createDbEntry(transaction);
 
-      const record = await new PatientRecord('Patient created', patient).createDbEntry(transaction);
+      const record = await new PatientRecord(
+        natsWrapper.client,
+        'Patient created',
+        patient,
+      ).createDbEntry(transaction);
 
       await transaction.commit();
 
