@@ -44,7 +44,7 @@ const buildOrderFromSorter = (sorter: any = []) => {
   return order;
 };
 
-export default {
+export const sequelizeQueries = {
   buildWhereFromFilters,
   buildOrderFromSorter,
 };
