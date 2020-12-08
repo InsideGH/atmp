@@ -1,3 +1,5 @@
+import Head from "next/head";
+
 import { Tabs } from "antd";
 import LatestEvent from "../src/components/latest-event";
 import Events from "../src/components/events";
@@ -11,17 +13,23 @@ export default function Home() {
   const services = socketContext.services;
 
   return (
-    <Tabs defaultActiveKey="events" tabPosition="left">
-      <Tabs.TabPane tab={"events"} key="events">
-        <LatestEvent />
-        <br />
-        <Events />
-      </Tabs.TabPane>
-      {services.map((service) => (
-        <Tabs.TabPane tab={service} key={service}>
-          <ServiceLogs service={service} />
+    <div>
+      <Head>
+        <title>Panda Care system</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Tabs defaultActiveKey="events" tabPosition="left">
+        <Tabs.TabPane tab={"events"} key="events">
+          <LatestEvent />
+          <br />
+          <Events />
         </Tabs.TabPane>
-      ))}
-    </Tabs>
+        {services.map((service) => (
+          <Tabs.TabPane tab={service} key={service}>
+            <ServiceLogs service={service} />
+          </Tabs.TabPane>
+        ))}
+      </Tabs>
+    </div>
   );
 }

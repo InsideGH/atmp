@@ -77,3 +77,28 @@ spec:
                 name: system-web-srv
                 port:
                   number: 3000
+    # Expose the admin web and give it possibility to acess the different services.
+    - host: admin.acss.dev
+      http:
+        paths:
+          - path: /api/patients/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: patients-srv
+                port:
+                  number: 3000
+          - path: /api/devices/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: devices-srv
+                port:
+                  number: 3000
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: admin-web-srv
+                port:
+                  number: 3000
