@@ -12,6 +12,8 @@ spec:
       labels:
         app: system
     spec:
+      imagePullSecrets:
+        - name: regcred
       initContainers:
         - name: check-db-ready
           image: postgres:alpine

@@ -12,9 +12,11 @@ spec:
       labels:
         app: system-db
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: system-db
-          image: postgres
+          image: postgres:alpine
           env:
             - name: POSTGRES_USER
               valueFrom:

@@ -12,9 +12,11 @@ spec:
       labels:
         app: patients-db
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: patients-db
-          image: postgres
+          image: postgres:alpine
           env:
             - name: POSTGRES_USER
               valueFrom:

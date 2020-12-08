@@ -42,6 +42,8 @@ bump_system:
 
 bump_all: bump_patients bump_devices bump_system
 
+common: common_pub bump_all
+
 minikube:
 	minikube start --mount=true --mount-string=$(PWD)/data:/host/data
 	minikube addons enable ingress
@@ -72,6 +74,10 @@ init:
 	- kubectl delete secret nats-db-passwd-secret
 	kubectl create secret generic nats-db-passwd-secret --from-literal=NATS_DB_PASSWD=1
 
+	- kubectl create secret generic regcred \
+    --from-file=.dockerconfigjson=$(HOME)/.docker/config.json \
+    --type=kubernetes.io/dockerconfigjson
+	
 volumes:
 	# create a directory here to store stuff
 	mkdir -p $(PWD)/data

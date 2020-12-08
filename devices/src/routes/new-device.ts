@@ -9,6 +9,8 @@ import {
 } from '@thelarsson/acss-common';
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
+import { DeviceRecord } from '../record/device-record';
+import { natsWrapper } from '../nats-wrapper';
 
 const router = express.Router();
 
@@ -39,9 +41,17 @@ router.post(
       });
 
       await internalPublisher.createDbEntry(transaction);
+
+      const record = await new DeviceRecord(
+        natsWrapper.client,
+        'Device created',
+        device,
+      ).createDbEntry(transaction);
+
       await transaction.commit();
 
       internalPublisher.publish();
+      record.publishId();
 
       logger.info(`Device id=${device.id} created`);
 

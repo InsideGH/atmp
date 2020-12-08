@@ -9,6 +9,7 @@ import { errorHandler, NotFoundError } from '@thelarsson/acss-common';
 import { newPatientRoute } from './routes/new-patient';
 import { updatePatientRoute } from './routes/update-patient';
 import { deletePatientRoute } from './routes/delete-patient';
+import { getLogsRoute } from './routes/get-logs';
 
 import { probeRouter } from './routes/probe';
 
@@ -34,6 +35,7 @@ app.use(
 app.use(newPatientRoute);
 app.use(updatePatientRoute);
 app.use(deletePatientRoute);
+app.use(getLogsRoute);
 
 app.all('*', async () => {
   throw new NotFoundError();

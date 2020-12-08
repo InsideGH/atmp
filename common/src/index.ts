@@ -27,6 +27,7 @@ export * from './util/strip-keys';
  * EVENT BASE
  */
 export * from './events/subjects';
+export * from './events/services';
 export * from './events/base/base-event';
 export * from './events/base/base-listener';
 export * from './events/base/base-publisher';
@@ -40,13 +41,14 @@ export * from './events/events/patient-deleted-event';
 export * from './events/events/device-created-event';
 export * from './events/events/device-updated-event';
 export * from './events/events/device-deleted-event';
-export * from './events/events/error-event-event';
+export * from './events/events/error-created-event';
+export * from './events/events/log-created-event';
 
 /**
  * EVENT PUBLISHERS
  */
 export * from './events/publishers/event-publisher';
-export * from './events/publishers/error-event-publisher';
+export * from './events/publishers/error-created-publisher';
 
 /**
  * EVENT PUBLISHERS WITH LOCAL PERSISTENSE
@@ -57,3 +59,14 @@ export * from './events-persistor/sequelize/event-persistor';
  * NATS
  */
 export * from './nats/config';
+
+/**
+ * SEQUELIZE MICS
+ */
+export * from './sequelize/sequelize-queries';
+export * from './test/sqlite-memory-db';
+
+/**
+ * RECORD
+ */
+export * from './record/sequelize/record-persistor';

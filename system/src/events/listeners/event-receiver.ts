@@ -58,7 +58,7 @@ export class EventReceiver {
       try {
         const event = await createEvent(data, msg);
         msg.ack();
-        this.socketWrapper.broadcast(SocketEventChannel.NEW_EVENT, event);
+        this.socketWrapper.broadcast(SocketEventChannel.SubjectEvent, event);
       } catch (error) {
         logger.error(`base-listener catched: ${error}`);
       }

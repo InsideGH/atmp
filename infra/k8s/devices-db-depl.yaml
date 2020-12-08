@@ -12,9 +12,11 @@ spec:
       labels:
         app: devices-db
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: devices-db
-          image: postgres
+          image: postgres:alpine
           env:
             - name: POSTGRES_USER
               valueFrom:

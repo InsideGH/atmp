@@ -1,15 +1,16 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
-export function useEvents(pagination, filters, sorter, initial) {
+export function useEvents(pagination, filters, sorter, excludedFilters, initial) {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
 
-  const refetch = useCallback(() => {
+  const fetchEvents = useCallback(() => {
     const body = {
       limit: pagination.pageSize,
       offset: (pagination.current - 1) * pagination.pageSize,
       filters,
+      excludedFilters,
     };
 
     if (sorter.length) {
@@ -51,11 +52,7 @@ export function useEvents(pagination, filters, sorter, initial) {
           setLoading(false);
         },
       );
-  }, [filters, initial.sorter, pagination, sorter]);
+  }, [filters, initial.sorter, pagination, excludedFilters, sorter]);
 
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
-
-  return { loading, data, total, refetch };
+  return { loading, data, total, fetchEvents };
 }

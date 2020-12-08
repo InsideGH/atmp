@@ -5,5 +5,5 @@ import { modelInits } from './models/';
 export const initialize = async (db: Database) => {
   modelInits.forEach((modelInit) => modelInit(db.sequelize));
   createModelAssociations();
-  await db.sequelize.sync({ force: true });
+  await db.sequelize.sync({ force: false });
 };

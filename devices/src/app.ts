@@ -8,6 +8,7 @@ import { errorHandler, NotFoundError } from '@thelarsson/acss-common';
 
 import { newDeviceRoute } from './routes/new-device';
 import { assignDeviceRoute } from './routes/assign-device';
+import { getLogsRoute } from './routes/get-logs';
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use(
 
 app.use(newDeviceRoute);
 app.use(assignDeviceRoute);
+app.use(getLogsRoute);
 
 app.all('*', async () => {
   throw new NotFoundError();

@@ -12,6 +12,8 @@ spec:
       labels:
         app: patients
     spec:
+      imagePullSecrets:
+        - name: regcred
       initContainers:
         - name: check-db-ready
           image: postgres:alpine

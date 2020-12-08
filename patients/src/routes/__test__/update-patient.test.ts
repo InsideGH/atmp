@@ -85,4 +85,7 @@ it('returns 200, when updating a patient', async () => {
       versionKey: 1,
     },
   });
+
+  const records = await models.Record.findAll({});
+  expect(records.length).toEqual(2);
 });

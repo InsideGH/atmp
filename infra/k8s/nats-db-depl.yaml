@@ -19,10 +19,12 @@ spec:
       labels:
         app: nats-db
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: nats-db
           # latest is default if not specified
-          image: postgres
+          image: postgres:alpine
           env:
             # Name of env variable inside our app
             - name: POSTGRES_USER

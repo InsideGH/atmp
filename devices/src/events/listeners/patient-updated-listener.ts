@@ -3,6 +3,7 @@ import { Message, Stan } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import db from '../../sequelize/database';
 import { models } from '../../sequelize/models';
+import { DeviceRecord } from '../../record/device-record';
 
 export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
   subject: Subjects.PatientUpdated = Subjects.PatientUpdated;
@@ -41,6 +42,10 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
             },
             { transaction },
           );
+          await new DeviceRecord(this.client, 'Patient updated', patient).createDbEntry(
+            transaction,
+          );
+
           logger.info(`Patient updated event handled with id=${data.id}`);
         } else {
           throw new Error(

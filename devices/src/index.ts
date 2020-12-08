@@ -6,6 +6,8 @@ import { eventPersistor } from '@thelarsson/acss-common';
 import { natsWrapper } from './nats-wrapper';
 import { PatientCreatedListener } from './events/listeners/patient-created-listener';
 import { PatientUpdatedListener } from './events/listeners/patient-updated-listener';
+import { PatientDeletedListener } from './events/listeners/patient-deleted-listener';
+
 import { Server } from 'http';
 
 let expressServer: Server;
@@ -108,6 +110,7 @@ const boot = async () => {
 
   new PatientCreatedListener(natsWrapper.client).listen();
   new PatientUpdatedListener(natsWrapper.client).listen();
+  new PatientDeletedListener(natsWrapper.client).listen();
 
   natsWrapper.onConnectionLost(() => {
     logger.error('Connection with NATS failed, sending SIGINT to self');

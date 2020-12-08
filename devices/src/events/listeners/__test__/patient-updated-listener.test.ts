@@ -63,6 +63,9 @@ it('updates a patient', async () => {
 
   const updatedPatient = await models.Patient.findByPk(originalPatient.id);
   expect(updatedPatient!.name).toEqual('updated_ponken');
+
+  const records = await models.Record.findAll({});
+  expect(records.length).toEqual(1);
 });
 
 it('acks the message', async () => {

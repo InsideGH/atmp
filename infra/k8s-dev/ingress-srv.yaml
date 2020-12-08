@@ -49,6 +49,20 @@ spec:
                 name: system-srv
                 port:
                   number: 3000
+          - path: /api/patients/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: patients-srv
+                port:
+                  number: 3000
+          - path: /api/devices/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: devices-srv
+                port:
+                  number: 3000
           - path: /?(socket.io/.*)
             pathType: Prefix
             backend:
