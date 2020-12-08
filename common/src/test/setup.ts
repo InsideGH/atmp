@@ -1,8 +1,10 @@
 import { Stan } from 'node-nats-streaming';
-import { Database, sqliteMemoryDatabase } from './sqlite-memory-db';
+import { Database } from './sqlite-memory-db';
 import { initialize } from './initialize';
 import { stripKeys } from '../util/strip-keys';
 import { stanMock } from '../util/stan-mock';
+
+const sqliteMemoryDatabase = new Database();
 
 declare global {
   namespace NodeJS {

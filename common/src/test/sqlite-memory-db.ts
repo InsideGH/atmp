@@ -22,5 +22,3 @@ export class Database {
     await this.sequelize.close();
   }
 }
-
-export const sqliteMemoryDatabase = new Database();
