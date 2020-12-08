@@ -76,6 +76,10 @@ build:
           # Then handle file change inside the pod!
           - src: "src/**/*.*"
             dest: .
+          - src: "pages/**/*.*"
+            dest: .
           - src: "public/**/*.*"
+            dest: .
+          - src: "styles/**/*.*"
             dest: .
 

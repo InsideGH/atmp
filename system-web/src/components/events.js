@@ -1,9 +1,9 @@
-import { useState, useContext, useEffect } from 'react';
-import { Table, Tag, Button, Space, Checkbox, Row, Col, Card } from 'antd';
-import { useSubjects } from './hooks/use-subjects';
-import { useEvents } from './hooks/use-events';
-import { SocketContext } from './context/socket-context';
-import { useNatsMonitor } from './hooks/use-nats-monitor';
+import { useState, useContext, useEffect } from "react";
+import { Table, Tag, Button, Space, Checkbox, Row, Col, Card } from "antd";
+import { useSubjects } from "../hooks/use-subjects";
+import { useEvents } from "../hooks/use-events";
+import { SocketContext } from "../context/socket-context";
+import { useNatsMonitor } from "../hooks/use-nats-monitor";
 
 const initial = {
   total: 0,
@@ -14,15 +14,17 @@ const initial = {
   },
   filters: {},
   sorter: {
-    field: 'id',
-    order: 'descend',
+    field: "id",
+    order: "descend",
   },
   excludedFilters: {
-    subject: ['log:created'],
+    subject: ["log:created"],
   },
 };
 
-const excludedSubjectsOptions = [{ label: 'log:created', value: 'log:created' }];
+const excludedSubjectsOptions = [
+  { label: "log:created", value: "log:created" },
+];
 
 function Events() {
   const socketContext = useContext(SocketContext);
@@ -30,7 +32,9 @@ function Events() {
   const [pagination, setPagination] = useState(initial.pagination);
   const [filters, setFilters] = useState(initial.filters);
   const [sorter, setSorter] = useState(initial.sorter);
-  const [excludedFilters, setExcludedFilters] = useState(initial.excludedFilters);
+  const [excludedFilters, setExcludedFilters] = useState(
+    initial.excludedFilters
+  );
 
   const subjects = useSubjects();
   const { loading, data, total, fetchEvents } = useEvents(
@@ -38,7 +42,7 @@ function Events() {
     filters,
     sorter,
     excludedFilters,
-    initial,
+    initial
   );
   const { data: natsData, refetch: natsRefetch } = useNatsMonitor();
 
@@ -61,7 +65,7 @@ function Events() {
    * has dependecies on these, so it will refetch automatically.
    */
   const handleTableChange = (pagination, filters, sorter) => {
-    console.log('handleTableChange');
+    console.log("handleTableChange");
     setPagination(pagination);
     if (sorter.length || sorter.order) {
       setSorter(sorter);
@@ -78,7 +82,7 @@ function Events() {
     });
   };
 
-  const renderNatsTags = ({ sequence, subject }) => {
+  const renderNatsTags = ({ subject }) => {
     if (natsData) {
       const channel = natsData.find((ch) => ch.name === subject);
       if (channel) {
@@ -86,17 +90,20 @@ function Events() {
           let color;
 
           if (s.is_offline) {
-            color = 'red';
+            color = "red";
           } else {
             if (s.pending_count === 0) {
-              color = 'green';
+              color = "green";
             } else {
-              color = 'orange';
+              color = "orange";
             }
           }
 
           return (
-            <Tag key={s.name} color={color}>{`${s.name}:${s.pending_count}:${s.last_sent}`}</Tag>
+            <Tag
+              key={s.name}
+              color={color}
+            >{`${s.name}:${s.pending_count}:${s.last_sent}`}</Tag>
           );
         });
         return tags;
@@ -107,13 +114,13 @@ function Events() {
 
   const columns = [
     {
-      title: 'id',
-      dataIndex: 'id',
+      title: "id",
+      dataIndex: "id",
       sorter: true,
     },
     {
-      title: 'subject',
-      dataIndex: 'subject',
+      title: "subject",
+      dataIndex: "subject",
       sorter: {
         multiple: 1,
       },
@@ -123,36 +130,43 @@ function Events() {
       })),
     },
     {
-      title: 'nats',
+      title: "nats",
       render: renderNatsTags,
     },
     {
-      title: 'sequence',
-      dataIndex: 'sequence',
+      title: "sequence",
+      dataIndex: "sequence",
       sorter: {
         multiple: 2,
       },
     },
     {
-      title: 'data',
-      dataIndex: 'data',
+      title: "data",
+      dataIndex: "data",
       render: (data) => JSON.stringify(data),
     },
     {
-      title: 'timestamp',
-      dataIndex: 'timestamp',
+      title: "timestamp",
+      dataIndex: "timestamp",
       sorter: true,
     },
   ];
 
   return (
     <>
-      <Row align='bottom'>
+      <Row align="bottom">
         <Col span={12}>
           <Space align="baseline">
-            <Tag color={socketContext.isConnected ? 'green' : 'red'}>socket</Tag>
+            <Tag color={socketContext.isConnected ? "green" : "red"}>
+              socket
+            </Tag>
             <Tag color="green">{total} events</Tag>
-            <Button type="primary" size="small" loading={loading} onClick={fetchEvents}>
+            <Button
+              type="primary"
+              size="small"
+              loading={loading}
+              onClick={fetchEvents}
+            >
               Refresh
             </Button>
           </Space>
@@ -167,7 +181,7 @@ function Events() {
           >
             <Checkbox.Group
               options={excludedSubjectsOptions}
-              defaultValue={['log:created']}
+              defaultValue={["log:created"]}
               onChange={onExcludeChange}
             />
           </Card>

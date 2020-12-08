@@ -6,4 +6,9 @@ RUN npm install --only=prod
 
 COPY . .
 
-CMD ["npm", "start"]
+# DEV MODE
+CMD ["npm", "run", "dev"]
+
+# PROD MODE
+# RUN npm run build
+# CMD ["npm", "start"]
