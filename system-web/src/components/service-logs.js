@@ -1,7 +1,7 @@
-import { useState, useContext, useEffect } from 'react';
-import { Table, Tag, Button, Space, Row, Col, Card, Checkbox } from 'antd';
-import { useLogs } from './hooks/use-logs';
-import { SocketContext } from './context/socket-context';
+import { useState, useContext, useEffect } from "react";
+import { Table, Tag, Button, Space, Row, Col, Card, Checkbox } from "antd";
+import { useLogs } from "../hooks/use-logs";
+import { SocketContext } from "../context/socket-context";
 
 const initial = {
   total: 0,
@@ -11,16 +11,16 @@ const initial = {
     total: 0,
   },
   sorter: {
-    field: 'id',
-    order: 'descend',
+    field: "id",
+    order: "descend",
   },
-  checkboxGroups: ['hide_raw_data'],
+  checkboxGroups: ["hide_raw_data"],
 };
 
 function stripKeys(obj, keys = []) {
   if (Array.isArray(obj)) {
     obj.forEach((x) => stripKeys(x, keys));
-  } else if (typeof obj == 'object') {
+  } else if (typeof obj == "object") {
     for (const key in obj) {
       const value = obj[key];
       if (keys.includes(key)) {
@@ -32,7 +32,9 @@ function stripKeys(obj, keys = []) {
   }
 }
 
-const checkboxGroupOptions = [{ label: 'hide some data fields', value: 'hide_raw_data' }];
+const checkboxGroupOptions = [
+  { label: "hide some data fields", value: "hide_raw_data" },
+];
 
 function ServiceLogs({ service }) {
   const socketContext = useContext(SocketContext);
@@ -41,7 +43,12 @@ function ServiceLogs({ service }) {
   const [sorter, setSorter] = useState(initial.sorter);
   const [checkboxGroup, setCheckboxGroup] = useState(initial.checkboxGroups);
 
-  const { loading, data, total, fetchLogs } = useLogs(service, pagination, sorter, initial);
+  const { loading, data, total, fetchLogs } = useLogs(
+    service,
+    pagination,
+    sorter,
+    initial
+  );
 
   /**
    * When socket IO or our fetch function changes.
@@ -55,7 +62,7 @@ function ServiceLogs({ service }) {
    * has dependecies on these, so it will refetch automatically.
    */
   const handleTableChange = (pagination, filters, sorter) => {
-    console.log('handleTableChange');
+    console.log("handleTableChange");
     setPagination(pagination);
     if (sorter.length || sorter.order) {
       setSorter(sorter);
@@ -71,37 +78,42 @@ function ServiceLogs({ service }) {
 
   const columns = [
     {
-      title: 'id',
-      dataIndex: 'id',
+      title: "id",
+      dataIndex: "id",
       sorter: true,
     },
     {
-      title: 'msg',
-      dataIndex: 'msg',
+      title: "msg",
+      dataIndex: "msg",
       sorter: {
         multiple: 1,
       },
     },
     {
-      title: 'data',
-      dataIndex: 'data',
+      title: "data",
+      dataIndex: "data",
       render: (data) => {
-        if (checkboxGroup.includes('hide_raw_data')) {
+        if (checkboxGroup.includes("hide_raw_data")) {
           const clone = JSON.parse(JSON.stringify(data));
-          stripKeys(clone, ['createdAt', 'updatedAt', 'deletedAt', 'versionKey']);
+          stripKeys(clone, [
+            "createdAt",
+            "updatedAt",
+            "deletedAt",
+            "versionKey",
+          ]);
           return JSON.stringify(clone);
         }
         return JSON.stringify(data);
       },
     },
     {
-      title: 'versionKey',
-      dataIndex: 'data',
+      title: "versionKey",
+      dataIndex: "data",
       render: (data) => data.versionKey,
     },
     {
-      title: 'createdAt',
-      dataIndex: 'createdAt',
+      title: "createdAt",
+      dataIndex: "createdAt",
       sorter: true,
     },
   ];
@@ -111,18 +123,31 @@ function ServiceLogs({ service }) {
       <Row align="bottom">
         <Col span={12}>
           <Space align="baseline">
-            <Tag color={socketContext.isConnected ? 'green' : 'red'}>socket</Tag>
+            <Tag color={socketContext.isConnected ? "green" : "red"}>
+              socket
+            </Tag>
             <Tag color="green">{total} events</Tag>
-            <Button type="primary" size="small" loading={loading} onClick={fetchLogs}>
+            <Button
+              type="primary"
+              size="small"
+              loading={loading}
+              onClick={fetchLogs}
+            >
               Refresh
             </Button>
           </Space>
         </Col>
         <Col span={12} align="right">
-          <Card title="Options" bordered={true} style={{ width: 300 }} size="small" align="left">
+          <Card
+            title="Options"
+            bordered={true}
+            style={{ width: 300 }}
+            size="small"
+            align="left"
+          >
             <Checkbox.Group
               options={checkboxGroupOptions}
-              defaultValue={['hide_raw_data']}
+              defaultValue={["hide_raw_data"]}
               onChange={onExcludeChange}
             />
           </Card>
