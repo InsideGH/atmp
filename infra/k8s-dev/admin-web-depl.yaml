@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-web-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-web
+  template:
+    metadata:
+      labels:
+        app: admin-web
+    spec:
+      containers:
+        - name: admin-web
+          image: admin-web:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-web-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: admin-web
+  ports:
+    - name: admin-web
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
