@@ -66,4 +66,7 @@ it('returns 200, when deleting a patient', async () => {
       versionKey: 0,
     },
   });
+
+  const records = await models.Record.findAll({});
+  expect(records.length).toEqual(2);
 });

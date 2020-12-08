@@ -52,4 +52,7 @@ it('returns 201, when creating a patient', async () => {
       versionKey: 0,
     },
   });
+
+  const records = await models.Record.findAll({});
+  expect(records.length).toEqual(1);
 });

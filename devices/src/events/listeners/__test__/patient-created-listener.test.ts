@@ -48,6 +48,9 @@ it('creates a patient', async () => {
   expect(patient!.id).toEqual(666);
   expect(patient!.name).toEqual('kulan');
   expect(patient!.versionKey).toEqual(0);
+
+  const records = await models.Record.findAll({});
+  expect(records.length).toEqual(1);
 });
 
 it('acks the message', async () => {

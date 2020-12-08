@@ -3,6 +3,7 @@ import { Message, Stan } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import db from '../../sequelize/database';
 import { models } from '../../sequelize/models';
+import { DeviceRecord } from '../../record/device-record';
 
 export class PatientDeletedListener extends Listener<PatientDeletedEvent> {
   subject: Subjects.PatientDeleted = Subjects.PatientDeleted;
@@ -32,6 +33,9 @@ export class PatientDeletedListener extends Listener<PatientDeletedEvent> {
       if (patient) {
         if (data.versionKey - patient.versionKey == 0) {
           await patient.destroy({ transaction });
+          await new DeviceRecord(this.client, 'Patient deleted', patient).createDbEntry(
+            transaction,
+          );
           logger.info(`Patient deleted event handled with id=${data.id}`);
         } else {
           throw new Error(

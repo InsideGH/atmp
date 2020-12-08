@@ -10,6 +10,8 @@ import {
 } from '@thelarsson/acss-common';
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
+import { PatientRecord } from '../record/patient-record';
+import { natsWrapper } from '../nats-wrapper';
 
 const router = express.Router();
 
@@ -40,9 +42,16 @@ router.delete(
 
       await internalPublisher.createDbEntry(transaction);
 
+      const record = await new PatientRecord(
+        natsWrapper.client,
+        'Patient deleted',
+        patient,
+      ).createDbEntry(transaction);
+
       await transaction.commit();
 
       internalPublisher.publish();
+      record.publishId();
 
       logger.info(`Patient id=${patient.id} deleted`);
 

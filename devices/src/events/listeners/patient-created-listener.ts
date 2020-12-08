@@ -3,6 +3,7 @@ import { Message, Stan } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import db from '../../sequelize/database';
 import { models } from '../../sequelize/models';
+import { DeviceRecord } from '../../record/device-record';
 
 export class PatientCreatedListener extends Listener<PatientCreatedEvent> {
   subject: Subjects.PatientCreated = Subjects.PatientCreated;
@@ -33,6 +34,7 @@ export class PatientCreatedListener extends Listener<PatientCreatedEvent> {
       });
 
       if (created) {
+        await new DeviceRecord(this.client, 'Patient created', patient).createDbEntry(transaction);
         logger.info(`Patient created event handled with id=${data.id}`);
       } else {
         logger.info(`Patient created event ignored, already handled with id=${data.id}`);
