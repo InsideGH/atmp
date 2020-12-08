@@ -18,7 +18,7 @@ export const initEvent = (sequelize: Sequelize) => {
         type: DataTypes.INTEGER,
       },
       data: {
-        type: DataTypes.JSON,
+        type: DataTypes.JSONB,
         allowNull: false,
       },
       subject: {

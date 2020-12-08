@@ -22,13 +22,13 @@ export abstract class RecordPersistor {
     return this;
   }
 
-  public publishId() {
+  public async publishId() {
     if (this.entry) {
       const publisher = new RecordPublisher(this.client, {
         enableDebugLogs: true,
       });
 
-      publisher.publish({
+      await publisher.publish({
         service: this.service,
         id: this.entry.id,
       });

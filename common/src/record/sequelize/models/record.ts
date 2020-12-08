@@ -4,6 +4,7 @@ export class Record extends Model {
   public id!: number;
   public msg!: string;
   public data: any;
+  public dataValues: any;
 }
 
 export const initRecord = (sequelize: Sequelize) => {
@@ -20,7 +21,7 @@ export const initRecord = (sequelize: Sequelize) => {
         allowNull: false,
       },
       data: {
-        type: DataTypes.JSON,
+        type: DataTypes.JSONB,
         allowNull: true,
       },
     },
