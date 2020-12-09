@@ -11,7 +11,7 @@ export class NatsPublisher {
 
   constructor(private stan: Stan, name?: string) {
     this.publisher = new AnyPublisher(stan, {
-      enableDebugLogs: true,
+      enableDebugLogs: false,
       publisherName: name,
     });
   }
