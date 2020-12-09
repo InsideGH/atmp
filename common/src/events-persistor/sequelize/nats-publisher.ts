@@ -24,7 +24,7 @@ export class NatsPublisher {
      * Send a error event instead.
      */
     if (!event) {
-      const errorMessage = `nats-publisher: event with id=${id} not found`;
+      const errorMessage = `[${name}] Event ${id} send FAIL - not found`;
       logger.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -33,7 +33,7 @@ export class NatsPublisher {
      * Already sent for some reason. Probably a cron job managed to get inbetween.
      */
     if (event.sent) {
-      return logger.info(`nats-publisher: event with id=${id} already sent`);
+      return logger.info(`[${name}] Event ${id} send IGNORED - already sent`);
     }
 
     /**

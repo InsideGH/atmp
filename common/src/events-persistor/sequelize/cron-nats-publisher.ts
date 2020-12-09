@@ -12,15 +12,15 @@ export class CronNatsPublisher {
   private publisher: NatsPublisher;
 
   constructor(private config: EventPersistorConfig) {
-    this.publisher = new NatsPublisher(config.client, 'cron');
+    this.publisher = new NatsPublisher(config.client, 'CRON');
   }
 
   start() {
     if (!this.cronJob) {
       this.cronJob = new cron.CronJob(this.config.cron.cronString, async () => {
-        logger.info('cron-nats-publisher: starting');
+        logger.info('[CRON] starting');
         const count = await cronNatsJob(this.publisher);
-        logger.info(`cron-nats-publisher: handled ${count} events`);
+        logger.info(`[CRON] handled ${count} events`);
       });
 
       this.cronJob.start();

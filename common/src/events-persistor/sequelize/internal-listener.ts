@@ -10,7 +10,7 @@ export class InternalListener {
   private publisher: NatsPublisher;
 
   constructor(stan: Stan) {
-    this.publisher = new NatsPublisher(stan, 'direct');
+    this.publisher = new NatsPublisher(stan, 'DIRECT');
   }
 
   listen(internalEventHandler: InternalEventHandler) {
