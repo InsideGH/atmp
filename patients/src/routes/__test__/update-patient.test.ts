@@ -29,7 +29,7 @@ it('returns 400, when updating a non existing patient', async () => {
     })
     .expect(400);
 
-  expect(body.errors[0]).toEqual({ message: 'Patient with id=1 not found' });
+  expect(body.errors[0]).toEqual({ message: '[ REQ ] Patient 1 update FAIL - not found' });
 });
 
 it('returns 200, when updating a patient', async () => {
@@ -58,7 +58,7 @@ it('returns 200, when updating a patient', async () => {
   expect(body.patient).toEqual({
     id: 1,
     name: 'snoop',
-    versionKey: 1,
+    versionKey: 2,
   });
 
   /**
@@ -67,7 +67,7 @@ it('returns 200, when updating a patient', async () => {
   const patient = await models.Patient.findByPk(body.patient.id);
   expect(patient!.id).toEqual(1);
   expect(patient!.name).toEqual('snoop');
-  expect(patient!.versionKey).toEqual(1);
+  expect(patient!.versionKey).toEqual(2);
 
   /**
    * Verify event versionKey in DB.
@@ -82,7 +82,7 @@ it('returns 200, when updating a patient', async () => {
     data: {
       id: 1,
       name: 'snoop',
-      versionKey: 1,
+      versionKey: 2,
     },
   });
 

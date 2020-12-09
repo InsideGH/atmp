@@ -25,7 +25,7 @@ export abstract class RecordPersistor {
   public async publishId() {
     if (this.entry) {
       const publisher = new RecordPublisher(this.client, {
-        enableDebugLogs: true,
+        enableDebugLogs: false,
       });
 
       await publisher.publish({

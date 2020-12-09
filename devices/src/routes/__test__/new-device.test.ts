@@ -27,7 +27,7 @@ it('returns 201, when creating a device', async () => {
   expect(body.device).toEqual({
     id: 1,
     type: 'watch',
-    versionKey: 0,
+    versionKey: 1,
   });
 
   /**
@@ -49,7 +49,7 @@ it('returns 201, when creating a device', async () => {
     data: {
       id: 1,
       type: 'watch',
-      versionKey: 0,
+      versionKey: 1,
     },
   });
 });

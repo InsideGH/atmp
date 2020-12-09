@@ -27,10 +27,13 @@ router.put(
     const transaction = await db.sequelize.transaction();
 
     try {
-      const patient = await models.Patient.findByPk(body.id, { transaction });
+      const patient = await models.Patient.findByPk(body.id, {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
 
       if (!patient) {
-        throw new BadRequestError(`Patient with id=${body.id} not found`);
+        throw new BadRequestError(`[ REQ ] Patient ${body.id} update FAIL - not found`);
       }
 
       patient.name = body.firstName;
@@ -61,7 +64,7 @@ router.put(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`Patient id=${patient.id} updated`);
+      logger.info(`[ REQ ] Patient ${patient.id}.${patient.versionKey} update OK`);
 
       res.status(200).send({
         patient,

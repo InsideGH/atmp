@@ -16,7 +16,7 @@ const setup = async (config: { id: number; name: string }) => {
   const data: PatientCreatedEvent['data'] = {
     id: config.id,
     name: config.name,
-    versionKey: 0,
+    versionKey: 1,
   };
 
   /**
@@ -47,7 +47,7 @@ it('creates a patient', async () => {
   expect(patient).toBeDefined();
   expect(patient!.id).toEqual(666);
   expect(patient!.name).toEqual('kulan');
-  expect(patient!.versionKey).toEqual(0);
+  expect(patient!.versionKey).toEqual(1);
 
   const records = await models.Record.findAll({});
   expect(records.length).toEqual(1);
@@ -71,7 +71,7 @@ it('creates a patient multiple times will be ignore', async () => {
   expect(patient).toBeDefined();
   expect(patient!.id).toEqual(666);
   expect(patient!.name).toEqual('kulan');
-  expect(patient!.versionKey).toEqual(0);
+  expect(patient!.versionKey).toEqual(1);
 });
 
 it('creates many patients', async () => {
@@ -79,7 +79,7 @@ it('creates many patients', async () => {
 
   const promises = [];
 
-  for (let i = 0; i < 1; i++) {
+  for (let i = 1; i < 2; i++) {
     promises.push(
       new Promise<any>(async (resolve, reject) => {
         data.id = i;

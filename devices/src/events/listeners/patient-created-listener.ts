@@ -11,10 +11,10 @@ export class PatientCreatedListener extends Listener<PatientCreatedEvent> {
 
   constructor(client: Stan) {
     super(client, {
-      enableDebugLogs: true,
+      enableDebugLogs: false,
     });
   }
-  async onMessage(data: { id: number; versionKey: number; name: string }, msg: Message) {
+  async onMessage(event: { id: number; versionKey: number; name: string }, msg: Message) {
     const transaction = await db.sequelize.transaction();
 
     try {
@@ -23,28 +23,27 @@ export class PatientCreatedListener extends Listener<PatientCreatedEvent> {
        */
       const [patient, created] = await models.Patient.findOrCreate({
         where: {
-          id: data.id,
+          id: event.id,
         },
         defaults: {
-          id: data.id,
-          name: data.name,
-          versionKey: data.versionKey,
+          id: event.id,
+          name: event.name,
+          versionKey: event.versionKey,
         },
         transaction,
       });
 
       if (created) {
         await new DeviceRecord(this.client, 'Patient created', patient).createDbEntry(transaction);
-        logger.info(`Patient created event handled with id=${data.id}`);
+        logger.info(`[EVENT] Patient ${patient.id}.${patient.versionKey} create OK`);
       } else {
-        logger.info(`Patient created event ignored, already handled with id=${data.id}`);
+        logger.info(`[EVENT] Patient ${patient.id}.${patient.versionKey} create IGNORED`);
       }
 
       await transaction.commit();
       msg.ack();
     } catch (error) {
       await transaction.rollback();
-      logger.error(`Patient created event with id=${data.id} failed with error ${error}`);
       throw error;
     }
   }

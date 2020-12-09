@@ -16,7 +16,7 @@ const setup = async (config: { id: number; name: string }) => {
   const originalPatient = await models.Patient.create({
     id: 666,
     name: 'ponken',
-    versionKey: 0,
+    versionKey: 1,
   });
 
   /**
@@ -24,7 +24,7 @@ const setup = async (config: { id: number; name: string }) => {
    */
   const deletedEvent: PatientDeletedEvent['data'] = {
     id: config.id,
-    versionKey: 0,
+    versionKey: 1,
   };
 
   /**
@@ -52,7 +52,7 @@ it('deletes a patient', async () => {
     name: 'updated_ponken',
   });
 
-  expect(deletedEvent!.versionKey).toEqual(0);
+  expect(deletedEvent!.versionKey).toEqual(1);
   expect(originalPatient!.name).toEqual('ponken');
 
   await listener.onMessage(deletedEvent, msg);
@@ -70,7 +70,7 @@ it('acks the message', async () => {
     name: 'updated_ponken',
   });
 
-  expect(deletedEvent!.versionKey).toEqual(0);
+  expect(deletedEvent!.versionKey).toEqual(1);
   expect(originalPatient!.name).toEqual('ponken');
 
   await listener.onMessage(deletedEvent, msg);
@@ -84,7 +84,7 @@ it('does not delete a patient if version number is wrong', async () => {
     name: 'updated_ponken',
   });
 
-  expect(deletedEvent!.versionKey).toEqual(0);
+  expect(deletedEvent!.versionKey).toEqual(1);
   expect(originalPatient!.name).toEqual('ponken');
 
   deletedEvent.versionKey = 10;
@@ -105,7 +105,7 @@ it('ignore and acks the message if patient id is not found', async () => {
     name: 'updated_ponken',
   });
 
-  expect(deletedEvent!.versionKey).toEqual(0);
+  expect(deletedEvent!.versionKey).toEqual(1);
   expect(originalPatient!.name).toEqual('ponken');
 
   deletedEvent.id = 234;

@@ -11,7 +11,7 @@ it('creates a PatientCreatedEvent event entry', async () => {
     data: {
       id: 1,
       name: 'cool event',
-      versionKey: 0,
+      versionKey: 1,
     },
   };
 
@@ -37,7 +37,7 @@ it('creates a PatientCreatedEvent event entry', async () => {
     data: {
       id: 1,
       name: 'cool event',
-      versionKey: 0,
+      versionKey: 1,
     },
   });
 

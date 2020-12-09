@@ -4,47 +4,48 @@ import {
   validateRequest,
   logger,
   Subjects,
-  PatientCreatedEvent,
   eventPersistor,
+  BadRequestError,
+  DeviceDeletedEvent,
 } from '@thelarsson/acss-common';
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
-import { PatientRecord } from '../record/patient-record';
+import { DeviceRecord } from '../record/device-record';
 import { natsWrapper } from '../nats-wrapper';
+
 const router = express.Router();
 
-router.post(
+router.delete(
   '/',
-  [body('firstName').not().isEmpty().withMessage('patient firstName is required')],
+  [body('id').isNumeric().withMessage('device id is required')],
   validateRequest,
   async (req: Request, res: Response) => {
     const { body } = req;
     const transaction = await db.sequelize.transaction();
 
     try {
-      const patient = await models.Patient.create(
-        {
-          name: body.firstName,
-          versionKey: 1,
-        },
-        { transaction },
-      );
+      const device = await models.Device.findByPk(body.id, { transaction });
 
-      const internalPublisher = eventPersistor.getPublisher<PatientCreatedEvent>({
-        subject: Subjects.PatientCreated,
+      if (!device) {
+        throw new BadRequestError(`Device with id=${body.id} not found`);
+      }
+
+      const internalPublisher = eventPersistor.getPublisher<DeviceDeletedEvent>({
+        subject: Subjects.DeviceDeleted,
         data: {
-          id: patient.id,
-          name: patient.name,
-          versionKey: patient.versionKey,
+          id: device.id,
+          versionKey: device.versionKey,
         },
       });
 
+      await device.destroy({ transaction });
+
       await internalPublisher.createDbEntry(transaction);
 
-      const record = await new PatientRecord(
+      const record = await new DeviceRecord(
         natsWrapper.client,
-        'Patient created',
-        patient,
+        'Device deleted',
+        device,
       ).createDbEntry(transaction);
 
       await transaction.commit();
@@ -52,17 +53,16 @@ router.post(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`[ REQ ] Patient ${patient.id}.${patient.versionKey} create OK`);
+      logger.info(`Device id=${device.id} deleted`);
 
-      res.status(201).send({
-        patient,
+      res.status(200).send({
+        deleted: true,
       });
     } catch (error) {
       await transaction.rollback();
-      logger.error('new-patient', error);
       throw error;
     }
   },
 );
 
-export { router as newPatientRoute };
+export { router as deleteDeviceRoute };

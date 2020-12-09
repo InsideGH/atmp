@@ -24,10 +24,13 @@ router.delete(
     const transaction = await db.sequelize.transaction();
 
     try {
-      const patient = await models.Patient.findByPk(body.id, { transaction });
+      const patient = await models.Patient.findByPk(body.id, {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
 
       if (!patient) {
-        throw new BadRequestError(`Patient with id=${body.id} not found`);
+        throw new BadRequestError(`[ REQ ] Patient ${body.id} delete FAIL - not found`);
       }
 
       const internalPublisher = eventPersistor.getPublisher<PatientDeletedEvent>({
@@ -51,9 +54,10 @@ router.delete(
       await transaction.commit();
 
       internalPublisher.publish();
+
       record.publishId();
 
-      logger.info(`Patient id=${patient.id} deleted`);
+      logger.info(`[ REQ ] Patient ${patient.id}.${patient.versionKey} delete OK`);
 
       res.status(200).send({
         deleted: true,

@@ -16,7 +16,7 @@ const setup = async (config: { id: number; name: string }) => {
   const originalPatient = await models.Patient.create({
     id: 666,
     name: 'ponken',
-    versionKey: 0,
+    versionKey: 1,
   });
 
   /**
@@ -25,7 +25,7 @@ const setup = async (config: { id: number; name: string }) => {
   const updateEventData: PatientUpdatedEvent['data'] = {
     id: config.id,
     name: config.name,
-    versionKey: 1,
+    versionKey: 2,
     age: 1,
   };
 
@@ -54,7 +54,7 @@ it('updates a patient', async () => {
     name: 'updated_ponken',
   });
 
-  expect(updateEventData!.versionKey).toEqual(1);
+  expect(updateEventData!.versionKey).toEqual(2);
   expect(originalPatient!.name).toEqual('ponken');
 
   expect(originalPatient!.name).toEqual('ponken');
@@ -74,7 +74,7 @@ it('acks the message', async () => {
     name: 'updated_ponken',
   });
 
-  expect(updateEventData!.versionKey).toEqual(1);
+  expect(updateEventData!.versionKey).toEqual(2);
   expect(originalPatient!.name).toEqual('ponken');
 
   await listener.onMessage(updateEventData, msg);
@@ -88,7 +88,7 @@ it('does not updates a patient if version number is wrong', async () => {
     name: 'updated_ponken',
   });
 
-  expect(updateEventData!.versionKey).toEqual(1);
+  expect(updateEventData!.versionKey).toEqual(2);
   expect(originalPatient!.name).toEqual('ponken');
 
   updateEventData.versionKey = 10;
@@ -109,7 +109,7 @@ it('ignore and acks the message if patient id is not found', async () => {
     name: 'updated_ponken',
   });
 
-  expect(updateEventData!.versionKey).toEqual(1);
+  expect(updateEventData!.versionKey).toEqual(2);
   expect(originalPatient!.name).toEqual('ponken');
 
   updateEventData.id = 234;
@@ -130,32 +130,32 @@ it('handles events out of order', async () => {
     name: 'update1_ponken',
   });
 
-  expect(updateEventData!.versionKey).toEqual(1);
+  expect(updateEventData!.versionKey).toEqual(2);
   expect(originalPatient!.name).toEqual('ponken');
 
   /**
-   * Try with version 2 first instead of version 1
+   * Try with version 3 first instead of version 2
    */
-  updateEventData.versionKey = 2;
+  updateEventData.versionKey = 3;
   try {
     await listener.onMessage(updateEventData, msg);
   } catch (error) {}
 
   const update2 = await models.Patient.findByPk(originalPatient.id);
   expect(update2!.name).toEqual('ponken');
-  expect(update2!.versionKey).toEqual(0);
+  expect(update2!.versionKey).toEqual(1);
   expect(msg.ack).not.toHaveBeenCalled();
 
   /**
-   * Try with version 1 now
+   * Try with version 2 now
    */
-  updateEventData.versionKey = 1;
+  updateEventData.versionKey = 2;
   try {
     await listener.onMessage(updateEventData, msg);
   } catch (error) {}
 
   const update1 = await models.Patient.findByPk(originalPatient.id);
   expect(update1!.name).toEqual('update1_ponken');
-  expect(update1!.versionKey).toEqual(1);
+  expect(update1!.versionKey).toEqual(2);
   expect(msg.ack).toHaveBeenCalled();
 });

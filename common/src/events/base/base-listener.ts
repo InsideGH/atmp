@@ -71,7 +71,7 @@ export abstract class Listener<T extends BaseEvent> {
       try {
         await this.onMessage(parsedData, msg);
       } catch (error) {
-        logger.error(`base-listener catched: ${error}`);
+        logger.error(`[LISTENER][${this.queueGroupName}]: ${error}`);
       }
     });
   }
