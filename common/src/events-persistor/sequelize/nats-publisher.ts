@@ -33,7 +33,9 @@ export class NatsPublisher {
      * Already sent for some reason. Probably a cron job managed to get inbetween.
      */
     if (event.sent) {
-      return logger.info(`[${this.name}] Event ${id} send IGNORED - already sent`);
+      return logger.info(
+        `[${this.name}] Event data.${event.data.id}.${event.data.versionKey} send IGNORED - already sent`,
+      );
     }
 
     /**
@@ -58,5 +60,7 @@ export class NatsPublisher {
      */
     event.sent = true;
     await event.save();
+
+    logger.info(`[${this.name}] Event data.${event.data.id}.${event.data.versionKey} send OK`);
   }
 }
