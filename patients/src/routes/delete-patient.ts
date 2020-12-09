@@ -37,7 +37,7 @@ router.delete(
         subject: Subjects.PatientDeleted,
         data: {
           id: patient.id,
-          versionKey: patient.versionKey,
+          versionKey: patient.versionKey + 1,
         },
       });
 
@@ -54,7 +54,6 @@ router.delete(
       await transaction.commit();
 
       internalPublisher.publish();
-
       record.publishId();
 
       logger.info(`[ REQ ] Patient ${patient.id}.${patient.versionKey} delete OK`);

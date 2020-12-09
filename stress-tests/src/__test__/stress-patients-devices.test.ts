@@ -22,7 +22,7 @@ it('should respect versionKey while handling simultanious requests', async () =>
     promises.push(
       new Promise<void>(async (resolve) => {
         const newName = `${create.patient.name} - update ${String.fromCharCode(96 + i)}`;
-        await global.fetch('http://admin.acss.dev/api/patients', {
+        const foo = await global.fetch('http://admin.acss.dev/api/patients', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -35,18 +35,20 @@ it('should respect versionKey while handling simultanious requests', async () =>
     );
   }
 
+
   /**
    * Delete the patient
    */
-  // await global.fetch('http://admin.acss.dev/api/patients', {
-  //   method: 'DELETE',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({
-  //     id: create.patient.id,
-  //   }),
-  // });
+  await global.fetch('http://admin.acss.dev/api/patients', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: create.patient.id,
+    }),
+  });
 
   await Promise.all(promises);
+
 });
 
 // module is any file which contains an import or export

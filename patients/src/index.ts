@@ -89,7 +89,7 @@ const boot = async () => {
     eventPersistor.start({
       client: natsWrapper.client,
       cron: {
-        cronString: '0 0 */1 * * *',
+        cronString: '*/2 * * * * *',
       },
     });
   } catch (error) {

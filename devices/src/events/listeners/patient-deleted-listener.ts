@@ -27,12 +27,17 @@ export class PatientDeletedListener extends Listener<PatientDeletedEvent> {
         where: {
           id: event.id,
         },
+        paranoid: false,
         transaction,
         lock: transaction.LOCK.UPDATE,
       });
 
       if (patient) {
-        if (event.versionKey - patient.versionKey == 0) {
+        if (event.versionKey <= patient.versionKey) {
+          logger.info(
+            `[EVENT] Patient ${patient.id}.${patient.versionKey} delete IGNORED - old version ${event.id}.${event.versionKey}`,
+          );
+        } else if (event.versionKey - patient.versionKey == 1) {
           await patient.destroy({ transaction });
           await new DeviceRecord(this.client, 'Patient deleted', patient).createDbEntry(
             transaction,

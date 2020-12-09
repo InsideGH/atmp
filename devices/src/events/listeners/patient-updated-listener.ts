@@ -24,12 +24,13 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
     msg: Message,
   ): Promise<void> {
     const transaction = await db.sequelize.transaction();
-
+    
     try {
       const patient = await models.Patient.findOne({
         where: {
           id: data.id,
         },
+        paranoid: false,
         transaction,
         lock: transaction.LOCK.UPDATE,
       });
@@ -37,7 +38,7 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
       if (patient) {
         if (data.versionKey <= patient.versionKey) {
           logger.info(
-            `[EVENT] Patient ${data.id}.${data.versionKey} update IGNORED - already updated version ${data.id}.${data.versionKey}`,
+            `[EVENT] Patient ${patient.id}.${patient.versionKey} update IGNORED - old version ${data.id}.${data.versionKey}`,
           );
         } else if (data.versionKey - patient.versionKey == 1) {
           await patient.update(
@@ -57,7 +58,9 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
           );
         }
       } else {
-        logger.info(`[EVENT] Patient ${data.id}.${data.versionKey} update IGNORED - not found`);
+        throw new Error(
+          `[EVENT] Patient update FAIL - not exist to update with event ${data.id}.${data.versionKey}`,
+        );
       }
 
       await transaction.commit();
@@ -69,3 +72,30 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
     }
   }
 }
+
+// enum StrategyDecision {
+//   IGNORE,
+//   UPDATE,
+//   FAIL,
+// }
+
+// class EventDbStrategy {
+//   static update(
+//     event: { id: number; versionKey: number },
+//     curr: { id: number; versionKey: number },
+//   ): StrategyDecision {
+//     if (!curr) {
+//       return StrategyDecision.FAIL;
+//     }
+
+//     if (event.versionKey <= curr.versionKey) {
+//       return StrategyDecision.IGNORE;
+//     }
+
+//     if (event.versionKey - curr.versionKey == 1) {
+//       return StrategyDecision.UPDATE;
+//     }
+
+//     return StrategyDecision.FAIL;
+//   }
+// }
