@@ -1,7 +1,7 @@
 import faker from 'faker';
 
 it('should respect versionKey while handling simultanious requests', async () => {
-  const NBR_OF_UPDATED = 10;
+  const NBR_OF_UPDATED = 19;
   /**
    * Create ONE patient
    */
@@ -38,13 +38,13 @@ it('should respect versionKey while handling simultanious requests', async () =>
   /**
    * Delete the patient
    */
-  await global.fetch('http://admin.acss.dev/api/patients', {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      id: create.patient.id,
-    }),
-  });
+  // await global.fetch('http://admin.acss.dev/api/patients', {
+  //   method: 'DELETE',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({
+  //     id: create.patient.id,
+  //   }),
+  // });
 
   await Promise.all(promises);
 });

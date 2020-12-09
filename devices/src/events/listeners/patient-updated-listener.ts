@@ -35,7 +35,11 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
       });
 
       if (patient) {
-        if (data.versionKey - patient.versionKey == 1) {
+        if (data.versionKey <= patient.versionKey) {
+          logger.info(
+            `[EVENT] Patient ${data.id}.${data.versionKey} update IGNORED - already updated version ${data.id}.${data.versionKey}`,
+          );
+        } else if (data.versionKey - patient.versionKey == 1) {
           await patient.update(
             {
               versionKey: data.versionKey,
