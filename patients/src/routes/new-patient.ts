@@ -25,7 +25,7 @@ router.post(
       const patient = await models.Patient.create(
         {
           name: body.firstName,
-          versionKey: 0,
+          versionKey: 1,
         },
         { transaction },
       );
@@ -52,7 +52,7 @@ router.post(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`Patient id=${patient.id} created`);
+      logger.info(`[ REQ ] Patient id=${patient.id}.${patient.versionKey} created`);
 
       res.status(201).send({
         patient,

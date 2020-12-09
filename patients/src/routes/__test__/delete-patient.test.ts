@@ -63,7 +63,7 @@ it('returns 200, when deleting a patient', async () => {
     sent: false,
     data: {
       id: 1,
-      versionKey: 0,
+      versionKey: 1,
     },
   });
 

@@ -26,7 +26,7 @@ router.post(
       const device = await models.Device.create(
         {
           type: body.type,
-          versionKey: 0,
+          versionKey: 1,
         },
         { transaction },
       );

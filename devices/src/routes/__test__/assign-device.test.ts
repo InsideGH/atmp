@@ -20,7 +20,7 @@ it('returns 201, when creating a device', async () => {
   await models.Patient.create({
     id: 1,
     name: 'gunnar',
-    versionKey: 0,
+    versionKey: 1,
   });
 
   /**
@@ -39,13 +39,13 @@ it('returns 201, when creating a device', async () => {
   expect(body.patient).toEqual({
     id: 1,
     name: 'gunnar',
-    versionKey: 0,
+    versionKey: 1,
   });
 
   expect(body.device).toEqual({
     id: 1,
     type: 'klocka',
-    versionKey: 1,
+    versionKey: 2,
     PatientId: 1,
   });
 
@@ -62,7 +62,7 @@ it('returns 201, when creating a device', async () => {
     data: {
       id: 1,
       type: 'klocka',
-      versionKey: 0,
+      versionKey: 1,
     },
   });
   expect(events[1].dataValues).toEqual({
@@ -72,7 +72,7 @@ it('returns 201, when creating a device', async () => {
     data: {
       id: 1,
       type: 'klocka',
-      versionKey: 1,
+      versionKey: 2,
       patientId: 1
     },
   });

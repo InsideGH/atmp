@@ -11,7 +11,7 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
 
   constructor(client: Stan) {
     super(client, {
-      enableDebugLogs: true,
+      enableDebugLogs: false,
     });
   }
 
@@ -45,15 +45,14 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
           await new DeviceRecord(this.client, 'Patient updated', patient).createDbEntry(
             transaction,
           );
-
-          logger.info(`Patient updated event handled with id=${data.id}`);
+          logger.info(`[EVENT] Patient id=${patient.id}.${patient.versionKey} updated`);
         } else {
           throw new Error(
-            `Can't updated patient with id=${data.id} versionKey=${data.versionKey}, not found`,
+            `Can't update patient with id=${data.id} versionKey=${data.versionKey}, not found`,
           );
         }
       } else {
-        logger.info(`Patient updated event ignore, pating with id=${data.id} not found`);
+        logger.info(`[EVENT] Patient id=${data.id}.${data.versionKey} update ignored, not found`);
       }
 
       await transaction.commit();
@@ -61,7 +60,6 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
       msg.ack();
     } catch (error) {
       await transaction.rollback();
-      logger.error(`Patient updated event with id=${data.id} failed with error ${error}`);
       throw error;
     }
   }

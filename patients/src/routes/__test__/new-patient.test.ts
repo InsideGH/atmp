@@ -27,7 +27,7 @@ it('returns 201, when creating a patient', async () => {
   expect(body.patient).toEqual({
     id: 1,
     name: 'cool',
-    versionKey: 0,
+    versionKey: 1,
   });
 
   /**
@@ -49,7 +49,7 @@ it('returns 201, when creating a patient', async () => {
     data: {
       id: 1,
       name: 'cool',
-      versionKey: 0,
+      versionKey: 1,
     },
   });
 
