@@ -28,6 +28,7 @@ export class PatientDeletedListener extends Listener<PatientDeletedEvent> {
           id: event.id,
         },
         transaction,
+        lock: transaction.LOCK.UPDATE,
       });
 
       if (patient) {
@@ -36,14 +37,14 @@ export class PatientDeletedListener extends Listener<PatientDeletedEvent> {
           await new DeviceRecord(this.client, 'Patient deleted', patient).createDbEntry(
             transaction,
           );
-          logger.info(`[EVENT] Patient id=${patient.id}.${patient.versionKey} deleted`);
+          logger.info(`[EVENT] Patient ${patient.id}.${patient.versionKey} delete OK`);
         } else {
           throw new Error(
-            `Can't delete patient id=${patient.id}.${patient.versionKey}, event=${event.id}.${event.versionKey}`,
+            `[EVENT] Patient ${patient.id}.${patient.versionKey} delete FAIL - wrong version ${event.id}.${event.versionKey}`,
           );
         }
       } else {
-        logger.info(`[EVENT] Patient id=${event.id}.${event.versionKey} delete ignored, not found`);
+        logger.info(`[EVENT] Patient ${event.id}.${event.versionKey} delete IGNORED - not found`);
       }
 
       await transaction.commit();

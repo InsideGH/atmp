@@ -33,8 +33,7 @@ router.put(
       });
 
       if (!patient) {
-        logger.info(`[ REQ ] Update failed, patient with id=${body.id} not found`);
-        throw new BadRequestError(`Update failed, patient with id=${body.id} not found`);
+        throw new BadRequestError(`[ REQ ] Patient ${body.id} update FAIL - not found`);
       }
 
       patient.name = body.firstName;
@@ -65,7 +64,7 @@ router.put(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`[ REQ ] Patient id=${patient.id}.${patient.versionKey} updated`);
+      logger.info(`[ REQ ] Patient ${patient.id}.${patient.versionKey} update OK`);
 
       res.status(200).send({
         patient,

@@ -52,7 +52,7 @@ router.post(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`[ REQ ] Patient id=${patient.id}.${patient.versionKey} created`);
+      logger.info(`[ REQ ] Patient ${patient.id}.${patient.versionKey} create OK`);
 
       res.status(201).send({
         patient,

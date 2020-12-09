@@ -31,6 +31,7 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
           id: data.id,
         },
         transaction,
+        lock: transaction.LOCK.UPDATE,
       });
 
       if (patient) {
@@ -45,14 +46,14 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
           await new DeviceRecord(this.client, 'Patient updated', patient).createDbEntry(
             transaction,
           );
-          logger.info(`[EVENT] Patient id=${patient.id}.${patient.versionKey} updated`);
+          logger.info(`[EVENT] Patient ${patient.id}.${patient.versionKey} update OK`);
         } else {
           throw new Error(
-            `Can't update patient with id=${data.id} versionKey=${data.versionKey}, not found`,
+            `[EVENT] Patient ${patient.id}.${patient.versionKey} update FAIL - wrong version ${data.id}.${data.versionKey}`,
           );
         }
       } else {
-        logger.info(`[EVENT] Patient id=${data.id}.${data.versionKey} update ignored, not found`);
+        logger.info(`[EVENT] Patient ${data.id}.${data.versionKey} update IGNORED - not found`);
       }
 
       await transaction.commit();

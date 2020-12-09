@@ -35,16 +35,15 @@ export class PatientCreatedListener extends Listener<PatientCreatedEvent> {
 
       if (created) {
         await new DeviceRecord(this.client, 'Patient created', patient).createDbEntry(transaction);
-        logger.info(`[EVENT] Patient id=${patient.id}.${patient.versionKey} created`);
+        logger.info(`[EVENT] Patient ${patient.id}.${patient.versionKey} create OK`);
       } else {
-        logger.info(`[EVENT] Patient id=${patient.id}.${patient.versionKey} create ignored`);
+        logger.info(`[EVENT] Patient ${patient.id}.${patient.versionKey} create IGNORED`);
       }
 
       await transaction.commit();
       msg.ack();
     } catch (error) {
       await transaction.rollback();
-      logger.error(error, `Patient created event with id=${event.id}.${event.versionKey} failed`);
       throw error;
     }
   }

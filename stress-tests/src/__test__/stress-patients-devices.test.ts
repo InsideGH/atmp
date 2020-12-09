@@ -1,6 +1,7 @@
 import faker from 'faker';
 
 it('should respect versionKey while handling simultanious requests', async () => {
+  const NBR_OF_UPDATED = 10;
   /**
    * Create ONE patient
    */
@@ -15,26 +16,13 @@ it('should respect versionKey while handling simultanious requests', async () =>
 
   /**
    * Update the patient SIMULATANIOUSLY
-   * The transaction with lock update makes sure that increasing the versionKey is done
-   * at 'each' request.
    */
   const promises = [];
-  for (let i = 1; i < 20; i++) {
-    // if (i == 6) {
-    //   promises.push(new Promise(async (resolve) => {
-    //     const del = await global.fetch('http://admin.acss.dev/api/patients', {
-    //       method: 'DELETE',
-    //       headers: { 'Content-Type': 'application/json' },
-    //       body: JSON.stringify({
-    //         id: create.patient.id,
-    //       }),
-    //     });      
-    //   }));
-    // }
+  for (let i = 1; i <= NBR_OF_UPDATED; i++) {
     promises.push(
       new Promise<void>(async (resolve) => {
-        const newName = `${create.patient.name} - update ${i}`;
-        const update = await global.fetch('http://admin.acss.dev/api/patients', {
+        const newName = `${create.patient.name} - update ${String.fromCharCode(96 + i)}`;
+        await global.fetch('http://admin.acss.dev/api/patients', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -42,22 +30,23 @@ it('should respect versionKey while handling simultanious requests', async () =>
             firstName: newName,
           }),
         });
-        expect(update.patient.name).toEqual(newName);
         resolve();
       }),
     );
   }
 
-  // await Promise.all(promises);
-
-  const del = await global.fetch('http://admin.acss.dev/api/patients', {
+  /**
+   * Delete the patient
+   */
+  await global.fetch('http://admin.acss.dev/api/patients', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       id: create.patient.id,
     }),
   });
-  expect(del.deleted).toBeTruthy();
+
+  await Promise.all(promises);
 });
 
 // module is any file which contains an import or export
