@@ -1,26 +1,30 @@
 install:
 	(cd common && npm i)
-	(cd patients && npm i)
-	(cd devices && npm i)
-	(cd system && npm i)
+	(cd services/patients && npm i)
+	(cd services/devices && npm i)
+	(cd services/system && npm i)
 
 build:
 	(cd common && npm run build)
-	(cd patients && npm run build)
-	(cd devices && npm run build)
-	(cd system && npm run build)
+	(cd services/patients && npm run build)
+	(cd services/devices && npm run build)
+	(cd services/system && npm run build)
 
 lint:
 	(cd common && npm run lint)
-	(cd patients && npm run lint)
-	(cd devices && npm run lint)
-	(cd system && npm run lint)
+	(cd services/patients && npm run lint)
+	(cd services/devices && npm run lint)
+	(cd services/system && npm run lint)
 
+.PHONY: test
 test:
 	(cd common && npm run "test:ci")
-	(cd patients && npm run "test:ci")
-	(cd devices && npm run "test:ci")
-	(cd system && npm run "test:ci")
+	(cd services/patients && npm run "test:ci")
+	(cd services/devices && npm run "test:ci")
+	(cd services/system && npm run "test:ci")
+
+stress:
+	(cd test/stress-tests && npm run test:ci)
 
 testdb:
 	- docker rm testdb
@@ -32,13 +36,13 @@ common_pub:
 	(cd common && npm run pub)
 
 bump_patients:
-	(cd patients && ncu --filter @thelarsson/acss-common -u && npm i)
+	(cd services/patients && ncu --filter @thelarsson/acss-common -u && npm i)
 
 bump_devices:
-	(cd devices && ncu --filter @thelarsson/acss-common -u && npm i)
+	(cd services/devices && ncu --filter @thelarsson/acss-common -u && npm i)
 
 bump_system:
-	(cd system && ncu --filter @thelarsson/acss-common -u && npm i)
+	(cd services/system && ncu --filter @thelarsson/acss-common -u && npm i)
 
 bump_all: bump_patients bump_devices bump_system
 
@@ -52,7 +56,7 @@ minikube_delete:
 	minikube delete --all --purge
 
 init_nats_db:
-	cat nats-streaming-server/scripts/postgres.db.sql | kubectl exec -it nats-db-depl-64555d7c49-lmz2p -- psql -h 127.0.0.1 nats_streaming 1
+	cat setup/nats-streaming-server/scripts/postgres.db.sql | kubectl exec -it nats-db-depl-64555d7c49-lmz2p -- psql -h 127.0.0.1 nats_streaming 1
 
 init:
 	# config maps
@@ -79,7 +83,7 @@ init:
     --type=kubernetes.io/dockerconfigjson
 	
 volumes:
-	# create a directory here to store stuff
+	# create a directory here to store stuff, survives minikube deletion
 	mkdir -p $(PWD)/data
 
 dev: volumes init
