@@ -37,7 +37,6 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
         where: {
           id: event.id,
         },
-        paranoid: false,
         transaction,
         lock: transaction.LOCK.UPDATE,
       });
