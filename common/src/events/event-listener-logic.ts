@@ -1,23 +1,39 @@
 export enum Decision {
-  UPDATE_AND_ACK,
+  HANDLE_AND_ACK,
   ACK,
   NO_ACK,
 }
 
 export class EventListenerLogic {
   static decision(event: { versionKey: number }, curr: { versionKey: number } | null): Decision {
+    /**
+     * OUT OF ORDER
+     *
+     * Update event happens BEFORE create event. We must NO_ACK, to process the event later.
+     */
     if (!curr) {
       return Decision.NO_ACK;
     }
 
+    /**
+     * DUPLICATION OF EVENTS
+     *
+     * The event version is older or equal to the database entry. It must be a duplicated event.
+     */
     if (event.versionKey <= curr.versionKey) {
       return Decision.ACK;
     }
 
+    /**
+     * The event version is one (1) ahead of the database entry. We handle the event and ack.
+     */
     if (event.versionKey - curr.versionKey == 1) {
-      return Decision.UPDATE_AND_ACK;
+      return Decision.HANDLE_AND_ACK;
     }
 
+    /**
+     * The event version is two or more steps ahead of the database entry. We NO_ACK, to process the event later.
+     */
     return Decision.NO_ACK;
   }
 }

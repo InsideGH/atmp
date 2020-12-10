@@ -46,7 +46,7 @@ it('return ACK when event version is older or same as current', () => {
   expect(decision).toEqual(Decision.ACK);
 });
 
-it('return UPDATE_AND_ACK when event version is 1 step ahead of current version', () => {
+it('return HANDLE_AND_ACK when event version is 1 step ahead of current version', () => {
   const event = {
     versionKey: 11,
   };
@@ -55,5 +55,5 @@ it('return UPDATE_AND_ACK when event version is 1 step ahead of current version'
   };
 
   const decision = EventListenerLogic.decision(event, curr);
-  expect(decision).toEqual(Decision.UPDATE_AND_ACK);
+  expect(decision).toEqual(Decision.HANDLE_AND_ACK);
 });
