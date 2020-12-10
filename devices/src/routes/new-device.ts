@@ -53,7 +53,7 @@ router.post(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`Device id=${device.id} created`);
+      logger.info(`[ REQ ] Device create OK - ${device.id} created`);
 
       res.status(201).send({
         device,

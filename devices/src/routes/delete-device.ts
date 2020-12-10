@@ -27,7 +27,7 @@ router.delete(
       const device = await models.Device.findByPk(body.id, { transaction });
 
       if (!device) {
-        throw new BadRequestError(`Device with id=${body.id} not found`);
+        throw new BadRequestError(`[ REQ ] Device delete FAIL - ${body.id} not found`);
       }
 
       const internalPublisher = eventPersistor.getPublisher<DeviceDeletedEvent>({
@@ -53,7 +53,7 @@ router.delete(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`Device id=${device.id} deleted`);
+      logger.info(`[ REQ ] Device delete OK - ${device.id} deleted`);
 
       res.status(200).send({
         deleted: true,

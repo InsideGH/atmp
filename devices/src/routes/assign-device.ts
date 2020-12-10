@@ -32,12 +32,12 @@ router.post(
     try {
       const device = await models.Device.findByPk(deviceId, { transaction });
       if (!device) {
-        throw new BadRequestError(`Device with id=${deviceId} not found`);
+        throw new BadRequestError(`[ REQ ] Device assign FAIL - device ${deviceId} not found`);
       }
 
       const patient = await models.Patient.findByPk(patientId, { transaction });
       if (!patient) {
-        throw new BadRequestError(`Patient with id=${patientId} not found`);
+        throw new BadRequestError(`[ REQ ] Device assign FAIL - patient ${patientId} not found`);
       }
 
       await device.setPatient(patient, { transaction });
@@ -72,7 +72,7 @@ router.post(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`Device id=${device.id} assigned to patiend id=${patient.id}`);
+      logger.info(`[ REQ ] Device assign OK - ${device.id} assigned to ${patient.id}`);
 
       res.status(201).send({ patient, device });
     } catch (error) {

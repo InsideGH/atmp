@@ -30,7 +30,7 @@ router.delete(
       });
 
       if (!patient) {
-        throw new BadRequestError(`[ REQ ] Patient ${body.id} delete FAIL - not found`);
+        throw new BadRequestError(`[ REQ ] Patient delete FAIL - ${body.id} not found`);
       }
 
       const internalPublisher = eventPersistor.getPublisher<PatientDeletedEvent>({
@@ -56,7 +56,7 @@ router.delete(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`[ REQ ] Patient ${patient.id}.${patient.versionKey} delete OK`);
+      logger.info(`[ REQ ] Patient delete OK - ${patient.id}.${patient.versionKey}`);
 
       res.status(200).send({
         deleted: true,
