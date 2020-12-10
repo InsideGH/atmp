@@ -1,4 +1,11 @@
-import { PatientUpdatedEvent, Subjects, logger, Listener } from '@thelarsson/acss-common';
+import {
+  PatientUpdatedEvent,
+  Subjects,
+  logger,
+  Listener,
+  Decision,
+  EventListenerLogic,
+} from '@thelarsson/acss-common';
 import { Message, Stan } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import db from '../../sequelize/database';
@@ -20,7 +27,7 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
    *
    */
   async onMessage(
-    data: { id: number; versionKey: number; name: string },
+    event: { id: number; versionKey: number; name: string },
     msg: Message,
   ): Promise<void> {
     const transaction = await db.sequelize.transaction();
@@ -28,18 +35,20 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
     try {
       const patient = await models.Patient.findOne({
         where: {
-          id: data.id,
+          id: event.id,
         },
+        paranoid: false,
         transaction,
         lock: transaction.LOCK.UPDATE,
       });
 
-      if (patient) {
-        if (data.versionKey - patient.versionKey == 1) {
+      const decision = EventListenerLogic.decision(event, patient);
+      if (decision == Decision.HANDLE_AND_ACK) {
+        if (patient) {
           await patient.update(
             {
-              versionKey: data.versionKey,
-              name: data.name,
+              versionKey: event.versionKey,
+              name: event.name,
             },
             { transaction },
           );
@@ -47,13 +56,9 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
             transaction,
           );
           logger.info(`[EVENT] Patient ${patient.id}.${patient.versionKey} update OK`);
-        } else {
-          throw new Error(
-            `[EVENT] Patient ${patient.id}.${patient.versionKey} update FAIL - wrong version ${data.id}.${data.versionKey}`,
-          );
         }
-      } else {
-        logger.info(`[EVENT] Patient ${data.id}.${data.versionKey} update IGNORED - not found`);
+      } else if (decision == Decision.NO_ACK) {
+        throw new Error(`[EVENT] Patient update NO_ACK - ${event.id}.${event.versionKey}`);
       }
 
       await transaction.commit();

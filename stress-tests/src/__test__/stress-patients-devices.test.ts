@@ -1,7 +1,7 @@
 import faker from 'faker';
 
 it('should respect versionKey while handling simultanious requests', async () => {
-  const NBR_OF_UPDATED = 10;
+  const NBR_OF_UPDATED = 19;
   /**
    * Create ONE patient
    */
@@ -22,7 +22,7 @@ it('should respect versionKey while handling simultanious requests', async () =>
     promises.push(
       new Promise<void>(async (resolve) => {
         const newName = `${create.patient.name} - update ${String.fromCharCode(96 + i)}`;
-        await global.fetch('http://admin.acss.dev/api/patients', {
+        const foo = await global.fetch('http://admin.acss.dev/api/patients', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -35,8 +35,9 @@ it('should respect versionKey while handling simultanious requests', async () =>
     );
   }
 
+
   /**
-   * Delete the patient
+   * AND add a delete patient somewhere along the way of the updates...
    */
   await global.fetch('http://admin.acss.dev/api/patients', {
     method: 'DELETE',
@@ -47,6 +48,7 @@ it('should respect versionKey while handling simultanious requests', async () =>
   });
 
   await Promise.all(promises);
+
 });
 
 // module is any file which contains an import or export

@@ -9,7 +9,7 @@ import { Stan } from 'node-nats-streaming';
 export class NatsPublisher {
   private publisher: AnyPublisher;
 
-  constructor(private stan: Stan, name?: string) {
+  constructor(private stan: Stan, private name: string) {
     this.publisher = new AnyPublisher(stan, {
       enableDebugLogs: false,
       publisherName: name,
@@ -24,7 +24,7 @@ export class NatsPublisher {
      * Send a error event instead.
      */
     if (!event) {
-      const errorMessage = `nats-publisher: event with id=${id} not found`;
+      const errorMessage = `[${this.name}] Event ${id} send FAIL - not found`;
       logger.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -33,7 +33,9 @@ export class NatsPublisher {
      * Already sent for some reason. Probably a cron job managed to get inbetween.
      */
     if (event.sent) {
-      return logger.info(`nats-publisher: event with id=${id} already sent`);
+      return logger.info(
+        `[${this.name}] Event data.${event.data.id}.${event.data.versionKey} send IGNORED - already sent`,
+      );
     }
 
     /**
@@ -58,5 +60,7 @@ export class NatsPublisher {
      */
     event.sent = true;
     await event.save();
+
+    logger.info(`[${this.name}] Event data.${event.data.id}.${event.data.versionKey} send OK`);
   }
 }

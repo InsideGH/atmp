@@ -28,7 +28,7 @@ export class AnyPublisher {
       enableDebugLogs: false,
     },
   ) {
-    this.name = config.publisherName ? `any-publisher-${config.publisherName}` : '';
+    this.name = `any-publisher-${config.publisherName}`;
   }
 
   /**

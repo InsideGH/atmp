@@ -51,8 +51,8 @@ it('returns 200, when deleting a patient', async () => {
   expect(patient).toBeNull();
 
   /**
-   * Verify event versionKey in DB. Since we only created, not updated, the version key is
-   * 0.
+   * Verify event versionKey in DB. Since we created (v1), deleted (v2), the version key is
+   * 2.
    */
   const events = await models.Event.findAll({});
   global.stripKeys(events, ['createdAt', 'updatedAt', 'deletedAt', 'age']);
@@ -63,7 +63,7 @@ it('returns 200, when deleting a patient', async () => {
     sent: false,
     data: {
       id: 1,
-      versionKey: 1,
+      versionKey: 2,
     },
   });
 
