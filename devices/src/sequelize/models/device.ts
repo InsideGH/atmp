@@ -15,13 +15,17 @@ import { Patient } from './patient';
 /**
  * Declare the association, this will make us never forget the transaction in second argument.
  */
-declare function setPatient(x: Patient, options: { transaction: Transaction }): Promise<any>;
+declare function setPatient(x: Patient | null, options: { transaction: Transaction }): Promise<any>;
+declare function getPatient(options: { transaction: Transaction }): Promise<Patient>;
 
 export class Device extends Model {
   public id!: number;
   public type!: string;
   public versionKey!: number;
   public setPatient!: typeof setPatient;
+  public getPatient!: typeof getPatient;
+  public PatientId!: number;
+  public Patient!: Patient;
   public dataValues: any;
 }
 

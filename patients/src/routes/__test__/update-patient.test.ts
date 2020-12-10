@@ -29,7 +29,7 @@ it('returns 400, when updating a non existing patient', async () => {
     })
     .expect(400);
 
-  expect(body.errors[0]).toEqual({ message: '[ REQ ] Patient 1 update FAIL - not found' });
+  expect(body.errors[0]).toEqual({ message: '[ REQ ] Patient update FAIL - 1 not found' });
 });
 
 it('returns 200, when updating a patient', async () => {

@@ -1,6 +1,6 @@
 import faker from 'faker';
 
-it('should respect versionKey while handling simultanious requests', async () => {
+it('should respect versionKey while handling simultanious patient update requests', async () => {
   const NBR_OF_UPDATED = 19;
   /**
    * Create ONE patient
@@ -35,7 +35,6 @@ it('should respect versionKey while handling simultanious requests', async () =>
     );
   }
 
-
   /**
    * AND add a delete patient somewhere along the way of the updates...
    */
@@ -49,7 +48,5 @@ it('should respect versionKey while handling simultanious requests', async () =>
 
   await Promise.all(promises);
 
+  
 });
-
-// module is any file which contains an import or export
-export {};

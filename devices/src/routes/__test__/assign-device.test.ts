@@ -3,7 +3,7 @@ import request from 'supertest';
 import { app } from '../../app';
 import { models } from '../../sequelize/models';
 
-it('returns 201, when creating a device', async () => {
+it('returns 200, when assign device correctly', async () => {
   /**
    * Make the request to create a device.
    */
@@ -32,7 +32,7 @@ it('returns 201, when creating a device', async () => {
       deviceId: 1,
       patientId: 1,
     })
-    .expect(201);
+    .expect(200);
 
   global.stripKeys(body, ['createdAt', 'updatedAt', 'deletedAt', 'age']);
 
@@ -73,7 +73,120 @@ it('returns 201, when creating a device', async () => {
       id: 1,
       type: 'klocka',
       versionKey: 2,
-      patientId: 1
+      patientId: 1,
     },
   });
+});
+
+it('returns 400, when assign same multiple times', async () => {
+  /**
+   * Make the request to create a device.
+   */
+  const deviceRes = await request(app)
+    .post('/')
+    .send({
+      type: 'klocka',
+    })
+    .expect(201);
+
+  /**
+   * Create the patient
+   */
+  await models.Patient.create({
+    id: 1,
+    name: 'gunnar',
+    versionKey: 1,
+  });
+
+  /**
+   * Assign device to patient.
+   */
+  await request(app)
+    .post('/assign')
+    .send({
+      deviceId: 1,
+      patientId: 1,
+    })
+    .expect(200);
+
+  /**
+   * Assign device to patient.
+   */
+  const { body } = await request(app)
+    .post('/assign')
+    .send({
+      deviceId: 1,
+      patientId: 1,
+    })
+    .expect(400);
+
+  expect(body.errors[0].message).toContain('already assigned');
+});
+
+it('returns 400, when non existing deviceId', async () => {
+  /**
+   * Make the request to create a device.
+   */
+  const deviceRes = await request(app)
+    .post('/')
+    .send({
+      type: 'klocka',
+    })
+    .expect(201);
+
+  /**
+   * Create the patient
+   */
+  await models.Patient.create({
+    id: 1,
+    name: 'gunnar',
+    versionKey: 1,
+  });
+
+  /**
+   * Assign device to patient.
+   */
+  const { body } = await request(app)
+    .post('/assign')
+    .send({
+      deviceId: 1111,
+      patientId: 1,
+    })
+    .expect(400);
+
+  expect(body.errors[0].message).toContain('device 1111 not found');
+});
+
+it('returns 400, when non existing patientId', async () => {
+  /**
+   * Make the request to create a device.
+   */
+  const deviceRes = await request(app)
+    .post('/')
+    .send({
+      type: 'klocka',
+    })
+    .expect(201);
+
+  /**
+   * Create the patient
+   */
+  await models.Patient.create({
+    id: 1,
+    name: 'gunnar',
+    versionKey: 1,
+  });
+
+  /**
+   * Assign device to patient.
+   */
+  const { body } = await request(app)
+    .post('/assign')
+    .send({
+      deviceId: 1,
+      patientId: 1111,
+    })
+    .expect(400);
+
+  expect(body.errors[0].message).toContain('patient 1111 not found');
 });

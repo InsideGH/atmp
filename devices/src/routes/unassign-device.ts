@@ -4,7 +4,6 @@ import {
   validateRequest,
   logger,
   Subjects,
-  DeviceCreatedEvent,
   eventPersistor,
   BadRequestError,
   DeviceUpdatedEvent,
@@ -17,10 +16,10 @@ import { natsWrapper } from '../nats-wrapper';
 const router = express.Router();
 
 router.post(
-  '/assign',
+  '/unassign',
   [
-    body('deviceId').not().isEmpty().withMessage('deviceId  is required'),
-    body('patientId').not().isEmpty().withMessage('patientId  is required'),
+    body('deviceId').not().isEmpty().withMessage('deviceId is required'),
+    body('patientId').not().isEmpty().withMessage('patientId is required'),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
@@ -39,7 +38,7 @@ router.post(
        * CHECK
        */
       if (!device) {
-        throw new BadRequestError(`[ REQ ] Device assign FAIL - device ${deviceId} not found`);
+        throw new BadRequestError(`[ REQ ] Device unassign FAIL - device ${deviceId} not found`);
       }
 
       /**
@@ -47,26 +46,26 @@ router.post(
        */
       const patient = await models.Patient.findByPk(patientId, { transaction });
       if (!patient) {
-        throw new BadRequestError(`[ REQ ] Device assign FAIL - patient ${patientId} not found`);
+        throw new BadRequestError(`[ REQ ] Device unassign FAIL - patient ${patientId} not found`);
       }
+
       /**
        * CHECK
        */
-      const deviceAssignedTo = await device.getPatient({ transaction });
-      if (deviceAssignedTo) {
+      const devicePatient = await device.getPatient({ transaction });
+      if (!devicePatient) {
         throw new BadRequestError(
-          `[ REQ ] Device assign FAIL - device ${device.id} already assigned to other patient`,
+          `[ REQ ] Device unassign FAIL - device ${device.id} not assigned to any patient`,
+        );
+      }
+      if (devicePatient.id != patient.id) {
+        throw new BadRequestError(
+          `[ REQ ] Device unassign FAIL - device ${device.id} not assigned to patient ${patient.id}`,
         );
       }
 
-      await device.setPatient(patient, { transaction });
-
-      await device.update(
-        {
-          versionKey: device.versionKey + 1,
-        },
-        { transaction },
-      );
+      await device.setPatient(null, { transaction });
+      await device.update({ versionKey: device.versionKey + 1 }, { transaction });
 
       const internalPublisher = eventPersistor.getPublisher<DeviceUpdatedEvent>({
         subject: Subjects.DeviceUpdated,
@@ -74,7 +73,7 @@ router.post(
           id: device.id,
           type: device.type,
           versionKey: device.versionKey,
-          patientId: patient.id,
+          patientId: undefined,
         },
       });
 
@@ -82,7 +81,7 @@ router.post(
 
       const record = await new DeviceRecord(
         natsWrapper.client,
-        'Device assigned',
+        'Device unassigned',
         device,
       ).createDbEntry(transaction);
 
@@ -91,7 +90,7 @@ router.post(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`[ REQ ] Device assign OK - ${device.id} assigned to ${patient.id}`);
+      logger.info(`[ REQ ] Device unassign OK - ${device.id} unassigned from ${patient.id}`);
 
       res.status(200).send({ device });
     } catch (error) {
@@ -101,4 +100,4 @@ router.post(
   },
 );
 
-export { router as assignDeviceRoute };
+export { router as unassignDeviceRoute };
