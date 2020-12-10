@@ -60,7 +60,6 @@ router.post(
       });
     } catch (error) {
       await transaction.rollback();
-      logger.error('new-device', error);
       throw error;
     }
   },

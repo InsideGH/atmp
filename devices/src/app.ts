@@ -8,6 +8,7 @@ import { errorHandler, NotFoundError } from '@thelarsson/acss-common';
 
 import { newDeviceRoute } from './routes/new-device';
 import { assignDeviceRoute } from './routes/assign-device';
+import { unassignDeviceRoute } from './routes/unassign-device';
 import { deleteDeviceRoute } from './routes/delete-device';
 import { getLogsRoute } from './routes/get-logs';
 
@@ -30,6 +31,7 @@ app.use(
 
 app.use(newDeviceRoute);
 app.use(assignDeviceRoute);
+app.use(unassignDeviceRoute);
 app.use(deleteDeviceRoute);
 app.use(getLogsRoute);
 

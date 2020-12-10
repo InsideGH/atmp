@@ -16,7 +16,7 @@ it('returns 400, when delete a non existing patient', async () => {
     })
     .expect(400);
 
-  expect(body.errors[0]).toEqual({ message: '[ REQ ] Patient 1 delete FAIL - not found' });
+  expect(body.errors[0]).toEqual({ message: '[ REQ ] Patient delete FAIL - 1 not found' });
 });
 
 it('returns 200, when deleting a patient', async () => {

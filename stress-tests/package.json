@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll --no-cache",
+    "test": "jest --watchAll --no-cache --runInBand",
     "lint": "eslint . --ext .ts",
-    "test:ci": "jest"
+    "test:ci": "jest --runInBand"
   },
   "jest": {
     "preset": "ts-jest",

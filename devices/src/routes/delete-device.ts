@@ -24,7 +24,10 @@ router.delete(
     const transaction = await db.sequelize.transaction();
 
     try {
-      const device = await models.Device.findByPk(body.id, { transaction });
+      const device = await models.Device.findByPk(body.id, {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
 
       if (!device) {
         throw new BadRequestError(`[ REQ ] Device delete FAIL - ${body.id} not found`);
