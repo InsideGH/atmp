@@ -1,4 +1,11 @@
-import { PatientUpdatedEvent, Subjects, logger, Listener } from '@thelarsson/acss-common';
+import {
+  PatientUpdatedEvent,
+  Subjects,
+  logger,
+  Listener,
+  Decision,
+  EventListenerLogic,
+} from '@thelarsson/acss-common';
 import { Message, Stan } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import db from '../../sequelize/database';
@@ -20,31 +27,28 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
    *
    */
   async onMessage(
-    data: { id: number; versionKey: number; name: string },
+    event: { id: number; versionKey: number; name: string },
     msg: Message,
   ): Promise<void> {
     const transaction = await db.sequelize.transaction();
-    
+
     try {
       const patient = await models.Patient.findOne({
         where: {
-          id: data.id,
+          id: event.id,
         },
         paranoid: false,
         transaction,
         lock: transaction.LOCK.UPDATE,
       });
 
-      if (patient) {
-        if (data.versionKey <= patient.versionKey) {
-          logger.info(
-            `[EVENT] Patient ${patient.id}.${patient.versionKey} update IGNORED - old version ${data.id}.${data.versionKey}`,
-          );
-        } else if (data.versionKey - patient.versionKey == 1) {
+      const decision = EventListenerLogic.decision(event, patient);
+      if (decision == Decision.HANDLE_AND_ACK) {
+        if (patient) {
           await patient.update(
             {
-              versionKey: data.versionKey,
-              name: data.name,
+              versionKey: event.versionKey,
+              name: event.name,
             },
             { transaction },
           );
@@ -52,15 +56,9 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
             transaction,
           );
           logger.info(`[EVENT] Patient ${patient.id}.${patient.versionKey} update OK`);
-        } else {
-          throw new Error(
-            `[EVENT] Patient ${patient.id}.${patient.versionKey} update FAIL - wrong version ${data.id}.${data.versionKey}`,
-          );
         }
-      } else {
-        throw new Error(
-          `[EVENT] Patient update FAIL - not exist to update with event ${data.id}.${data.versionKey}`,
-        );
+      } else if (decision == Decision.NO_ACK) {
+        throw new Error(`[EVENT] Patient update NO_ACK - ${event.id}.${event.versionKey}`);
       }
 
       await transaction.commit();
@@ -72,30 +70,3 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
     }
   }
 }
-
-// enum StrategyDecision {
-//   IGNORE,
-//   UPDATE,
-//   FAIL,
-// }
-
-// class EventDbStrategy {
-//   static update(
-//     event: { id: number; versionKey: number },
-//     curr: { id: number; versionKey: number },
-//   ): StrategyDecision {
-//     if (!curr) {
-//       return StrategyDecision.FAIL;
-//     }
-
-//     if (event.versionKey <= curr.versionKey) {
-//       return StrategyDecision.IGNORE;
-//     }
-
-//     if (event.versionKey - curr.versionKey == 1) {
-//       return StrategyDecision.UPDATE;
-//     }
-
-//     return StrategyDecision.FAIL;
-//   }
-// }

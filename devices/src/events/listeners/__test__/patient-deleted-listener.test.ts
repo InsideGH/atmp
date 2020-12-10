@@ -4,7 +4,7 @@ import { models } from '../../../sequelize/models';
 import { PatientDeletedListener } from '../patient-deleted-listener';
 import { Message } from 'node-nats-streaming';
 
-const setup = async (config: { id: number; name: string }) => {
+const setup = async (config: { id: number }) => {
   /**
    * Create listener to test
    */
@@ -24,7 +24,7 @@ const setup = async (config: { id: number; name: string }) => {
    */
   const deletedEvent: PatientDeletedEvent['data'] = {
     id: config.id,
-    versionKey: 1,
+    versionKey: 2,
   };
 
   /**
@@ -49,10 +49,9 @@ const setup = async (config: { id: number; name: string }) => {
 it('deletes a patient', async () => {
   const { listener, deletedEvent, msg, originalPatient } = await setup({
     id: 666,
-    name: 'updated_ponken',
   });
 
-  expect(deletedEvent!.versionKey).toEqual(1);
+  expect(deletedEvent!.versionKey).toEqual(2);
   expect(originalPatient!.name).toEqual('ponken');
 
   await listener.onMessage(deletedEvent, msg);
@@ -67,10 +66,9 @@ it('deletes a patient', async () => {
 it('acks the message', async () => {
   const { listener, deletedEvent, msg, originalPatient } = await setup({
     id: 666,
-    name: 'updated_ponken',
   });
 
-  expect(deletedEvent!.versionKey).toEqual(1);
+  expect(deletedEvent!.versionKey).toEqual(2);
   expect(originalPatient!.name).toEqual('ponken');
 
   await listener.onMessage(deletedEvent, msg);
@@ -81,10 +79,9 @@ it('acks the message', async () => {
 it('does not delete a patient if version number is wrong', async () => {
   const { listener, deletedEvent, msg, originalPatient } = await setup({
     id: 666,
-    name: 'updated_ponken',
   });
 
-  expect(deletedEvent!.versionKey).toEqual(1);
+  expect(deletedEvent!.versionKey).toEqual(2);
   expect(originalPatient!.name).toEqual('ponken');
 
   deletedEvent.versionKey = 10;
@@ -99,13 +96,12 @@ it('does not delete a patient if version number is wrong', async () => {
   expect(msg.ack).not.toHaveBeenCalled();
 });
 
-it('ignore and acks the message if patient id is not found', async () => {
+it('does not ack the message if patient id is not found', async () => {
   const { listener, deletedEvent, msg, originalPatient } = await setup({
     id: 666,
-    name: 'updated_ponken',
   });
 
-  expect(deletedEvent!.versionKey).toEqual(1);
+  expect(deletedEvent!.versionKey).toEqual(2);
   expect(originalPatient!.name).toEqual('ponken');
 
   deletedEvent.id = 234;
@@ -117,5 +113,5 @@ it('ignore and acks the message if patient id is not found', async () => {
   const stillPatient = await models.Patient.findByPk(originalPatient.id);
   expect(stillPatient!.name).toEqual('ponken');
 
-  expect(msg.ack).toHaveBeenCalled();
+  expect(msg.ack).not.toHaveBeenCalled();
 });

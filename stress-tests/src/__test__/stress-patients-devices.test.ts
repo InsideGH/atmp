@@ -37,7 +37,7 @@ it('should respect versionKey while handling simultanious requests', async () =>
 
 
   /**
-   * Delete the patient
+   * AND add a delete patient somewhere along the way of the updates...
    */
   await global.fetch('http://admin.acss.dev/api/patients', {
     method: 'DELETE',

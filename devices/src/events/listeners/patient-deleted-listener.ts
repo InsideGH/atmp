@@ -1,4 +1,11 @@
-import { PatientDeletedEvent, Subjects, logger, Listener } from '@thelarsson/acss-common';
+import {
+  PatientDeletedEvent,
+  Subjects,
+  logger,
+  Listener,
+  EventListenerLogic,
+  Decision,
+} from '@thelarsson/acss-common';
 import { Message, Stan } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import db from '../../sequelize/database';
@@ -32,24 +39,17 @@ export class PatientDeletedListener extends Listener<PatientDeletedEvent> {
         lock: transaction.LOCK.UPDATE,
       });
 
-      if (patient) {
-        if (event.versionKey <= patient.versionKey) {
-          logger.info(
-            `[EVENT] Patient ${patient.id}.${patient.versionKey} delete IGNORED - old version ${event.id}.${event.versionKey}`,
-          );
-        } else if (event.versionKey - patient.versionKey == 1) {
+      const decision = EventListenerLogic.decision(event, patient);
+      if (decision == Decision.HANDLE_AND_ACK) {
+        if (patient) {
           await patient.destroy({ transaction });
           await new DeviceRecord(this.client, 'Patient deleted', patient).createDbEntry(
             transaction,
           );
           logger.info(`[EVENT] Patient ${patient.id}.${patient.versionKey} delete OK`);
-        } else {
-          throw new Error(
-            `[EVENT] Patient ${patient.id}.${patient.versionKey} delete FAIL - wrong version ${event.id}.${event.versionKey}`,
-          );
         }
-      } else {
-        logger.info(`[EVENT] Patient ${event.id}.${event.versionKey} delete IGNORED - not found`);
+      } else if (decision == Decision.NO_ACK) {
+        throw new Error(`[EVENT] Patient delete NO_ACK - ${event.id}.${event.versionKey}`);
       }
 
       await transaction.commit();

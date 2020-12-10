@@ -103,7 +103,7 @@ it('does not updates a patient if version number is wrong', async () => {
   expect(msg.ack).not.toHaveBeenCalled();
 });
 
-it('ignore and acks the message if patient id is not found', async () => {
+it('does not ack the message if patient id is not found', async () => {
   const { listener, updateEventData, msg, originalPatient } = await setup({
     id: 666,
     name: 'updated_ponken',
@@ -121,7 +121,7 @@ it('ignore and acks the message if patient id is not found', async () => {
   const updatedPatient = await models.Patient.findByPk(originalPatient.id);
   expect(updatedPatient!.name).toEqual('ponken');
 
-  expect(msg.ack).toHaveBeenCalled();
+  expect(msg.ack).not.toHaveBeenCalled();
 });
 
 it('handles events out of order', async () => {
