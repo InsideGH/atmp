@@ -36,12 +36,6 @@ it('returns 200, when assign device correctly', async () => {
 
   global.stripKeys(body, ['createdAt', 'updatedAt', 'deletedAt', 'age']);
 
-  expect(body.patient).toEqual({
-    id: 1,
-    name: 'gunnar',
-    versionKey: 1,
-  });
-
   expect(body.device).toEqual({
     id: 1,
     type: 'klocka',
