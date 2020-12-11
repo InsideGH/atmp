@@ -30,4 +30,4 @@ router.post(
   },
 );
 
-export { router as getLogsRoute };
+export { router as getRecordsRoute };

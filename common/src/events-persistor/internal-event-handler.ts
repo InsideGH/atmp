@@ -1,6 +1,12 @@
 import { EventEmitter } from 'events';
-import { logger } from '../logger/pino';
 
+/**
+ * Internal event emitter that can register listeners and publish to.
+ *
+ * The only thing that can be published is a number (id), which is the id of the event in the database.
+ *
+ * The event emitter can be closed down and it will remove all registered listeners.
+ */
 class MyEventEmitter extends EventEmitter {}
 
 export class InternalEventHandler {
@@ -41,4 +47,7 @@ export class InternalEventHandler {
   }
 }
 
+/**
+ * Make sure we only can create one single instance
+ */
 export const internalEventHandler = new InternalEventHandler();

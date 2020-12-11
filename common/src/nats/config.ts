@@ -8,8 +8,9 @@ export const natsConstants = {
 };
 
 /**
- * This combination will replay all events to a queueGroup that has not been received and
+ * This combination will replay all events that has not been received and
  * ack:ed by any worker in the queue group.
+ *
  * The ack mode is manual.
  */
 export function getNatsSubscriptionOptions(

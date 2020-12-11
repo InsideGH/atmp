@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: alarm-config
-data:
-  ALARM_DB_USER: "1"
-  ALARM_DB_NAME: "alarm_db"
-  ALARM_DB_TIMEZONE: "Etc/GMT0"
-  LOG_LEVEL: "debug"

@@ -5,6 +5,8 @@ import { useEvents } from "../hooks/use-events";
 import { SocketContext } from "../context/socket-context";
 import { useNatsMonitor } from "../hooks/use-nats-monitor";
 
+const SubjectsLogCreated = "log.created";
+
 const initial = {
   total: 0,
   pagination: {
@@ -18,12 +20,12 @@ const initial = {
     order: "descend",
   },
   excludedFilters: {
-    subject: ["log:created"],
+    subject: [SubjectsLogCreated],
   },
 };
 
 const excludedSubjectsOptions = [
-  { label: "log:created", value: "log:created" },
+  { label: SubjectsLogCreated, value: SubjectsLogCreated },
 ];
 
 function Events() {
@@ -181,7 +183,7 @@ function Events() {
           >
             <Checkbox.Group
               options={excludedSubjectsOptions}
-              defaultValue={["log:created"]}
+              defaultValue={[SubjectsLogCreated]}
               onChange={onExcludeChange}
             />
           </Card>

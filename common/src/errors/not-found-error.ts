@@ -1,7 +1,7 @@
 import { CustomError } from './custom-error';
 
 /**
- * Extending built in Error through CustomError.
+ * 404 status + message string serializer.
  */
 export class NotFoundError extends CustomError {
   statusCode = 404;

@@ -30,12 +30,6 @@ spec:
       containers:
         - name: system
           image: system:latest
-          # livenessProbe:
-          #   httpGet:
-          #     path: /liveness
-          #     port: 3000
-          #   initialDelaySeconds: 3
-          #   periodSeconds: 3
           env:
             - name: SYSTEM_DB_TIMEZONE
               valueFrom:

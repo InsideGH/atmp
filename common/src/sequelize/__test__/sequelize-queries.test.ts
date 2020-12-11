@@ -1,5 +1,6 @@
 import { sequelizeQueries } from '../sequelize-queries';
 import { Op } from 'sequelize';
+import { Subjects } from '../../events/subjects';
 
 it('build empty where if nothing is given', () => {
   let filters = undefined;
@@ -29,7 +30,7 @@ it('return where as given if nothing is given', () => {
 
 it('return where if only filters is given', () => {
   let filters = {
-    subject: ['patient:created', 'patient: updated'],
+    subject: [Subjects.PatientCreated, Subjects.PatientUpdated],
   };
   let excludedFilters = undefined;
   let where;
@@ -41,17 +42,17 @@ it('return where if only filters is given', () => {
   expect(where).toEqual({
     kalle: 'anka',
     subject: {
-      [Op.in]: ['patient:created', 'patient: updated'],
+      [Op.in]: [Subjects.PatientCreated, Subjects.PatientUpdated],
     },
   });
 });
 
 it('return where if both filters and exclude is given', () => {
   let filters = {
-    subject: ['patient:created', 'patient: updated'],
+    subject: [Subjects.PatientCreated, Subjects.PatientUpdated],
   };
   let excludedFilters = {
-    subject: ['patient: updated'],
+    subject: [Subjects.PatientUpdated],
   };
   let where;
 
@@ -62,18 +63,18 @@ it('return where if both filters and exclude is given', () => {
   expect(where).toEqual({
     kalle: 'anka',
     subject: {
-      [Op.in]: ['patient:created', 'patient: updated'],
-      [Op.notIn]: ['patient: updated'],
+      [Op.in]: [Subjects.PatientCreated, Subjects.PatientUpdated],
+      [Op.notIn]: [Subjects.PatientUpdated],
     },
   });
 });
 
 it('return where if both filters and exclude is given without starting where', () => {
   let filters = {
-    subject: ['patient:created', 'patient: updated'],
+    subject: [Subjects.PatientCreated, Subjects.PatientUpdated],
   };
   let excludedFilters = {
-    subject: ['patient: updated'],
+    subject: [Subjects.PatientUpdated],
   };
   let where;
 
@@ -81,18 +82,18 @@ it('return where if both filters and exclude is given without starting where', (
 
   expect(where).toEqual({
     subject: {
-      [Op.in]: ['patient:created', 'patient: updated'],
-      [Op.notIn]: ['patient: updated'],
+      [Op.in]: [Subjects.PatientCreated, Subjects.PatientUpdated],
+      [Op.notIn]: [Subjects.PatientUpdated],
     },
   });
 });
 
 it('return where if both filters and exclude is given with undefined input where', () => {
   let filters = {
-    subject: ['patient:created', 'patient: updated'],
+    subject: [Subjects.PatientCreated, Subjects.PatientUpdated],
   };
   let excludedFilters = {
-    subject: ['patient: updated'],
+    subject: [Subjects.PatientUpdated],
   };
   let where;
 
@@ -100,8 +101,8 @@ it('return where if both filters and exclude is given with undefined input where
 
   expect(where).toEqual({
     subject: {
-      [Op.in]: ['patient:created', 'patient: updated'],
-      [Op.notIn]: ['patient: updated'],
+      [Op.in]: [Subjects.PatientCreated, Subjects.PatientUpdated],
+      [Op.notIn]: [Subjects.PatientUpdated],
     },
   });
 });

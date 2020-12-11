@@ -4,12 +4,17 @@ import { Transaction } from 'sequelize/types';
 import { Event } from './models/event';
 
 /**
- * Provides somewhat "atomish" like "create event in db" AND "send it to nats via internal event handler" feature.
+ * Does->
  *
- * Means that you create an instance and use the two methods to create db entry and later on
- * the publishing to the internal event system.
+ * 1) "persist event in database"
+ * 2) "send it to nats"
  *
- * Note, that the db entry at this stage is not sent.
+ * The event to persist and publish is defined at construction time.
+ *
+ * Means that you create an instance with the event and then use the
+ * two methods to create db entry and later on the publishing to the
+ * internal event system.
+ *
  */
 export class InternalPublisher<T extends BaseEvent> {
   private id?: number;

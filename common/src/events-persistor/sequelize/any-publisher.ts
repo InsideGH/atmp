@@ -8,9 +8,16 @@ interface Config {
 }
 
 /**
- * A publisher that can be used to send AnyEvent with.
+ * o()o()o-> REASON FOR EXISTENSE AND WHY ITS **ALLOWED** IS DESCRIBED IN THE ANYEVENT FILE. <-o()o()o
  *
- * Reason for existense is described in the AnyEvent.
+ * This is a publisher that can be used to send 'AnyEvent's with.
+ *
+ * NOTE, should NOT BE USED (do not export it from common)
+ * by any other part in the system due to it's unsafe publishing capabilities.
+ *
+ * Using this module, you can publish any combination of subject and data onto
+ * nats, making life hard for the listeners.
+ *
  */
 export class AnyPublisher {
   name: string;

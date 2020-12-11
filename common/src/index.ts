@@ -47,9 +47,10 @@ export * from './events/event-listener-logic';
 
 /**
  * EVENT PUBLISHERS
+ *
+ * Currently no common publishers exist since it's publishers
+ * are service 'owned' mostly.
  */
-export * from './events/publishers/event-publisher';
-export * from './events/publishers/error-created-publisher';
 
 /**
  * EVENT PUBLISHERS WITH LOCAL PERSISTENSE
@@ -68,6 +69,6 @@ export * from './sequelize/sequelize-queries';
 export * from './test/sqlite-memory-db';
 
 /**
- * RECORD
+ * RECORD PERSISTOR
  */
-export * from './record/sequelize/record-persistor';
+export * from './record-persistor/sequelize/record-persistor';

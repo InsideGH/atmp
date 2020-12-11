@@ -1,3 +1,4 @@
+import { Subjects } from '@thelarsson/acss-common';
 import request from 'supertest';
 import { app } from '../../app';
 import { models } from '../../sequelize/models';
@@ -45,25 +46,25 @@ it('returns 400, when not providing limit/offset', async () => {
 it('returns 200, when fetching something', async () => {
   const inputData = [
     {
-      subject: 'patient:created',
+      subject: Subjects.PatientCreated,
       data: { id: 1, name: 'kalle' },
       sequence: 0,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:updated',
+      subject: Subjects.PatientUpdated,
       data: { id: 1, name: 'kalleUpdated1' },
       sequence: 1,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:updated',
+      subject: Subjects.PatientUpdated,
       data: { id: 1, name: 'kalleUpdated2' },
       sequence: 2,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:created',
+      subject: Subjects.PatientCreated,
       data: { id: 2, name: 'nisse' },
       sequence: 0,
       timestamp: new Date(),
@@ -89,25 +90,25 @@ it('returns 200, when fetching something', async () => {
 it('returns 200, when fetching with limit', async () => {
   const inputData = [
     {
-      subject: 'patient:created',
+      subject: Subjects.PatientCreated,
       data: { id: 1, name: 'kalle' },
       sequence: 0,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:updated',
+      subject: Subjects.PatientUpdated,
       data: { id: 1, name: 'kalleUpdated1' },
       sequence: 1,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:updated',
+      subject: Subjects.PatientUpdated,
       data: { id: 1, name: 'kalleUpdated2' },
       sequence: 2,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:created',
+      subject: Subjects.PatientCreated,
       data: { id: 2, name: 'nisse' },
       sequence: 0,
       timestamp: new Date(),
@@ -124,7 +125,7 @@ it('returns 200, when fetching with limit', async () => {
     rows: [
       {
         id: 1,
-        subject: 'patient:created',
+        subject: Subjects.PatientCreated,
         data: { id: 1, name: 'kalle' },
         sequence: 0,
       },
@@ -135,25 +136,25 @@ it('returns 200, when fetching with limit', async () => {
 it('returns 200, when fetching with offset/limit', async () => {
   const inputData = [
     {
-      subject: 'patient:created',
+      subject: Subjects.PatientCreated,
       data: { id: 1, name: 'kalle' },
       sequence: 0,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:updated',
+      subject: Subjects.PatientUpdated,
       data: { id: 1, name: 'kalleUpdated1' },
       sequence: 1,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:updated',
+      subject: Subjects.PatientUpdated,
       data: { id: 1, name: 'kalleUpdated2' },
       sequence: 2,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:created',
+      subject: Subjects.PatientCreated,
       data: { id: 2, name: 'nisse' },
       sequence: 0,
       timestamp: new Date(),
@@ -170,7 +171,7 @@ it('returns 200, when fetching with offset/limit', async () => {
     rows: [
       {
         id: 2,
-        subject: 'patient:updated',
+        subject: Subjects.PatientUpdated,
         data: { id: 1, name: 'kalleUpdated1' },
         sequence: 1,
       },
@@ -181,25 +182,25 @@ it('returns 200, when fetching with offset/limit', async () => {
 it('returns 200, when fetching with sorter', async () => {
   const inputData = [
     {
-      subject: 'patient:created',
+      subject: Subjects.PatientCreated,
       data: { id: 1, name: 'kalle' },
       sequence: 0,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:updated',
+      subject: Subjects.PatientUpdated,
       data: { id: 1, name: 'kalleUpdated1' },
       sequence: 1,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:updated',
+      subject: Subjects.PatientUpdated,
       data: { id: 1, name: 'kalleUpdated2' },
       sequence: 2,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:created',
+      subject: Subjects.PatientCreated,
       data: { id: 2, name: 'nisse' },
       sequence: 0,
       timestamp: new Date(),
@@ -239,25 +240,25 @@ it('returns 200, when fetching with sorter', async () => {
 it('returns 200, when fetching with sorter & filter', async () => {
   const inputData = [
     {
-      subject: 'patient:created',
+      subject: Subjects.PatientCreated,
       data: { id: 1, name: 'kalle' },
       sequence: 0,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:updated',
+      subject: Subjects.PatientUpdated,
       data: { id: 1, name: 'kalleUpdated1' },
       sequence: 1,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:updated',
+      subject: Subjects.PatientUpdated,
       data: { id: 1, name: 'kalleUpdated2' },
       sequence: 2,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:created',
+      subject: Subjects.PatientCreated,
       data: { id: 2, name: 'nisse' },
       sequence: 0,
       timestamp: new Date(),
@@ -278,7 +279,7 @@ it('returns 200, when fetching with sorter & filter', async () => {
         },
       ],
       filters: {
-        subject: ['patient:created'],
+        subject: [Subjects.PatientCreated],
       },
     })
     .expect(200);
@@ -289,13 +290,13 @@ it('returns 200, when fetching with sorter & filter', async () => {
     rows: [
       {
         id: 4,
-        subject: 'patient:created',
+        subject: Subjects.PatientCreated,
         data: { id: 2, name: 'nisse' },
         sequence: 0,
       },
       {
         id: 1,
-        subject: 'patient:created',
+        subject: Subjects.PatientCreated,
         data: { id: 1, name: 'kalle' },
         sequence: 0,
       },
@@ -306,25 +307,25 @@ it('returns 200, when fetching with sorter & filter', async () => {
 it('returns 200, when fetching with sorter & filter & excluded filter', async () => {
   const inputData = [
     {
-      subject: 'patient:created',
+      subject: Subjects.PatientCreated,
       data: { id: 1, name: 'kalle' },
       sequence: 0,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:updated',
+      subject: Subjects.PatientUpdated,
       data: { id: 1, name: 'kalleUpdated1' },
       sequence: 1,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:updated',
+      subject: Subjects.PatientUpdated,
       data: { id: 1, name: 'kalleUpdated2' },
       sequence: 2,
       timestamp: new Date(),
     },
     {
-      subject: 'patient:created',
+      subject: Subjects.PatientCreated,
       data: { id: 2, name: 'nisse' },
       sequence: 0,
       timestamp: new Date(),
@@ -345,7 +346,7 @@ it('returns 200, when fetching with sorter & filter & excluded filter', async ()
         },
       ],
       filters: {
-        subject: ['patient:created', 'patiend:updated'],
+        subject: [Subjects.PatientCreated, 'patiend:updated'],
       },
       excludedFilters: {
         subject: ['patiend:updated'],
@@ -359,13 +360,13 @@ it('returns 200, when fetching with sorter & filter & excluded filter', async ()
     rows: [
       {
         id: 4,
-        subject: 'patient:created',
+        subject: Subjects.PatientCreated,
         data: { id: 2, name: 'nisse' },
         sequence: 0,
       },
       {
         id: 1,
-        subject: 'patient:created',
+        subject: Subjects.PatientCreated,
         data: { id: 1, name: 'kalle' },
         sequence: 0,
       },

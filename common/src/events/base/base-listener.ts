@@ -3,10 +3,12 @@ import { BaseEvent } from './base-event';
 import { logger } from '../../logger/pino';
 import { getNatsSubscriptionOptions, parseNatsMessage, natsConstants } from '../../nats/config';
 
-interface Config {
-  enableDebugLogs?: Boolean;
-}
-
+/**
+ *
+ * Implement this will give you a Nats event listener on the specified queueGroupName. All events
+ * received will be typed according to generic <T extends BaseEvent>.
+ *
+ */
 export abstract class Listener<T extends BaseEvent> {
   /**
    * Listener must have a subject of type Event.subject generic, provide by the implementing listener.
@@ -28,20 +30,12 @@ export abstract class Listener<T extends BaseEvent> {
    */
   protected ackWait: number = natsConstants.ackWait;
 
-  /**
-   * Create a nats streaming listener.
-   */
   constructor(
     protected client: Stan,
-    private config: Config = {
-      enableDebugLogs: false,
+    private config: {
+      enableDebugLogs: false;
     },
   ) {}
-
-  /**
-   * This combination will replay all events to a queueGroup that has not been received and ack:ed by any worker in the queue group.
-   * The ack mode is manual.
-   */
 
   /**
    * Call this to create a subscription and get events to the onMessage function.

@@ -10,7 +10,7 @@ import { newDeviceRoute } from './routes/new-device';
 import { assignDeviceRoute } from './routes/assign-device';
 import { unassignDeviceRoute } from './routes/unassign-device';
 import { deleteDeviceRoute } from './routes/delete-device';
-import { getLogsRoute } from './routes/get-logs';
+import { getRecordsRoute } from './routes/get-records';
 
 const app = express();
 
@@ -33,7 +33,7 @@ app.use(newDeviceRoute);
 app.use(assignDeviceRoute);
 app.use(unassignDeviceRoute);
 app.use(deleteDeviceRoute);
-app.use(getLogsRoute);
+app.use(getRecordsRoute);
 
 app.all('*', async () => {
   throw new NotFoundError();
