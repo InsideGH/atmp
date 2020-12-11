@@ -2,30 +2,27 @@ import { Stan } from 'node-nats-streaming';
 import { BaseEvent } from './base-event';
 import { logger } from '../../logger/pino';
 
-interface Config {
-  enableDebugLogs?: Boolean;
-}
-
+/**
+ *
+ * Implement this will give you a Nats event publisher. All events
+ * published must conform to the generic <T extends BaseEvent> structure.
+ *
+ */
 export abstract class Publisher<T extends BaseEvent> {
   /**
-   * Publisher must have a subject of type Event.subject generic, provide by the implementing publisher.
+   * Publisher must have a subject of type Event.subject generic, provide by the implementing class.
    */
   abstract subject: T['subject'];
 
-  /**
-   * Create a nats streaming publisher.
-   */
   constructor(
     protected client: Stan,
-    private config: Config = {
+    private config = {
       enableDebugLogs: false,
     },
   ) {}
 
   /**
    * Call this to send the event.
-   *
-   * @param data Event payload/data.
    */
   publish(data: T['data']): Promise<void> {
     return new Promise((resolve, reject) => {

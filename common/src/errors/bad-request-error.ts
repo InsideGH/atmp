@@ -1,7 +1,7 @@
 import { CustomError } from './custom-error';
 
 /**
- * Extending built in Error through CustomError.
+ * 400 status + message string serializer.
  */
 export class BadRequestError extends CustomError {
   statusCode = 400;

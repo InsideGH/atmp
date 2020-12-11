@@ -9,16 +9,12 @@ import { errorHandler, NotFoundError } from '@thelarsson/acss-common';
 import { newPatientRoute } from './routes/new-patient';
 import { updatePatientRoute } from './routes/update-patient';
 import { deletePatientRoute } from './routes/delete-patient';
-import { getLogsRoute } from './routes/get-logs';
-
-import { probeRouter } from './routes/probe';
+import { getRecordsRoute } from './routes/get-records';
 
 const app = express();
 
 // tell express to trusts traffic behind a proxy.
 app.set('trust proxy', true);
-
-app.use(probeRouter);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   next();
@@ -35,7 +31,7 @@ app.use(
 app.use(newPatientRoute);
 app.use(updatePatientRoute);
 app.use(deletePatientRoute);
-app.use(getLogsRoute);
+app.use(getRecordsRoute);
 
 app.all('*', async () => {
   throw new NotFoundError();

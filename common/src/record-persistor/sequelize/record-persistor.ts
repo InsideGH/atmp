@@ -4,6 +4,23 @@ import { Record, initRecord } from './models/record';
 import { RecordPublisher } from '../record-publisher';
 import { Stan } from 'node-nats-streaming';
 
+/**
+ *
+ * To use this you must provide the name of your service according to
+ * the options available in Services.
+ *
+ * The Service is used IF you choose to publish event about you creating
+ * a record. In that case, the event will include the ID of the record +
+ * the service name.
+ *
+ * You can do 4 things:
+ *
+ * 1) Create it
+ * 2) Persist a record in database
+ * 3) Publish event about it
+ * 4) Get models so that you can setup model in your database.
+ *
+ */
 export abstract class RecordPersistor {
   protected abstract service: Services;
   private entry?: Record;

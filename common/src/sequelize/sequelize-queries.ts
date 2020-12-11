@@ -1,6 +1,10 @@
 import { Op } from 'sequelize';
 
 /**
+ * A bunch of helpers to do filtering and sorting.
+ */
+
+/**
  * Check test on how to use these...
  */
 const buildWhereFromFilters = (filters: any, excludedFilters: any, where: any = {}) => {

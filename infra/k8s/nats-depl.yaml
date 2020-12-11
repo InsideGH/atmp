@@ -4,14 +4,9 @@ metadata:
   name: nats-depl
 spec:
   replicas: 1
-  # Selector works together with metadata
-  # 'app' is just a key - could be anything
-  # The selector/matchLabels tells what pods it should manage (find)
   selector:
     matchLabels:
       app: nats
-  # Metadata works together with selector
-  # Specifies configuration for creating pods.
   template:
     metadata:
       labels:
@@ -30,19 +25,15 @@ spec:
             ]
       containers:
         - name: nats
-          # latest is default if not specified
           image: nats-streaming
           env:
-            # Name of env variable inside our app
             - name: NATS_DB_USER
               valueFrom:
-                # If the config map does not exist, the pod will not start (CreateContainerConfigError)
                 configMapKeyRef:
                   name: nats-config
                   key: NATS_DB_USER
             - name: NATS_DB_NAME
               valueFrom:
-                # If the config map does not exist, the pod will not start (CreateContainerConfigError)
                 configMapKeyRef:
                   name: nats-config
                   key: NATS_DB_NAME
@@ -51,7 +42,6 @@ spec:
                 secretKeyRef:
                   name: nats-db-passwd-secret
                   key: NATS_DB_PASSWD
-          # args that are given to the primary command when a container is build from our image
           args:
             [
               "-st",
@@ -80,22 +70,15 @@ kind: Service
 metadata:
   name: nats-srv
 spec:
-  # Default is ClusterIP
   type: ClusterIP
-  # Selector works together with DEPL.template.metadata.label
   selector:
     app: nats
   ports:
-    # the name is just for logging purposes, can be anything
     - name: client
       protocol: TCP
-      # the port that Cluster is listening on
       port: 4222
-      # the port that pod/container is listening on
       targetPort: 4222
     - name: monitoring
       protocol: TCP
-      # the port that Cluster is listening on
       port: 8222
-      # the port that pod/container is listening on
       targetPort: 8222

@@ -30,12 +30,6 @@ spec:
       containers:
         - name: devices
           image: devices
-          # livenessProbe:
-          #   httpGet:
-          #     path: /liveness
-          #     port: 3000
-          #   initialDelaySeconds: 3
-          #   periodSeconds: 3
           env:
             - name: DEVICES_DB_TIMEZONE
               valueFrom:

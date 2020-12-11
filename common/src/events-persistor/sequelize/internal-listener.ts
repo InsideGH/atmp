@@ -5,6 +5,7 @@ import { NatsPublisher } from './nats-publisher';
 
 /**
  * Listens for internal events that will then be sent to nats using a publisher instance.
+ * 
  */
 export class InternalListener {
   private publisher: NatsPublisher;

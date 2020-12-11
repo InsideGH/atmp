@@ -3,20 +3,15 @@ kind: PersistentVolume
 metadata:
   name: system-db-pv
 spec:
-  # empty string means use no StorageClass, we want to bind this pv-pvc
   storageClassName: ""
   capacity:
-    # The PVC size must match PV size.
     storage: 500Mi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    # it must be /tmp/.*
-    # otherwise the delete of the PV will fail when skaffold is terminating.
     path: "/host/data"
   claimRef:
     name: system-db-pvc
-    # For some reason we need to have the namespace here event though we configure the namespace to the default
     namespace: default
 ---
 apiVersion: v1
@@ -24,11 +19,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: system-db-pvc
 spec:
-  # empty string means use no StorageClass, we want to bind this pv-pvc
   storageClassName: ""
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      # The PVC size must match PV size.
       storage: 500Mi
