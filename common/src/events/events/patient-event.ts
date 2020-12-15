@@ -15,7 +15,6 @@ export enum PatientEventType {
 export interface PatientCreateData {
   type: PatientEventType.CREATE;
   id: number;
-  versionKey: number;
   name: string;
 }
 
