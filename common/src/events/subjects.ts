@@ -10,6 +10,9 @@ export enum Subjects {
    * That service (frontend) is not speaking typescript.
    */
   LogCreated = 'log.created',
+  
+  Patient = 'patient',
+  Device = 'device',
 
   PatientCreated = 'patient.created',
   PatientUpdated = 'patient.updated',

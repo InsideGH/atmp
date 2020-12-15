@@ -24,6 +24,7 @@ export function useNatsMonitor() {
               msgs: channel.msgs,
               subscriptions: channel.subscriptions
                 .map((s) => ({
+                  id: s.client_id,
                   name: s.queue_name.split(':')[0],
                   is_offline: s.is_offline,
                   last_sent: s.last_sent,
