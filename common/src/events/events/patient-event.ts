@@ -6,25 +6,25 @@ import { BaseEvent } from '../base/base-event';
  * confirms to the structure.
  */
 
-enum PatientEventType {
+export enum PatientEventType {
   CREATE,
   UPDATE,
   DELETE,
 }
 
-interface PatientCreateData {
+export interface PatientCreateData {
   id: number;
   versionKey: number;
   name: string;
 }
 
-interface PatientUpdateData {
+export interface PatientUpdateData {
   id: number;
   name: string;
   age: number;
 }
 
-interface PatientDeleteData {
+export interface PatientDeleteData {
   id: number;
 }
 
