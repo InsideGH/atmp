@@ -15,7 +15,7 @@
     "check": "npm run build && npm run lint && npm run test:ci",
     "create": "npm publish --access public ",
     "test:ci": "jest",
-    "pub": "npm run lint && npm run build && npm run test:ci && git add . && git commit -m \"Common updates\" && npm version patch && npm publish"
+    "pub": "npm run lint && npm run build && git add . && git commit -m \"Common updates\" && npm version patch && npm publish"
   },
   "jest": {
     "preset": "ts-jest",
