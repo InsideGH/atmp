@@ -13,25 +13,25 @@ export enum PatientEventType {
 }
 
 export interface PatientCreateData {
+  type: PatientEventType.CREATE;
   id: number;
   versionKey: number;
   name: string;
 }
 
 export interface PatientUpdateData {
+  type: PatientEventType.UPDATE;
   id: number;
   name: string;
   age: number;
 }
 
 export interface PatientDeleteData {
+  type: PatientEventType.DELETE;
   id: number;
 }
 
 export interface PatientEvent extends BaseEvent {
   subject: Subjects.Patient;
-  data: {
-    type: PatientEventType;
-    payload: PatientCreateData | PatientUpdateData | PatientDeleteData;
-  };
+  data: PatientCreateData | PatientUpdateData | PatientDeleteData;
 }
