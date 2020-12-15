@@ -12,25 +12,29 @@ export enum PatientEventType {
   DELETE,
 }
 
-export interface PatientCreateData {
-  type: PatientEventType.CREATE;
-  id: number;
-  name: string;
-}
-
-export interface PatientUpdateData {
-  type: PatientEventType.UPDATE;
-  id: number;
-  name: string;
-  age: number;
-}
-
-export interface PatientDeleteData {
-  type: PatientEventType.DELETE;
-  id: number;
-}
-
-export interface PatientEvent extends BaseEvent {
+export interface PatientCreatedEvent2 extends BaseEvent {
   subject: Subjects.Patient;
-  data: PatientCreateData | PatientUpdateData | PatientDeleteData;
+  data: {
+    type: PatientEventType.CREATE;
+    id: number;
+    name: string;
+  };
+}
+
+export interface PatientUpdatedEvent2 extends BaseEvent {
+  subject: Subjects.Patient;
+  data: {
+    type: PatientEventType.UPDATE;
+    id: number;
+    name: string;
+    age: number;
+  };
+}
+
+export interface PatientDeletedEvent2 extends BaseEvent {
+  subject: Subjects.Patient;
+  data: {
+    type: PatientEventType.DELETE;
+    id: number;
+  };
 }
