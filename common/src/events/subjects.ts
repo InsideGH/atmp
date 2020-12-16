@@ -11,14 +11,6 @@ export enum Subjects {
    */
   LogCreated = 'log.created',
 
-  /**
-   * One patient event instead of spliting it into created/updated/deleted
-   */
-  PatientReplica = 'patient:replica',
-
-  /**
-   * Three patient events describing more details about what happened
-   */
   PatientCreated = 'patient.created',
   PatientUpdated = 'patient.updated',
   PatientDeleted = 'patient.deleted',

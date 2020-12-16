@@ -35,7 +35,6 @@ export * from './events/base/base-publisher';
 /**
  * EVENTS
  */
-export * from './events/events/patient-event';
 export * from './events/events/patient-created-event';
 export * from './events/events/patient-updated-event';
 export * from './events/events/patient-deleted-event';
