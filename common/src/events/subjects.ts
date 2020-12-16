@@ -10,13 +10,19 @@ export enum Subjects {
    * That service (frontend) is not speaking typescript.
    */
   LogCreated = 'log.created',
-  
-  Patient = 'patient',
-  Device = 'device',
 
+  /**
+   * One patient event instead of spliting it into created/updated/deleted
+   */
+  PatientReplica = 'patient:replica',
+
+  /**
+   * Three patient events describing more details about what happened
+   */
   PatientCreated = 'patient.created',
   PatientUpdated = 'patient.updated',
   PatientDeleted = 'patient.deleted',
+
   DeviceCreated = 'device.created',
   DeviceUpdated = 'device.updated',
   DeviceDeleted = 'device.deleted',
