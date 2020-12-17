@@ -22,7 +22,6 @@ export function getNatsSubscriptionOptions(
     .setDeliverAllAvailable()
     .setManualAckMode(true)
     .setAckWait(config.ackWait)
-    .setMaxInFlight(1)
     .setDurableName(config.queueGroupName);
 }
 
