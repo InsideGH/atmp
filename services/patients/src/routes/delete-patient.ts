@@ -56,10 +56,10 @@ router.delete(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`[ REQ ] Patient delete OK - ${patient.id}.${patient.versionKey}`);
+      logger.info(`[ REQ ] Patient d OK - ${patient.id}.${patient.versionKey}`);
 
       res.status(200).send({
-        deleted: true,
+        patient
       });
     } catch (error) {
       await transaction.rollback();

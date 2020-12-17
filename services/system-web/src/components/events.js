@@ -1,5 +1,15 @@
 import { useState, useContext, useEffect } from "react";
-import { Table, Tag, Button, Space, Checkbox, Row, Col, Card } from "antd";
+import {
+  Table,
+  Tag,
+  Button,
+  Space,
+  Checkbox,
+  Row,
+  Col,
+  Card,
+  Tooltip,
+} from "antd";
 import { useSubjects } from "../hooks/use-subjects";
 import { useEvents } from "../hooks/use-events";
 import { SocketContext } from "../context/socket-context";
@@ -102,10 +112,11 @@ function Events() {
           }
 
           return (
-            <Tag
-              key={s.name}
-              color={color}
-            >{`${s.name}:${s.pending_count}:${s.last_sent}`}</Tag>
+            <Tooltip key={s.id} title={s.id}>
+              <Tag
+                color={color}
+              >{`${s.name}:${s.pending_count}:${s.last_sent}`}</Tag>
+            </Tooltip>
           );
         });
         return tags;

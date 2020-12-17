@@ -4,7 +4,7 @@ import { natsConstants, parseNatsMessage } from '../config';
 it('is a common config', () => {
   expect(natsConstants).toBeDefined();
   expect(natsConstants).toEqual({
-    ackWait: 5 * 1000,
+    ackWait: 2 * 1000,
   });
 });
 

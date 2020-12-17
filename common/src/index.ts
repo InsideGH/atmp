@@ -22,6 +22,7 @@ export * from './logger/pino';
  */
 export * from './util/assert-env-variables';
 export * from './util/strip-keys';
+export * from './util/wait-ms';
 
 /**
  * EVENT BASE

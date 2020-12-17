@@ -30,14 +30,17 @@ export class PatientCreatedListener extends Listener<PatientCreatedEvent> {
           name: event.name,
           versionKey: event.versionKey,
         },
+        // TODO: Figure out if we need this or if it's the testcase that requires it
+        paranoid: false,
         transaction,
+        lock: transaction.LOCK.UPDATE,
       });
 
       if (created) {
         await new DeviceRecord(this.client, 'Patient created', patient).createDbEntry(transaction);
-        logger.info(`[EVENT] Patient ${patient.id}.${patient.versionKey} create OK`);
+        logger.info(`[EVENT] Patient c OK - ${patient.id}.${patient.versionKey}`);
       } else {
-        logger.info(`[EVENT] Patient ${patient.id}.${patient.versionKey} create IGNORED`);
+        logger.info(`[EVENT] Patient c ACK(IGNORE) - ${patient.id}.${patient.versionKey}`);
       }
 
       await transaction.commit();

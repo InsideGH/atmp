@@ -14,6 +14,7 @@ export enum Subjects {
   PatientCreated = 'patient.created',
   PatientUpdated = 'patient.updated',
   PatientDeleted = 'patient.deleted',
+
   DeviceCreated = 'device.created',
   DeviceUpdated = 'device.updated',
   DeviceDeleted = 'device.deleted',

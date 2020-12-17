@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: patients-depl
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: patients

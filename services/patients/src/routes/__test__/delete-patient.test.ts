@@ -40,9 +40,8 @@ it('returns 200, when deleting a patient', async () => {
   /**
    * Verify response.
    */
-  expect(deleteResponse.body).toEqual({
-    deleted: true,
-  });
+  expect(deleteResponse.body.patient.id).toEqual(1);
+  expect(deleteResponse.body.patient.versionKey).toEqual(1);
 
   /**
    * Verify patient in DB

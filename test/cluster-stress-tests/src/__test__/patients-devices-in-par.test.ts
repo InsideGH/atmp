@@ -20,7 +20,7 @@ it('should respect versionKey while handling simultanious patient update request
   const promises = [];
   for (let i = 1; i <= NBR_OF_UPDATED; i++) {
     promises.push(
-      new Promise<void>(async (resolve) => {
+      new Promise<any>(async (resolve) => {
         const newName = `${create.patient.name} - update ${String.fromCharCode(96 + i)}`;
         const foo = await global.fetch('http://admin.acss.dev/api/patients', {
           method: 'PUT',
@@ -30,7 +30,7 @@ it('should respect versionKey while handling simultanious patient update request
             firstName: newName,
           }),
         });
-        resolve();
+        resolve(foo);
       }),
     );
   }
@@ -38,7 +38,7 @@ it('should respect versionKey while handling simultanious patient update request
   /**
    * AND add a delete patient somewhere along the way of the updates...
    */
-  await global.fetch('http://admin.acss.dev/api/patients', {
+  const deleteRes = await global.fetch('http://admin.acss.dev/api/patients', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -46,7 +46,24 @@ it('should respect versionKey while handling simultanious patient update request
     }),
   });
 
-  await Promise.all(promises);
+  console.log(`deleted at versionKey=${deleteRes.patient.versionKey}`);
 
-  
+  const allUpdates = await Promise.all(promises);
+
+  expect(allUpdates.length).toEqual(NBR_OF_UPDATED);
+  const successUpdates = allUpdates.filter((u) => !!u.patient);
+  /**
+   * Patient get versionKey = 1 when it's created. This means, 0 updates leads to versionKey of 1.
+   */
+  expect(successUpdates.length + 1).toEqual(deleteRes.patient.versionKey);
+
+  const failedUpdates = allUpdates.filter((u) => !!u.errors);
+
+  expect(failedUpdates.length - 1).toEqual(NBR_OF_UPDATED - deleteRes.patient.versionKey);
+  failedUpdates.forEach((failedUpdate) => {
+    expect(failedUpdate.errors.length).toEqual(1);
+    expect(failedUpdate.errors[0].message).toContain(
+      `Patient update FAIL - ${create.patient.id} not found`,
+    );
+  });
 });

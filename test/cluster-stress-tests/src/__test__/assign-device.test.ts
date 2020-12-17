@@ -54,11 +54,24 @@ it('should update device 1 time during simultanious assign requests', async () =
   const results = await Promise.all(promises);
   expect(results.length).toEqual(NBR_OF_UPDATED);
   const updates = results.filter((x) => !!x.device);
+  /**
+   * It's not possible to make an assignment if the device already is assigned. Thus 'toBeLessThanOrEqual(1)'.
+   *
+   */
   expect(updates.length).toBeLessThanOrEqual(1);
+  /**
+   * If one update was made, we have created and updated the device, thus versionKey = 2
+   */
   if (updates.length == 1) {
     expect(updates[0].device.versionKey).toEqual(2);
   } else {
-    expect(updates[0].device.versionKey).toEqual(1);
+    /**
+     * No updates/assignment was made. This occurs if the patient replication has not reached the device service.
+     */
+    results.forEach((r) => {
+      expect(r.errors.length).toEqual(1);
+      expect(r.errors[0].message).toContain(`patient ${patient.id} not found`);
+    });
   }
 });
 
