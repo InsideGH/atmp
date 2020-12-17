@@ -72,7 +72,13 @@ it('should update device 1 time during simultanious unassign requests', async ()
     if (updates.length == 1) {
       expect(updates[0].device.versionKey).toEqual(3);
     } else {
-      expect(updates[0].device.versionKey).toEqual(2);
+      /**
+       * No updates/unassignment were made. This occurs if the patient replication has not reached the device service.
+       */
+      results.forEach((r) => {
+        expect(r.errors.length).toEqual(1);
+        expect(r.errors[0].message).toContain(`patient ${patient.id} not found`);
+      });
     }
   }
 });

@@ -1,11 +1,4 @@
-import {
-  PatientDeletedEvent,
-  Subjects,
-  logger,
-  Listener,
-  EventListenerLogic,
-  Decision,
-} from '@thelarsson/acss-common';
+import { PatientDeletedEvent, Subjects, logger, Listener, EventListenerLogic, Decision } from '@thelarsson/acss-common';
 import { Message, Stan } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import db from '../../sequelize/database';
@@ -35,6 +28,8 @@ export class PatientDeletedListener extends Listener<PatientDeletedEvent> {
           id: event.id,
         },
         transaction,
+        // TODO: Figure out if we need this or if it's the testcase that requires it
+        paranoid: false,
         lock: transaction.LOCK.UPDATE,
       });
 
@@ -42,13 +37,15 @@ export class PatientDeletedListener extends Listener<PatientDeletedEvent> {
       if (decision == Decision.HANDLE_AND_ACK) {
         if (patient) {
           await patient.destroy({ transaction });
-          await new DeviceRecord(this.client, 'Patient deleted', patient).createDbEntry(
-            transaction,
-          );
-          logger.info(`[EVENT] Patient ${patient.id}.${patient.versionKey} delete OK`);
+          await new DeviceRecord(this.client, 'Patient deleted', patient).createDbEntry(transaction);
+          logger.info(`[EVENT] Patient d OK - ${event.id}.${event.versionKey} -> ${patient.id}.${patient.versionKey}`);
         }
       } else if (decision == Decision.NO_ACK) {
-        throw new Error(`[EVENT] Patient delete NO_ACK - ${event.id}.${event.versionKey}`);
+        throw new Error(`[EVENT] Patient d NO_ACK - ${event.id}.${event.versionKey} -> ${patient ? `${patient.id}.${patient.versionKey}` : 'no exist'}`);
+      } else {
+        logger.info(
+          `[EVENT] Patient d ACK(IGNORE) - ${event.id}.${event.versionKey} -> ${patient ? `${patient.id}.${patient.versionKey}` : 'no patient exist'}`,
+        );
       }
 
       await transaction.commit();

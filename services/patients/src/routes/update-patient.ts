@@ -64,7 +64,7 @@ router.put(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`[ REQ ] Patient update OK - ${patient.id}.${patient.versionKey}`);
+      logger.info(`[ REQ ] Patient u OK - ${patient.id}.${patient.versionKey}`);
 
       res.status(200).send({
         patient,
