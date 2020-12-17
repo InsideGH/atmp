@@ -10,7 +10,14 @@ export enum Decision {
   NO_ACK,
 }
 
+interface QueryByPk {
+  findByPk(id: number, opt: any): any;
+}
+
 export class EventListenerLogic {
+  /**
+   * Get a decision on how to handle the event.
+   */
   static decision(event: { versionKey: number }, curr: { versionKey: number } | null): Decision {
     /**
      * OUT OF ORDER CASE
@@ -46,5 +53,18 @@ export class EventListenerLogic {
      * We NO_ACK, to process the event later.
      */
     return Decision.NO_ACK;
+  }
+
+  /**
+   * Precheck at database NOT using a transaction on how to either ACK and NO_ACK the event. This can be used to
+   * get a partly decision.
+   */
+  static async preDatabaseCheck(model: QueryByPk, event: { id: number; versionKey: number }): Promise<Decision> {
+    const instance = await model.findByPk(event.id, {
+      attributes: ['id', 'versionKey'],
+      paranoid: false,
+    });
+    const decision = EventListenerLogic.decision(event, instance);
+    return decision;
   }
 }
