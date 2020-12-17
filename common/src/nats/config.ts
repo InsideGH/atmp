@@ -4,7 +4,7 @@ import { Message, Stan, SubscriptionOptions } from 'node-nats-streaming';
  * Common nats constants.
  */
 export const natsConstants = {
-  ackWait: 5 * 1000,
+  ackWait: 2 * 1000,
 };
 
 /**

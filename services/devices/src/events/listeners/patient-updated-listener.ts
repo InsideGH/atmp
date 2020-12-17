@@ -20,6 +20,16 @@ export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
    *
    */
   async onMessage(event: { id: number; versionKey: number; name: string }, msg: Message): Promise<void> {
+    const precheck = await EventListenerLogic.preDatabaseCheck(models.Patient, event);
+    if (precheck == Decision.ACK) {
+      msg.ack();
+      logger.info(`[EVENT] Patient u ACK/PRECHECK - ${event.id}.${event.versionKey}`);
+      return;
+    } else if (precheck == Decision.NO_ACK) {
+      logger.info(`[EVENT] Patient u NO_ACK/PRECHECK - ${event.id}.${event.versionKey}`);
+      return;
+    }
+
     const transaction = await db.sequelize.transaction();
 
     try {

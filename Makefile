@@ -180,3 +180,7 @@ dev: cluster-volumes cluster-config
 restart_devices:
 	$(eval PODNAME = $(shell sh -c "kubectl get pod -l "app=devices" --namespace=default -o jsonpath='{.items[0].metadata.name}'"))
 	kubectl delete pod $(PODNAME)
+
+restart_nats:
+	$(eval PODNAME = $(shell sh -c "kubectl get pod -l "app=nats" --namespace=default -o jsonpath='{.items[0].metadata.name}'"))
+	kubectl delete pod $(PODNAME)

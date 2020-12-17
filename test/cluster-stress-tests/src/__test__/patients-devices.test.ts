@@ -1,7 +1,7 @@
 import faker from 'faker';
 
 it('should respect versionKey while handling simultanious patient update requests', async () => {
-  const NBR_OF_UPDATED = 49;
+  const NBR_OF_UPDATED = 19;
   /**
    * Create ONE patient
    */
