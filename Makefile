@@ -146,7 +146,7 @@ minikube_delete:
 
 
 # ------------------ NATS ONE TIME SETUP STEPS (CHECK README FILE)
-nats_setup_step_1: cluster-config
+nats_setup_step_1: cluster-volumes cluster-config
 	kubectl apply -f infra/k8s-dev/nats-db-pvc.yaml
 	kubectl apply -f infra/k8s/nats-db-depl.yaml
 nats_setup_step_2:
@@ -194,6 +194,7 @@ cluster-volumes:
 
 dev: cluster-volumes cluster-config
 	skaffold dev
+
 
 
 # ------------------ STRESS TEST

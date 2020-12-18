@@ -59,12 +59,17 @@ export class EventListenerLogic {
    * Precheck at database NOT using a transaction on how to either ACK and NO_ACK the event. This can be used to
    * get a partly decision.
    */
-  static async preDatabaseCheck(model: QueryByPk, event: { id: number; versionKey: number }): Promise<Decision> {
+  static async preDatabaseCheck(model: QueryByPk, event: { id: number; versionKey: number }): Promise<{ decision: Decision; instance: any }> {
     const instance = await model.findByPk(event.id, {
       attributes: ['id', 'versionKey'],
       paranoid: false,
     });
+
     const decision = EventListenerLogic.decision(event, instance);
-    return decision;
+
+    return {
+      decision,
+      instance,
+    };
   }
 }

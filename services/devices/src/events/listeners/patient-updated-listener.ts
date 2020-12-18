@@ -1,77 +1,38 @@
-import { PatientUpdatedEvent, Subjects, logger, Listener, Decision, EventListenerLogic } from '@thelarsson/acss-common';
-import { Message, Stan } from 'node-nats-streaming';
+import { PatientUpdatedEvent, Subjects, logger } from '@thelarsson/acss-common';
+import { Stan } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import db from '../../sequelize/database';
-import { models } from '../../sequelize/models';
+import { Patient } from '../../sequelize/models/patient';
 import { DeviceRecord } from '../../record/device-record';
+import { ReplicaUpdateListener } from './base-updated-listener';
+import { Transaction } from 'sequelize/types';
 
-export class PatientUpdatedListener extends Listener<PatientUpdatedEvent> {
+export class PatientUpdatedListener extends ReplicaUpdateListener<PatientUpdatedEvent, Patient> {
   subject: Subjects.PatientUpdated = Subjects.PatientUpdated;
   queueGroupName: string = queueGroupName;
 
   constructor(client: Stan) {
-    super(client, {
-      enableDebugLogs: false,
-    });
+    super(client, { enableDebugLogs: false }, db.sequelize, Patient);
   }
 
-  /**
-   * We only want to throw back the event if everything is OK except the versionKey.
-   *
-   */
-  async onMessage(event: { id: number; versionKey: number; name: string }, msg: Message): Promise<void> {
-    const precheck = await EventListenerLogic.preDatabaseCheck(models.Patient, event);
-    if (precheck == Decision.ACK) {
-      msg.ack();
-      logger.info(`[EVENT] Patient u ACK/PRECHECK - ${event.id}.${event.versionKey}`);
-      return;
-    } else if (precheck == Decision.NO_ACK) {
-      logger.info(`[EVENT] Patient u NO_ACK/PRECHECK - ${event.id}.${event.versionKey}`);
-      return;
-    }
+  async onTransaction(data: PatientUpdatedEvent['data'], row: Patient, transaction: Transaction): Promise<void> {
+    await new DeviceRecord(this.client, 'Patient updated', row).createDbEntry(transaction);
+    logger.info(`[EVENT] Patient u OK - ${data.id}.${data.versionKey} -> ${row.id}.${row.versionKey}`);
+  }
 
-    const transaction = await db.sequelize.transaction();
+  mapUpdateCols(data: PatientUpdatedEvent['data']) {
+    return {
+      versionKey: data.versionKey,
+      name: data.name,
+      age: data.age,
+    };
+  }
 
-    try {
-      const patient = await models.Patient.findOne({
-        where: {
-          id: event.id,
-        },
-        transaction,
-        lock: transaction.LOCK.UPDATE,
-        // TODO: Figure out if we need this or if it's the testcase that requires it
-        paranoid: false,
-      });
+  infoIgnored(data: PatientUpdatedEvent['data'], row?: any): void {
+    logger.info(`[EVENT] Patient u ACK (IGNORE) - ${data.id}.${data.versionKey} -> ${row ? `${row.id}.${row.versionKey}` : 'no patient exist'}`);
+  }
 
-      const decision = EventListenerLogic.decision(event, patient);
-      if (decision == Decision.HANDLE_AND_ACK) {
-        if (patient) {
-          await patient.update(
-            {
-              versionKey: event.versionKey,
-              name: event.name,
-            },
-            { transaction },
-          );
-          await new DeviceRecord(this.client, 'Patient updated', patient).createDbEntry(transaction);
-          logger.info(`[EVENT] Patient u OK - ${event.id}.${event.versionKey} -> ${patient.id}.${patient.versionKey}`);
-        }
-      } else if (decision == Decision.NO_ACK) {
-        throw new Error(
-          `[EVENT] Patient u NO_ACK - ${event.id}.${event.versionKey} -> ${patient ? `${patient.id}.${patient.versionKey}` : 'no patient exist'}`,
-        );
-      } else {
-        logger.info(
-          `[EVENT] Patient u ACK (IGNORE) - ${event.id}.${event.versionKey} -> ${patient ? `${patient.id}.${patient.versionKey}` : 'no patient exist'}`,
-        );
-      }
-
-      await transaction.commit();
-
-      msg.ack();
-    } catch (error) {
-      await transaction.rollback();
-      throw error;
-    }
+  infoNotThisTime(data: PatientUpdatedEvent['data'], row?: any): void {
+    logger.info(`[EVENT] Patient u NO_ACK - ${data.id}.${data.versionKey} -> ${row ? `${row.id}.${row.versionKey}` : 'no patient exist'}`);
   }
 }
