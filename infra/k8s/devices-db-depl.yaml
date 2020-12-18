@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         app: devices-db
+        system: panda
     spec:
       imagePullSecrets:
         - name: regcred

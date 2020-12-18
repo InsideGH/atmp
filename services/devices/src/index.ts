@@ -37,8 +37,10 @@ const onExit = async () => {
 
     logger.info('Everything stopped. Bye!');
   } catch (error) {
+    logger.error(error, 'Catched error during onExit');
+    process.exit(1);
   } finally {
-    process.exit();
+    process.exit(0);
   }
 };
 
@@ -53,31 +55,18 @@ const boot = async () => {
    * This means that kubernetes will just think that everything
    * is OK. (we don't have any liveness probes setup).
    */
-  assertEnvVariables([
-    'DEVICES_DB_USER',
-    'DEVICES_DB_NAME',
-    'DEVICES_DB_USER_PASSWORD',
-    'NATS_URL',
-    'NATS_CLUSTER_ID',
-    'NATS_CLIENT_ID',
-    'LOG_LEVEL',
-  ]);
+  assertEnvVariables(['DEVICES_DB_USER', 'DEVICES_DB_NAME', 'DEVICES_DB_USER_PASSWORD', 'NATS_URL', 'NATS_CLUSTER_ID', 'NATS_CLIENT_ID', 'LOG_LEVEL']);
 
-  /**
-   * If something throws inside the try/catch, we will SIGINT and
-   * kubernetes will restart our pod exponential with back-off
-   * delay (10s, 20s, 40s, …), that is capped at five minutes.
-   */
   /**
    * Set up these first just in case they are needed.
    */
-  process.on('SIGINT', async () => {
+  process.on('SIGINT', () => {
     logger.info('Received SIGINT');
-    await onExit();
+    onExit();
   });
-  process.on('SIGTERM', async () => {
+  process.on('SIGTERM', () => {
     logger.info('Received SIGTERM');
-    await onExit();
+    onExit();
   });
 
   /**
@@ -92,11 +81,7 @@ const boot = async () => {
    * NATS
    */
   logger.info('Connect to nats');
-  await natsWrapper.connect(
-    process.env.NATS_CLUSTER_ID!,
-    process.env.NATS_CLIENT_ID!,
-    process.env.NATS_URL!,
-  );
+  await natsWrapper.connect(process.env.NATS_CLUSTER_ID!, process.env.NATS_CLIENT_ID!, process.env.NATS_URL!);
 
   /**
    * Send events to nats even if nats would be down.

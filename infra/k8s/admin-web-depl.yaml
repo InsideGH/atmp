@@ -11,10 +11,11 @@ spec:
     metadata:
       labels:
         app: admin-web
+        system: panda
     spec:
       containers:
         - name: admin-web
-          image: admin-web:latest
+          image: insidedocker/admin-web
 ---
 apiVersion: v1
 kind: Service

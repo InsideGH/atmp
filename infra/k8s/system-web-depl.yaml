@@ -11,10 +11,11 @@ spec:
     metadata:
       labels:
         app: system-web
+        system: panda
     spec:
       containers:
         - name: system-web
-          image: system-web:latest
+          image: insidedocker/system-web
 ---
 apiVersion: v1
 kind: Service

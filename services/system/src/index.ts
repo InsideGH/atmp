@@ -35,8 +35,10 @@ const onExit = async () => {
 
     logger.info('Everything stopped. Bye!');
   } catch (error) {
+    logger.error(error, 'Catched error during onExit');
+    process.exit(1);
   } finally {
-    process.exit();
+    process.exit(0);
   }
 };
 
@@ -64,13 +66,13 @@ const boot = async () => {
   /**
    * Set up these first just in case they are needed.
    */
-  process.on('SIGINT', async () => {
+  process.on('SIGINT', () => {
     logger.info('Received SIGINT');
-    await onExit();
+    onExit();
   });
-  process.on('SIGTERM', async () => {
+  process.on('SIGTERM', () => {
     logger.info('Received SIGTERM');
-    await onExit();
+    onExit();
   });
 
   /**

@@ -15,7 +15,7 @@ build:
     push: false
   artifacts:
     # patients
-    - image: patients
+    - image: insidedocker/patients
       context: services/patients
       docker:
         dockerfile: Dockerfile
@@ -24,7 +24,7 @@ build:
           - src: "src/**/*.ts"
             dest: .
     # devices
-    - image: devices
+    - image: insidedocker/devices
       context: services/devices
       docker:
         dockerfile: Dockerfile
@@ -33,7 +33,7 @@ build:
           - src: "src/**/*.ts"
             dest: .
     # system
-    - image: system
+    - image: insidedocker/system
       context: services/system
       docker:
         dockerfile: Dockerfile
@@ -42,7 +42,7 @@ build:
           - src: "src/**/*.ts"
             dest: .
     # system-web
-    - image: system-web
+    - image: insidedocker/system-web
       context: services/system-web
       docker:
         dockerfile: Dockerfile
@@ -57,7 +57,7 @@ build:
           - src: "styles/**/*.*"
             dest: .
     # admin-web
-    - image: admin-web
+    - image: insidedocker/admin-web
       context: services/admin-web
       docker:
         dockerfile: Dockerfile

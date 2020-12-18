@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         app: system
+        system: panda
     spec:
       imagePullSecrets:
         - name: regcred
@@ -29,7 +30,7 @@ spec:
             ['sh', '-c', 'until wget -O- http://nats-srv:8222/varz; do echo waiting for nats-srv; sleep 2; done;']
       containers:
         - name: system
-          image: system:latest
+          image: insidedocker/system
           env:
             - name: SYSTEM_DB_TIMEZONE
               valueFrom:

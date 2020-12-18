@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         app: patients
+        system: panda
     spec:
       imagePullSecrets:
         - name: regcred
@@ -29,7 +30,7 @@ spec:
             ['sh', '-c', 'until wget -O- http://nats-srv:8222/varz; do echo waiting for nats-srv; sleep 2; done;']
       containers:
         - name: patients
-          image: patients:latest
+          image: insidedocker/patients
           env:
             - name: PATIENTS_DB_TIMEZONE
               valueFrom:
