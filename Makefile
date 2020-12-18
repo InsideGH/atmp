@@ -68,21 +68,41 @@ check: build lint test
 
 # ------------------ DOCKER IMAGES
 image_adminweb:
-	(cd services/admin-web && docker build -f Dockerfile.prod -t panda-admin-web .)
+	(cd services/admin-web && docker build -f Dockerfile.prod -t insidedocker/admin-web .)
 
 image_devices:
-	(cd services/devices && docker build -f Dockerfile.prod -t panda-devices .)
+	(cd services/devices && docker build -f Dockerfile.prod -t insidedocker/devices .)
 
 image_patients:
-	(cd services/patients && docker build -f Dockerfile.prod -t panda-patients .)
+	(cd services/patients && docker build -f Dockerfile.prod -t insidedocker/patients .)
 
 image_system:
-	(cd services/system && docker build -f Dockerfile.prod -t panda-system .)
+	(cd services/system && docker build -f Dockerfile.prod -t insidedocker/system .)
 
 image_system-web:
-	(cd services/system-web && docker build -f Dockerfile.prod -t panda-system-web .)
+	(cd services/system-web && docker build -f Dockerfile.prod -t insidedocker/system-web .)
 
 images: image_adminweb image_devices image_patients image_system image_system-web
+
+
+
+# ------------------ DOCKER HUB PUSH
+push_adminweb:
+	docker push insidedocker/admin-web
+
+push_devices:
+	docker push insidedocker/devices
+
+push_patients:
+	docker push insidedocker/patients
+
+push_system:
+	docker push insidedocker/system
+
+push_systemweb:
+	docker push insidedocker/system-web
+
+push: push_adminweb push_devices push_patients push_system push_systemweb
 
 
 
@@ -184,3 +204,17 @@ restart_devices:
 restart_nats:
 	$(eval PODNAME = $(shell sh -c "kubectl get pod -l "app=nats" --namespace=default -o jsonpath='{.items[0].metadata.name}'"))
 	kubectl delete pod $(PODNAME)
+
+
+
+# ------------------ PROD LOCALLY
+prod: cluster-volumes cluster-config
+	kubectl apply -f infra/k8s-dev
+	kubectl apply -f infra/k8s
+
+prod_stop:
+	kubectl delete -f infra/k8s
+	kubectl delete -f infra/k8s-dev
+
+logs:
+	kubectl logs --selector=system=panda --max-log-requests=99 -f

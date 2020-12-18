@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: nats-db
+        system: panda
     spec:
       imagePullSecrets:
         - name: regcred
