@@ -48,7 +48,6 @@ export abstract class ReplicaCreateListener<T extends BaseEvent, TM extends Mode
         transaction,
         lock: transaction.LOCK.UPDATE,
       });
-
       if (created) {
         await this.onTransaction(data, row, transaction);
         await transaction.commit();

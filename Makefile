@@ -219,3 +219,28 @@ prod_stop:
 
 logs:
 	kubectl logs --selector=system=panda --max-log-requests=99 -f
+
+
+
+# ------------------ MONITORING (PROMETHEUS/GRAPHANA)
+# ------------------ https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack
+# ------------------ GRAFANA username: admin password: prom-operator
+# Get the base64 password:
+#   k get secret --namespace monitoring panda-monitor-grafana -o yaml
+# echo cHJvbS1vcGVyYXRvcg== | base64 -d ---> prom-operator
+#
+monitoring-install:
+	helm install panda-monitor prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+
+monitoring-uninstall:
+	helm uninstall panda-monitor
+	kubectl delete crd alertmanagerconfigs.monitoring.coreos.com
+	kubectl delete crd alertmanagers.monitoring.coreos.com
+	kubectl delete crd podmonitors.monitoring.coreos.com
+	kubectl delete crd probes.monitoring.coreos.com
+	kubectl delete crd prometheuses.monitoring.coreos.com
+	kubectl delete crd prometheusrules.monitoring.coreos.com
+	kubectl delete crd servicemonitors.monitoring.coreos.com
+	kubectl delete crd thanosrulers.monitoring.coreos.com
+	kubectl delete service panda-monitor-kube-prom-kubelet -n kube-system
+

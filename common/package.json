@@ -1,6 +1,6 @@
 {
   "name": "@thelarsson/acss-common",
-  "version": "1.0.107",
+  "version": "1.0.108",
   "description": "",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",

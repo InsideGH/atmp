@@ -45,12 +45,12 @@ export abstract class ReplicaDeletedListener<T extends BaseEvent, TM extends Mod
   async onMessage(data: T['data'], msg: Message): Promise<void> {
     const precheck = await EventListenerLogic.preDatabaseCheck(this.SequelizeModel, data);
 
-    if (precheck == Decision.ACK) {
+    if (precheck.decision == Decision.ACK) {
       msg.ack();
-      this.infoIgnored(data);
+      this.infoIgnored(data, precheck.instance);
       return;
-    } else if (precheck == Decision.NO_ACK) {
-      this.infoNotThisTime(data);
+    } else if (precheck.decision == Decision.NO_ACK) {
+      this.infoNotThisTime(data, precheck.instance);
       return;
     }
 
