@@ -146,7 +146,7 @@ minikube_delete:
 
 
 # ------------------ NATS ONE TIME SETUP STEPS (CHECK README FILE)
-nats_setup_step_1: cluster-config
+nats_setup_step_1: cluster-volumes cluster-config
 	kubectl apply -f infra/k8s-dev/nats-db-pvc.yaml
 	kubectl apply -f infra/k8s/nats-db-depl.yaml
 nats_setup_step_2:
@@ -196,6 +196,7 @@ dev: cluster-volumes cluster-config
 	skaffold dev
 
 
+
 # ------------------ STRESS TEST
 restart_devices:
 	$(eval PODNAME = $(shell sh -c "kubectl get pod -l "app=devices" --namespace=default -o jsonpath='{.items[0].metadata.name}'"))
@@ -218,3 +219,28 @@ prod_stop:
 
 logs:
 	kubectl logs --selector=system=panda --max-log-requests=99 -f
+
+
+
+# ------------------ MONITORING (PROMETHEUS/GRAPHANA)
+# ------------------ https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack
+# ------------------ GRAFANA username: admin password: prom-operator
+# Get the base64 password:
+#   k get secret --namespace monitoring panda-monitor-grafana -o yaml
+# echo cHJvbS1vcGVyYXRvcg== | base64 -d ---> prom-operator
+#
+monitoring-install:
+	helm install panda-monitor prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+
+monitoring-uninstall:
+	helm uninstall panda-monitor
+	kubectl delete crd alertmanagerconfigs.monitoring.coreos.com
+	kubectl delete crd alertmanagers.monitoring.coreos.com
+	kubectl delete crd podmonitors.monitoring.coreos.com
+	kubectl delete crd probes.monitoring.coreos.com
+	kubectl delete crd prometheuses.monitoring.coreos.com
+	kubectl delete crd prometheusrules.monitoring.coreos.com
+	kubectl delete crd servicemonitors.monitoring.coreos.com
+	kubectl delete crd thanosrulers.monitoring.coreos.com
+	kubectl delete service panda-monitor-kube-prom-kubelet -n kube-system
+
