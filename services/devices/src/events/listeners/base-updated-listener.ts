@@ -52,7 +52,9 @@ export abstract class ReplicaUpdateListener<T extends BaseEvent, TM extends Mode
     const precheck = await EventListenerLogic.preDatabaseCheck(this.SequelizeModel, data);
 
     if (precheck.decision == Decision.ACK) {
+      logger.info(`acking1 ${data.id}.${data.versionKey} sub=${msg.getSubject()} seq=${msg.getSequence()} re=${msg.isRedelivered()}`);
       msg.ack();
+      logger.info(`acked1 ${data.id}.${data.versionKey} sub=${msg.getSubject()} seq=${msg.getSequence()} re=${msg.isRedelivered()}`);
       this.infoIgnored(data, precheck.instance);
       return;
     } else if (precheck.decision == Decision.NO_ACK) {
@@ -85,8 +87,10 @@ export abstract class ReplicaUpdateListener<T extends BaseEvent, TM extends Mode
         this.infoNotThisTime(data, row);
         await transaction.rollback();
       } else {
-        this.infoIgnored(data, row);
+        logger.info(`acking2 ${data.id}.${data.versionKey} sub=${msg.getSubject()} seq=${msg.getSequence()} re=${msg.isRedelivered()}`);
         msg.ack();
+        this.infoIgnored(data, row);
+        logger.info(`acked2 ${data.id}.${data.versionKey} sub=${msg.getSubject()} seq=${msg.getSequence()} re=${msg.isRedelivered()}`);
         await transaction.rollback();
       }
     } catch (error) {

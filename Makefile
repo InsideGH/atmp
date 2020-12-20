@@ -233,7 +233,7 @@ monitoring-install:
 	helm install panda-monitor prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
 
 monitoring-uninstall:
-	helm uninstall panda-monitor
+	helm uninstall panda-monitor --namespace monitoring
 	kubectl delete crd alertmanagerconfigs.monitoring.coreos.com
 	kubectl delete crd alertmanagers.monitoring.coreos.com
 	kubectl delete crd podmonitors.monitoring.coreos.com
@@ -242,5 +242,14 @@ monitoring-uninstall:
 	kubectl delete crd prometheusrules.monitoring.coreos.com
 	kubectl delete crd servicemonitors.monitoring.coreos.com
 	kubectl delete crd thanosrulers.monitoring.coreos.com
-	kubectl delete service panda-monitor-kube-prom-kubelet -n kube-system
+	kubectl delete service panda-monitor-kube-prometh-kubelet -n kube-system
 
+# grafana username: admin
+# grafana password: kubectl get secret --namespace default loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+# https://grafana.com/docs/loki/latest/installation/helm/#deploy-loki-stack-loki-promtail-grafana-prometheus
+# helm upgrade --install loki loki/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false
+loki-grafana:
+	helm upgrade --install loki loki/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false
+
+loki-grafana-uninstall:
+	helm upgrade --uninstall loki loki/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false

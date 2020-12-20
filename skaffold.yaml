@@ -32,44 +32,44 @@ build:
         manual:
           - src: "src/**/*.ts"
             dest: .
-    # system
-    - image: insidedocker/system
-      context: services/system
-      docker:
-        dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: "src/**/*.ts"
-            dest: .
-    # system-web
-    - image: insidedocker/system-web
-      context: services/system-web
-      docker:
-        dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: "src/**/*.*"
-            dest: .
-          - src: "pages/**/*.*"
-            dest: .
-          - src: "public/**/*.*"
-            dest: .
-          - src: "styles/**/*.*"
-            dest: .
-    # admin-web
-    - image: insidedocker/admin-web
-      context: services/admin-web
-      docker:
-        dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: "src/**/*.*"
-            dest: .
-          - src: "pages/**/*.*"
-            dest: .
-          - src: "public/**/*.*"
-            dest: .
-          - src: "styles/**/*.*"
-            dest: .
+    # # system
+    # - image: insidedocker/system
+    #   context: services/system
+    #   docker:
+    #     dockerfile: Dockerfile
+    #   sync:
+    #     manual:
+    #       - src: "src/**/*.ts"
+    #         dest: .
+    # # system-web
+    # - image: insidedocker/system-web
+    #   context: services/system-web
+    #   docker:
+    #     dockerfile: Dockerfile
+    #   sync:
+    #     manual:
+    #       - src: "src/**/*.*"
+    #         dest: .
+    #       - src: "pages/**/*.*"
+    #         dest: .
+    #       - src: "public/**/*.*"
+    #         dest: .
+    #       - src: "styles/**/*.*"
+    #         dest: .
+    # # admin-web
+    # - image: insidedocker/admin-web
+    #   context: services/admin-web
+    #   docker:
+    #     dockerfile: Dockerfile
+    #   sync:
+    #     manual:
+    #       - src: "src/**/*.*"
+    #         dest: .
+    #       - src: "pages/**/*.*"
+    #         dest: .
+    #       - src: "public/**/*.*"
+    #         dest: .
+    #       - src: "styles/**/*.*"
+    #         dest: .
 
 
