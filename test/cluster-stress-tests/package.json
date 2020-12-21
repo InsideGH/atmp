@@ -22,7 +22,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@thelarsson/acss-common": "^1.0.82",
+    "@thelarsson/acss-common": "^1.0.109",
     "@types/faker": "^5.1.5",
     "@types/node-fetch": "^2.5.7",
     "faker": "^5.1.0",

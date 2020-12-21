@@ -145,20 +145,23 @@ minikube_delete:
 
 
 
-# ------------------ NATS ONE TIME SETUP STEPS (CHECK README FILE)
-nats_setup_step_1: cluster-volumes cluster-config
-	kubectl apply -f infra/k8s-dev/nats-db-pvc.yaml
-	kubectl apply -f infra/k8s/nats-db-depl.yaml
-nats_setup_step_2:
-	$(eval PODNAME = $(shell sh -c "kubectl get pod -l "app=nats-db" --namespace=default -o jsonpath='{.items[0].metadata.name}'"))
-	cat setup/nats-streaming-server/scripts/postgres.db.sql | kubectl exec -it $(PODNAME) -- psql -h 127.0.0.1 nats_streaming 1
-nats_setup_step_3:
-	kubectl delete -f infra/k8s/nats-db-depl.yaml
-	kubectl delete -f infra/k8s-dev/nats-db-pvc.yaml
-# ------------------ NATS DROP
-nats_drop:
-	$(eval PODNAME = $(shell sh -c "kubectl get pod -l "app=nats-db" --namespace=default -o jsonpath='{.items[0].metadata.name}'"))
-	cat setup/nats-streaming-server/scripts/drop_postgres.db.sql | kubectl exec -it $(PODNAME) -- psql -h 127.0.0.1 nats_streaming 1
+# ------------------ NATS ONE TIME SETUP STEPS WHEN SETTING UP SQL STORAGE
+# ------------------ DO NOT USE THIS, SINCE WE ARE USING FILE STORAGE
+# ------------------ FILE STORAGE SEEMS MORE ROBUST
+# ------------------ NOT THAT EVENTS HAS BEEN LOST, BUT SOME STRANGE REDELIVERY UPON NATS RESTARTS WITH SQL STORE
+# nats_sqlstore_setup_step_1: cluster-volumes cluster-config
+# 	kubectl apply -f infra/k8s-dev/nats-db-pvc.yaml
+# 	kubectl apply -f infra/k8s/nats-db-depl.yaml
+# nats_sqlstore_setup_step_2:
+# 	$(eval PODNAME = $(shell sh -c "kubectl get pod -l "app=nats-db" --namespace=default -o jsonpath='{.items[0].metadata.name}'"))
+# 	cat setup/nats-streaming-server/scripts/postgres.db.sql | kubectl exec -it $(PODNAME) -- psql -h 127.0.0.1 nats_streaming 1
+# nats_sqlstore_setup_step_3:
+# 	kubectl delete -f infra/k8s/nats-db-depl.yaml
+# 	kubectl delete -f infra/k8s-dev/nats-db-pvc.yaml
+# # ------------------ NATS DROP SQL TABLES
+# nats_drop:
+# 	$(eval PODNAME = $(shell sh -c "kubectl get pod -l "app=nats-db" --namespace=default -o jsonpath='{.items[0].metadata.name}'"))
+# 	cat setup/nats-streaming-server/scripts/drop_postgres.db.sql | kubectl exec -it $(PODNAME) -- psql -h 127.0.0.1 nats_streaming 1
 
 
 
@@ -229,20 +232,23 @@ logs:
 #   k get secret --namespace monitoring panda-monitor-grafana -o yaml
 # echo cHJvbS1vcGVyYXRvcg== | base64 -d ---> prom-operator
 #
-monitoring-install:
-	helm install panda-monitor prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+# The following is based on helm chart: prometheus-community/kube-prometheus-stack
+# 
+# NOT USED, USING LOKI HELM CHART (BELOW) INSTEAD
+# monitoring-install:
+# 	helm install panda-monitor prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
 
-monitoring-uninstall:
-	helm uninstall panda-monitor --namespace monitoring
-	kubectl delete crd alertmanagerconfigs.monitoring.coreos.com
-	kubectl delete crd alertmanagers.monitoring.coreos.com
-	kubectl delete crd podmonitors.monitoring.coreos.com
-	kubectl delete crd probes.monitoring.coreos.com
-	kubectl delete crd prometheuses.monitoring.coreos.com
-	kubectl delete crd prometheusrules.monitoring.coreos.com
-	kubectl delete crd servicemonitors.monitoring.coreos.com
-	kubectl delete crd thanosrulers.monitoring.coreos.com
-	kubectl delete service panda-monitor-kube-prometh-kubelet -n kube-system
+# monitoring-uninstall:
+# 	helm uninstall panda-monitor --namespace monitoring
+# 	kubectl delete crd alertmanagerconfigs.monitoring.coreos.com
+# 	kubectl delete crd alertmanagers.monitoring.coreos.com
+# 	kubectl delete crd podmonitors.monitoring.coreos.com
+# 	kubectl delete crd probes.monitoring.coreos.com
+# 	kubectl delete crd prometheuses.monitoring.coreos.com
+# 	kubectl delete crd prometheusrules.monitoring.coreos.com
+# 	kubectl delete crd servicemonitors.monitoring.coreos.com
+# 	kubectl delete crd thanosrulers.monitoring.coreos.com
+# 	kubectl delete service panda-monitor-kube-prometh-kubelet -n kube-system
 
 # grafana username: admin
 # grafana password: kubectl get secret --namespace default loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
