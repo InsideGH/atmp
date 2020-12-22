@@ -129,7 +129,10 @@ bump_devices:
 bump_system:
 	(cd services/system && ncu --filter @thelarsson/acss-common -u && npm i)
 
-bump_all: bump_patients bump_devices bump_system
+bump_test:
+	(cd test/cluster-stress-tests && ncu --filter @thelarsson/acss-common -u && npm i)
+
+bump_all: bump_patients bump_devices bump_system bump_test
 
 common: common_pub bump_all
 
