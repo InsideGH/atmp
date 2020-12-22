@@ -18,4 +18,11 @@ export enum Subjects {
   DeviceCreated = 'device.created',
   DeviceUpdated = 'device.updated',
   DeviceDeleted = 'device.deleted',
+
+  /**
+   * These are used by test. Do not use these for anything else than test.
+   */
+  TestCreated = 'test.created',
+  TestUpdated = 'test.updated',
+  TestDeleted = 'test.deleted',
 }

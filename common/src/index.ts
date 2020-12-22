@@ -73,3 +73,10 @@ export * from './test/sqlite-memory-db';
  * RECORD PERSISTOR
  */
 export * from './record-persistor/sequelize/record-persistor';
+
+/**
+ * TABLE REPLICATOR
+ */
+export * from './table-replica/sequelize/replica-created-listener';
+export * from './table-replica/sequelize/replica-updated-listener';
+export * from './table-replica/sequelize/replica-deleted-listener';

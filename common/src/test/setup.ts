@@ -4,6 +4,8 @@ import { initialize } from './initialize';
 import { stripKeys } from '../util/strip-keys';
 import { stanMock } from './stan-mock';
 
+jest.mock('../logger/pino');
+
 const sqliteMemoryDatabase = new Database();
 
 declare global {
