@@ -47,7 +47,7 @@ class NatsWrapper {
       url,
       ackTimeout: 30000,
       connectTimeout: 2000,
-      stanMaxPingOut: 300, // default 3
+      stanMaxPingOut: 3, // default 3
       stanPingInterval: 5000,
     });
 

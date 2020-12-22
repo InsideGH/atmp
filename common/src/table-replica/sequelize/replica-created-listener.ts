@@ -1,8 +1,23 @@
-import { BaseEvent, Listener, logger } from '@thelarsson/acss-common';
+import { BaseEvent } from '../../events/base/base-event';
+import { Listener } from '../../events/base/base-listener';
+import { logger } from '../../logger/pino';
 import { Model, Sequelize, Transaction } from 'sequelize';
 import { Message, Stan } from 'node-nats-streaming';
 
-export abstract class ReplicaCreateListener<T extends BaseEvent, TM extends Model> extends Listener<T> {
+/**
+ * A nats listener that is used as a base class. This will create a new entry in the database (CREATE).
+ *
+ * 2 methods must be provided by the implementor + 1 optional,
+ *
+ * required:
+ *   onTransaction
+ *   mapCreateCols
+ *
+ * optional:
+ *   infoIgnored
+ *
+ */
+export abstract class ReplicaCreatedListener<T extends BaseEvent, TM extends Model> extends Listener<T> {
   /**
    * The created replica is provided UNDER ONGOING TRANSACTION. No need to commit or
    * rollback transaction, we will handle that.
@@ -26,7 +41,7 @@ export abstract class ReplicaCreateListener<T extends BaseEvent, TM extends Mode
    * @param data Event data
    * @param row Database row
    */
-  abstract infoIgnored(data: T['data'], row: any): void;
+  infoIgnored?(data: T['data'], row: any): void;
 
   /**
    * Using <<<<< ANY >>>>> for the sequelize static model here...can't get typescript work with Sequelize, passing model as argument...it's just a pain...
@@ -48,18 +63,22 @@ export abstract class ReplicaCreateListener<T extends BaseEvent, TM extends Mode
         transaction,
         lock: transaction.LOCK.UPDATE,
       });
+
       if (created) {
         await this.onTransaction(data, row, transaction);
         await transaction.commit();
       } else {
-        this.infoIgnored(data, row);
+        if (this.infoIgnored) {
+          this.infoIgnored(data, row);
+        }
         await transaction.rollback();
       }
 
       msg.ack();
     } catch (error) {
-      logger.error(error, `ReplicaCreateListener error data.id=${data.id} subject=${msg.getSubject()}`);
+      logger.error(error, `ReplicaCreatedListener error data.id=${data.id} subject=${msg.getSubject()}`);
       await transaction.rollback();
+      throw error;
     }
 
     return;

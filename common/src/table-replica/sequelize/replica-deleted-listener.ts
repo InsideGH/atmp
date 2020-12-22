@@ -1,24 +1,34 @@
-import { BaseEvent, Decision, EventListenerLogic, Listener, logger } from '@thelarsson/acss-common';
+import { BaseEvent } from '../../events/base/base-event';
+import { Listener } from '../../events/base/base-listener';
+import { logger } from '../../logger/pino';
 import { Model, Sequelize, Transaction } from 'sequelize';
 import { Message, Stan } from 'node-nats-streaming';
+import { Decision, EventListenerLogic } from '../../events/event-listener-logic';
 
-export abstract class ReplicaUpdateListener<T extends BaseEvent, TM extends Model> extends Listener<T> {
+/**
+ * A nats listener that is used as a base class. This will delete a entry in the database (DELETE).
+ *
+ * 1 methods must be provided by the implementor + 2 optional,
+ *
+ * required:
+ *   onTransaction
+ *
+ * optional:
+ *   infoIgnored
+ *   infoNotThisTime
+ *
+ */
+export abstract class ReplicaDeletedListener<T extends BaseEvent, TM extends Model> extends Listener<T> {
   /**
-   * The updated replica is provided UNDER ONGOING TRANSACTION. No need to commit or
-   * rollback transaction, we will handle that.
+   * The replica to be deleted is provided UNDER ONGOING TRANSACTION. No need to commit or
+   * rollback transaction, we will handle that. The replica has NOT yet been destroyed
+   * under the ongoing transaction, but will be after returning from this method.
    *
    * @param data Event data
    * @param row The database instance
    * @param transaction Ongoing sequalize transaction
    */
   abstract onTransaction(data: T['data'], row: TM, transaction: Transaction): Promise<void>;
-
-  /**
-   * The event data should be used to map it to database base column structure.
-   *
-   * @param data Event data
-   */
-  abstract mapUpdateCols(data: T['data']): any;
 
   /**
    * Information that the event has been ignored due to that
@@ -28,7 +38,7 @@ export abstract class ReplicaUpdateListener<T extends BaseEvent, TM extends Mode
    * @param data Event data
    * @param row Database row
    */
-  abstract infoIgnored(data: T['data'], row?: any): void;
+  infoIgnored?(data: T['data'], row?: any): void;
 
   /**
    * Information that the event has been not been update due to that
@@ -39,7 +49,7 @@ export abstract class ReplicaUpdateListener<T extends BaseEvent, TM extends Mode
    * @param data Event data
    * @param row Database row
    */
-  abstract infoNotThisTime(data: T['data'], row?: any): void;
+  infoNotThisTime?(data: T['data'], row?: any): void;
 
   /**
    * Using <<<<< ANY >>>>> for the sequelize static model here...can't get typescript work with Sequelize, passing model as argument...it's just a pain...
@@ -53,10 +63,14 @@ export abstract class ReplicaUpdateListener<T extends BaseEvent, TM extends Mode
 
     if (precheck.decision == Decision.ACK) {
       msg.ack();
-      this.infoIgnored(data, precheck.instance);
+      if (this.infoIgnored) {
+        this.infoIgnored(data, precheck.instance);
+      }
       return;
     } else if (precheck.decision == Decision.NO_ACK) {
-      this.infoNotThisTime(data, precheck.instance);
+      if (this.infoNotThisTime) {
+        this.infoNotThisTime(data, precheck.instance);
+      }
       return;
     }
 
@@ -72,26 +86,34 @@ export abstract class ReplicaUpdateListener<T extends BaseEvent, TM extends Mode
       const decision = EventListenerLogic.decision(data, row);
       if (decision == Decision.HANDLE_AND_ACK) {
         if (row) {
-          const updateObject = this.mapUpdateCols(data);
-          delete updateObject.id;
-          await row.update(updateObject, { transaction });
+          await row.update(
+            {
+              versionKey: data.versionKey,
+            },
+            { transaction },
+          );
           await this.onTransaction(data, row, transaction);
+          await row.destroy({ transaction });
           await transaction.commit();
           msg.ack();
         } else {
           throw new Error(`not possible that row is undefined if decision is HANDLE_AND_ACK, data.id=${data.id} subject=${msg.getSubject()}`);
         }
       } else if (decision == Decision.NO_ACK) {
-        this.infoNotThisTime(data, row);
+        if (this.infoNotThisTime) {
+          this.infoNotThisTime(data, row);
+        }
         await transaction.rollback();
       } else {
-        this.infoIgnored(data, row);
         msg.ack();
+        if (this.infoIgnored) {
+          this.infoIgnored(data, row);
+        }
         await transaction.rollback();
       }
     } catch (error) {
       await transaction.rollback();
-      logger.error(error, `ReplicaUpdateListener error data.id=${data.id} subject=${msg.getSubject()}`);
+      logger.error(error, `ReplicaDeletedListener error data.id=${data.id} subject=${msg.getSubject()}`);
     }
     return;
   }

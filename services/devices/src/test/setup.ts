@@ -11,6 +11,7 @@ declare global {
   }
 }
 
+jest.mock('@thelarsson/acss-common/build/logger/pino');
 jest.mock('../sequelize/database');
 jest.mock('../sequelize/initialize');
 jest.mock('../nats-wrapper');
