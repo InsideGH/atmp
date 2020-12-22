@@ -203,7 +203,7 @@ dev: cluster-volumes cluster-config
 
 
 
-# ------------------ STRESS TEST
+# ------------------ STRESS TEST MISC UTILS
 restart_devices:
 	$(eval PODNAME = $(shell sh -c "kubectl get pod -l "app=devices" --namespace=default -o jsonpath='{.items[0].metadata.name}'"))
 	kubectl delete pod $(PODNAME)
@@ -257,8 +257,13 @@ logs:
 # grafana password: kubectl get secret --namespace default loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 # https://grafana.com/docs/loki/latest/installation/helm/#deploy-loki-stack-loki-promtail-grafana-prometheus
 # helm upgrade --install loki loki/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false
+
 loki-grafana:
 	helm upgrade --install loki loki/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false
 
 loki-grafana-uninstall:
 	helm upgrade --uninstall loki loki/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false
+
+grafana:
+	$(eval PODNAME = $(shell sh -c "kubectl get pod -l "app.kubernetes.io/name=grafana" --namespace=default -o jsonpath='{.items[0].metadata.name}'"))
+	kubectl port-forward $(PODNAME) 3000
