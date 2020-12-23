@@ -24,10 +24,13 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
     statusCode = 400;
   }
 
-  apiLogger.error({
-    statusCode,
-    errors,
-  });
+  apiLogger.error(
+    {
+      statusCode,
+      errors,
+    },
+    'Something went wrong',
+  );
 
   res.status(statusCode).send({
     errors,
