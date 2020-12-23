@@ -13,7 +13,7 @@ export const logger = pino({
   prettyPrint :false,
 });
 
-export const reqLogger = logger.child({ domain: 'API' });
+export const apiLogger = logger.child({ domain: 'API' });
 
 export const eventLogger = logger.child({ domain: 'EVENT' });
 
