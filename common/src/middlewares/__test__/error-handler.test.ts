@@ -7,7 +7,7 @@ it('error handler triggered when requesting non-existing url', async () => {
   expect(response.body.errors).toBeDefined();
   expect(response.body.errors.length).toEqual(1);
   expect(response.body.errors[0]).toEqual({
-    errorMsg: 'Not found',
+    message: 'Not found',
   });
 });
 
@@ -27,7 +27,7 @@ it('error handler triggered when throwing custom error inside existing route', a
   expect(response.body.errors).toBeDefined();
   expect(response.body.errors.length).toEqual(1);
   expect(response.body.errors[0]).toEqual({
-    errorMsg: 'My bad request message',
+    message: 'My bad request message',
   });
 });
 
@@ -42,7 +42,7 @@ it('error handler triggered when throwing build in error inside existing route',
   expect(response.body.errors).toBeDefined();
   expect(response.body.errors.length).toEqual(1);
   expect(response.body.errors[0]).toEqual({
-    errorMsg: 'Something went wrong',
+    message: 'Something went wrong',
   });
 });
 
@@ -53,6 +53,6 @@ it('error handler triggered when passing in faulty parameter', async () => {
   expect(response.body.errors.length).toEqual(1);
   expect(response.body.errors[0]).toEqual({
     field: 'code',
-    errorMsg: 'code is required',
+    message: 'code is required',
   });
 });

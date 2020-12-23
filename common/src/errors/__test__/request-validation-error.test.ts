@@ -24,12 +24,12 @@ it('serializes the error', () => {
   expect(serialized.length).toEqual(2);
 
   expect(serialized[0]).toEqual({
-    errorMsg: 'Name is required',
+    message: 'Name is required',
     field: 'name',
   });
 
   expect(serialized[1]).toEqual({
-    errorMsg: 'Age is required',
+    message: 'Age is required',
     field: 'age',
   });
 

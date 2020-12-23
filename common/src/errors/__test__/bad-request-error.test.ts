@@ -11,7 +11,7 @@ it('serializes the error', () => {
   expect(serialized.length).toEqual(1);
 
   expect(serialized[0]).toEqual({
-    errorMsg: 'Hello',
+    message: 'Hello',
   });
 
   expect(error.message).toEqual('Hello');

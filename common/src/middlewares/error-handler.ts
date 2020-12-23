@@ -13,14 +13,23 @@ import { apiLogger } from '../logger/pino';
  *
  */
 export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+  let statusCode;
+  let errors;
+
   if (err instanceof CustomError) {
-    apiLogger.error(err.serializeErrors());
-    return res.status(err.statusCode).send({ errors: err.serializeErrors() });
+    errors = err.serializeErrors();
+    statusCode = err.statusCode;
+  } else {
+    errors = [{ message: 'Something went wrong' }];
+    statusCode = 400;
   }
 
-  apiLogger.error(err);
+  apiLogger.error({
+    statusCode,
+    errors,
+  });
 
-  res.status(400).send({
-    errors: [{ errorMsg: 'Something went wrong' }],
+  res.status(statusCode).send({
+    errors,
   });
 };
