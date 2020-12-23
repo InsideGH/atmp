@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import {
   validateRequest,
-  logger,
+  apiLogger,
   Subjects,
   DeviceCreatedEvent,
   eventPersistor,
@@ -53,7 +53,7 @@ router.post(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`[ REQ ] Device create OK - ${device.id} created`);
+      apiLogger.info(`[ REQ ] Device create OK - ${device.id} created`);
 
       res.status(201).send({
         device,

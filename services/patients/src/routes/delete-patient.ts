@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { validateRequest, logger, Subjects, eventPersistor, BadRequestError, PatientDeletedEvent } from '@thelarsson/acss-common';
+import { validateRequest, apiLogger, Subjects, eventPersistor, BadRequestError, PatientDeletedEvent } from '@thelarsson/acss-common';
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
 import { PatientRecord } from '../record/patient-record';
@@ -42,7 +42,7 @@ router.delete('/', [body('id').isNumeric().withMessage('patiend id is required')
     internalPublisher.publish();
     record.publishId();
 
-    logger.info(`[ REQ ] Patient d OK - ${patient.id}.${patient.versionKey}(${nextVersionKey})`);
+    apiLogger.info(`[ REQ ] Patient d OK - ${patient.id}.${patient.versionKey}(${nextVersionKey})`);
 
     res.status(200).send({
       patient,

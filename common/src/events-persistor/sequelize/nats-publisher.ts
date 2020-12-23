@@ -1,4 +1,4 @@
-import { logger } from '../../logger/pino';
+import { eventLogger } from '../../logger/pino';
 import { AnyPublisher } from './any-publisher';
 import { Event } from './models/event';
 import { Stan } from 'node-nats-streaming';
@@ -24,7 +24,7 @@ export class NatsPublisher {
      */
     if (!event) {
       const errorMessage = `[${this.name}] Event ${id} send FAIL - not found`;
-      logger.error(errorMessage);
+      eventLogger.error(errorMessage);
       throw new Error(errorMessage);
     }
 
@@ -32,7 +32,7 @@ export class NatsPublisher {
      * Already sent for some reason. Probably a cron job managed to get inbetween.
      */
     if (event.sent) {
-      return logger.info(
+      return eventLogger.info(
         `[${this.name}] Event data.${event.data.id}.${event.data.versionKey} send IGNORED - already sent`,
       );
     }
@@ -60,6 +60,6 @@ export class NatsPublisher {
     event.sent = true;
     await event.save();
 
-    logger.info(`[${this.name}] Event data.${event.data.id}.${event.data.versionKey} send OK`);
+    eventLogger.info(`[${this.name}] Event data.${event.data.id}.${event.data.versionKey} send OK`);
   }
 }

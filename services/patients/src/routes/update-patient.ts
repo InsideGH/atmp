@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import {
   validateRequest,
-  logger,
+  apiLogger,
   Subjects,
   eventPersistor,
   BadRequestError,
@@ -64,7 +64,7 @@ router.put(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`[ REQ ] Patient u OK - ${patient.id}.${patient.versionKey}`);
+      apiLogger.info(`[ REQ ] Patient u OK - ${patient.id}.${patient.versionKey}`);
 
       res.status(200).send({
         patient,

@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import {
   validateRequest,
-  logger,
+  apiLogger,
   Subjects,
   DeviceCreatedEvent,
   eventPersistor,
@@ -91,7 +91,7 @@ router.post(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`[ REQ ] Device assign OK - ${device.id} assigned to ${patient.id}`);
+      apiLogger.info(`[ REQ ] Device assign OK - ${device.id} assigned to ${patient.id}`);
 
       res.status(200).send({ device });
     } catch (error) {

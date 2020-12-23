@@ -2,10 +2,11 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import {
   validateRequest,
-  logger,
+  apiLogger,
   Subjects,
   PatientCreatedEvent,
   eventPersistor,
+  logger,
 } from '@thelarsson/acss-common';
 import db from '../sequelize/database';
 import { models } from '../sequelize/models';
@@ -52,7 +53,7 @@ router.post(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`[ REQ ] Patient c OK - ${patient.id}.${patient.versionKey}`);
+      apiLogger.info(`[ REQ ] Patient c OK - ${patient.id}.${patient.versionKey}`);
 
       res.status(201).send({
         patient,
