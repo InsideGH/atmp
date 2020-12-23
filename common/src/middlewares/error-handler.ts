@@ -13,29 +13,32 @@ import { apiLogger } from '../logger/pino';
  *
  */
 export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
-  let statusCode;
-  let errors;
-  let msg;
-
   if (err instanceof CustomError) {
-    msg = err.toString();
-    errors = err.serializeErrors();
-    statusCode = err.statusCode;
-  } else {
-    msg = 'Something went wrong';
-    errors = [{ message: msg }];
-    statusCode = 400;
-  }
+    const msg = err.toString();
+    const errors = err.serializeErrors();
+    const statusCode = err.statusCode;
 
-  apiLogger.error(
-    {
-      statusCode,
+    apiLogger.error(
+      {
+        statusCode,
+        errors,
+      },
+      msg,
+    );
+
+    res.status(statusCode).send({
       errors,
-    },
-    msg,
-  );
+    });
+  } else {
+    const msg = 'Something went wrong';
 
-  res.status(statusCode).send({
-    errors,
-  });
+    apiLogger.error(err, msg);
+
+    const errors = [{ message: msg }];
+    const statusCode = 400;
+
+    res.status(statusCode).send({
+      errors,
+    });
+  }
 };
