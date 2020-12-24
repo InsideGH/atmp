@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import {
   validateRequest,
-  logger,
+  apiLogger,
   Subjects,
   eventPersistor,
   BadRequestError,
@@ -90,7 +90,7 @@ router.post(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`[ REQ ] Device unassign OK - ${device.id} unassigned from ${patient.id}`);
+      apiLogger.info(`[ REQ ] Device unassign OK - ${device.id} unassigned from ${patient.id}`);
 
       res.status(200).send({ device });
     } catch (error) {

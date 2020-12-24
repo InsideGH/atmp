@@ -1,5 +1,5 @@
 import nats, { Stan } from 'node-nats-streaming';
-import { logger } from '@thelarsson/acss-common';
+import { systemLogger } from '@thelarsson/acss-common';
 
 class NatsWrapper {
   /**
@@ -55,7 +55,7 @@ class NatsWrapper {
      * When connect, save state about it.
      */
     this._client.on('connect', () => {
-      logger.info('nats-wrapper: connect received');
+      systemLogger.info('nats-wrapper: connect received');
       this.isConnected = false;
     });
 
@@ -63,7 +63,7 @@ class NatsWrapper {
      * When close, save state about it.
      */
     this._client.on('close', () => {
-      logger.info('nats-wrapper: close received');
+      systemLogger.info('nats-wrapper: close received');
       this.isConnected = false;
     });
 
@@ -71,22 +71,22 @@ class NatsWrapper {
      * These are here for educational purposes.
      */
     this._client.on('disconnect', () => {
-      logger.info('nats-wrapper: disconnect received');
+      systemLogger.info('nats-wrapper: disconnect received');
     });
     this._client.on('reconnect', () => {
-      logger.info('nats-wrapper: reconnect received');
+      systemLogger.info('nats-wrapper: reconnect received');
     });
     this._client.on('reconnecting', () => {
-      logger.info('nats-wrapper: reconnecting received');
+      systemLogger.info('nats-wrapper: reconnecting received');
     });
     this._client.on('error', (err) => {
-      logger.error(`nats-wrapper: error received ${err}`);
+      systemLogger.error(`nats-wrapper: error received ${err}`);
     });
     this._client.on('permission_error', () => {
-      logger.error('nats-wrapper: permission_error received');
+      systemLogger.error('nats-wrapper: permission_error received');
     });
     this._client.on('connection_lost', () => {
-      logger.error('nats-wrapper: connection_lost received');
+      systemLogger.error('nats-wrapper: connection_lost received');
     });
 
     /**
@@ -106,7 +106,7 @@ class NatsWrapper {
   onConnectionLost(cb: Function) {
     if (this._client) {
       this._client.on('connection_lost', () => {
-        logger.error('nats-wrapper: onConnectionLost cb connection_lost received');
+        systemLogger.error('nats-wrapper: onConnectionLost cb connection_lost received');
         cb();
       });
     }
@@ -119,7 +119,7 @@ class NatsWrapper {
       }
 
       this._client.on('close', () => {
-        logger.info('nats-wrapper: disconnect called and close event received ok');
+        systemLogger.info('nats-wrapper: disconnect called and close event received ok');
         return resolve(true);
       });
 
