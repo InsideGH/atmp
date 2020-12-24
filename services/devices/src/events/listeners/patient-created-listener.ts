@@ -1,4 +1,4 @@
-import { PatientCreatedEvent, Subjects, logger, ReplicaCreatedListener } from '@thelarsson/acss-common';
+import { PatientCreatedEvent, Subjects, eventLogger, ReplicaCreatedListener } from '@thelarsson/acss-common';
 import { Stan } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import db from '../../sequelize/database';
@@ -16,7 +16,7 @@ export class PatientCreatedListener extends ReplicaCreatedListener<PatientCreate
 
   async onTransaction(data: PatientCreatedEvent['data'], row: Patient, transaction: Transaction): Promise<void> {
     await new DeviceRecord(this.client, 'Patient created', row).createDbEntry(transaction);
-    logger.info(`[EVENT] Patient c [OK      ] ${row.id}.${row.versionKey}`);
+    eventLogger.info(`[EVENT] Patient c [OK      ] ${row.id}.${row.versionKey}`);
   }
 
   mapCreateCols(data: PatientCreatedEvent['data']) {
@@ -28,6 +28,6 @@ export class PatientCreatedListener extends ReplicaCreatedListener<PatientCreate
   }
 
   infoIgnored(data: PatientCreatedEvent['data'], row: any): void {
-    logger.info(`[EVENT] Patient c [ACK(IGN)] ${data.id}.${data.versionKey} -| ${row.id}.${row.versionKey}`);
+    eventLogger.info(`[EVENT] Patient c [ACK(IGN)] ${data.id}.${data.versionKey} -| ${row.id}.${row.versionKey}`);
   }
 }

@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import {
   validateRequest,
-  logger,
+  apiLogger,
   Subjects,
   eventPersistor,
   BadRequestError,
@@ -56,7 +56,7 @@ router.delete(
       internalPublisher.publish();
       record.publishId();
 
-      logger.info(`[ REQ ] Device delete OK - ${device.id} deleted`);
+      apiLogger.info(`[ REQ ] Device delete OK - ${device.id} deleted`);
 
       res.status(200).send({
         deleted: true,

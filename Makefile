@@ -262,7 +262,7 @@ loki-grafana:
 	helm upgrade --install loki loki/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false
 
 loki-grafana-uninstall:
-	helm upgrade --uninstall loki loki/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false
+	helm uninstall loki
 
 grafana:
 	$(eval PODNAME = $(shell sh -c "kubectl get pod -l "app.kubernetes.io/name=grafana" --namespace=default -o jsonpath='{.items[0].metadata.name}'"))

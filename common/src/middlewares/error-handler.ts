@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { CustomError } from '../errors/custom-error';
-import { logger } from '../logger/pino';
+import { apiLogger } from '../logger/pino';
 
 /**
  * Express error middleware. Should be placed at the very last middleware.
@@ -14,13 +14,31 @@ import { logger } from '../logger/pino';
  */
 export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof CustomError) {
-    logger.error(err.serializeErrors());
-    return res.status(err.statusCode).send({ errors: err.serializeErrors() });
+    const msg = err.toString();
+    const errors = err.serializeErrors();
+    const statusCode = err.statusCode;
+
+    apiLogger.error(
+      {
+        statusCode,
+        errors,
+      },
+      msg,
+    );
+
+    res.status(statusCode).send({
+      errors,
+    });
+  } else {
+    const msg = 'Something went wrong';
+
+    apiLogger.error(err, msg);
+
+    const errors = [{ message: msg }];
+    const statusCode = 400;
+
+    res.status(statusCode).send({
+      errors,
+    });
   }
-
-  logger.error(err);
-
-  res.status(400).send({
-    errors: [{ message: 'Something went wrong' }],
-  });
 };
