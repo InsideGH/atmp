@@ -129,6 +129,9 @@ bump_devices:
 bump_system:
 	(cd services/system && ncu --filter @thelarsson/acss-common -u && npm i)
 
+bump_admin-web:
+	(cd services/admin-web && ncu --filter @thelarsson/acss-common -u && npm i)
+
 bump_test:
 	(cd test/cluster-stress-tests && ncu --filter @thelarsson/acss-common -u && npm i)
 
@@ -237,32 +240,41 @@ logs:
 #
 # The following is based on helm chart: prometheus-community/kube-prometheus-stack
 # 
-# NOT USED, USING LOKI HELM CHART (BELOW) INSTEAD
-# monitoring-install:
-# 	helm install panda-monitor prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+monitoring-install:
+	- helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+	- helm repo add stable https://charts.helm.sh/stable
+	- helm repo update
+	- helm install panda-monitoring prometheus-community/kube-prometheus-stack
 
-# monitoring-uninstall:
-# 	helm uninstall panda-monitor --namespace monitoring
-# 	kubectl delete crd alertmanagerconfigs.monitoring.coreos.com
-# 	kubectl delete crd alertmanagers.monitoring.coreos.com
-# 	kubectl delete crd podmonitors.monitoring.coreos.com
-# 	kubectl delete crd probes.monitoring.coreos.com
-# 	kubectl delete crd prometheuses.monitoring.coreos.com
-# 	kubectl delete crd prometheusrules.monitoring.coreos.com
-# 	kubectl delete crd servicemonitors.monitoring.coreos.com
-# 	kubectl delete crd thanosrulers.monitoring.coreos.com
-# 	kubectl delete service panda-monitor-kube-prometh-kubelet -n kube-system
+monitoring-uninstall:
+	helm uninstall panda-monitoring
+	kubectl delete crd alertmanagerconfigs.monitoring.coreos.com
+	kubectl delete crd alertmanagers.monitoring.coreos.com
+	kubectl delete crd podmonitors.monitoring.coreos.com
+	kubectl delete crd probes.monitoring.coreos.com
+	kubectl delete crd prometheuses.monitoring.coreos.com
+	kubectl delete crd prometheusrules.monitoring.coreos.com
+	kubectl delete crd servicemonitors.monitoring.coreos.com
+	kubectl delete crd thanosrulers.monitoring.coreos.com
+	kubectl delete svc panda-monitoring-kube-prom-kubelet -n kube-system
+	
+loki-install:
+	- helm repo add grafana https://grafana.github.io/helm-charts
+	helm repo update
+	helm upgrade --install loki grafana/loki-stack
+loki-uninstall:
+	helm uninstall loki
 
 # grafana username: admin
 # grafana password: kubectl get secret --namespace default loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 # https://grafana.com/docs/loki/latest/installation/helm/#deploy-loki-stack-loki-promtail-grafana-prometheus
 # helm upgrade --install loki loki/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false
+# NOT USED, OLD VERSION OF GRAFANA
+# loki-grafana:
+# 	helm upgrade --install loki loki/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false
 
-loki-grafana:
-	helm upgrade --install loki loki/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false
-
-loki-grafana-uninstall:
-	helm uninstall loki
+# loki-grafana-uninstall:
+# 	helm uninstall loki
 
 grafana:
 	$(eval PODNAME = $(shell sh -c "kubectl get pod -l "app.kubernetes.io/name=grafana" --namespace=default -o jsonpath='{.items[0].metadata.name}'"))
