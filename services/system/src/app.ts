@@ -9,6 +9,7 @@ import { errorHandler, NotFoundError } from '@thelarsson/acss-common';
 import { getEventsRoute } from './routes/get-events';
 import { getSubjectsRoute } from './routes/get-subjects';
 import { getServicesRoute } from './routes/get-services';
+import { clientLoggerRoute } from './routes/client-logger';
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use(
 app.use(getEventsRoute);
 app.use(getSubjectsRoute);
 app.use(getServicesRoute);
+app.use(clientLoggerRoute);
 
 app.all('*', async () => {
   throw new NotFoundError();

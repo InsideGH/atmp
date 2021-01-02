@@ -67,6 +67,13 @@ spec:
     - host: admin.acss.dev
       http:
         paths:
+          - path: /api/system/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: system-srv
+                port:
+                  number: 3000
           - path: /api/patients/?(.*)
             pathType: Prefix
             backend:
