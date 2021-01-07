@@ -1,4 +1,4 @@
-import { Message, Stan } from 'node-nats-streaming';
+import { Message, Stan, SubscriptionOptions } from 'node-nats-streaming';
 import { BaseEvent } from './base-event';
 import { logger } from '../../logger/pino';
 import { getNatsSubscriptionOptions, parseNatsMessage, natsConstants } from '../../nats/config';
@@ -40,25 +40,19 @@ export abstract class Listener<T extends BaseEvent> {
   /**
    * Call this to create a subscription and get events to the onMessage function.
    */
-  listen() {
-    const subscriptionOptions = getNatsSubscriptionOptions(this.client, {
-      ackWait: this.ackWait,
-      queueGroupName: this.queueGroupName,
-    });
+  listen(options?: SubscriptionOptions) {
+    const subscriptionOptions = options
+      ? options
+      : getNatsSubscriptionOptions(this.client, {
+          ackWait: this.ackWait,
+          queueGroupName: this.queueGroupName,
+        });
 
-    const subscription = this.client.subscribe(
-      this.subject,
-      this.queueGroupName,
-      subscriptionOptions,
-    );
+    const subscription = this.client.subscribe(this.subject, this.queueGroupName, subscriptionOptions);
 
     subscription.on('message', async (msg: Message) => {
       if (this.config.enableDebugLogs) {
-        logger.debug(
-          `[${msg.getSequence()}] ${this.subject} event received by ${
-            this.queueGroupName
-          } : ${msg.getData()}`,
-        );
+        logger.debug(`[${msg.getSequence()}] ${this.subject} event received by ${this.queueGroupName} : ${msg.getData()}`);
       }
 
       const parsedData = parseNatsMessage(msg);
